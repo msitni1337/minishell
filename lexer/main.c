@@ -2,6 +2,10 @@
 
 int main(int c, char **v, char **env) 
 {
+    USED(c);
+    USED(v);
+    USED(env);
+    
     char *line;
 
     while ((line = readline(">> ")) != NULL) {

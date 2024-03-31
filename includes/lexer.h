@@ -12,7 +12,7 @@ typedef enum e_token_type
 {
     TOKEN_INVALID,
     TOKEN_EOF,
-    TOKEN_STRING,
+    TOKEN_STRING, // todo
     TOKEN_SQUOTE,
     TOKEN_DQUOTE,
     TOKEN_PIPE,
