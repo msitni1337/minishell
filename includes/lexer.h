@@ -1,14 +1,15 @@
 #ifndef LEXER_H
 # define LEXER_H
 
-#define DQUOTE '"'
-#define SQUOTE '\''
-
 #include "common.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+
+#define DQUOTE '"'
+#define SQUOTE '\''
 
 typedef enum e_token_type 
 {
@@ -29,7 +30,6 @@ typedef enum e_token_type
     TOKEN_OPEN_CURLY,
     TOKEN_CLOSE_CURLY,
     TOKEN_DOLLAR,
-    TOKEN_UNKNOWN
 } t_token_type;
 
 typedef struct s_token 

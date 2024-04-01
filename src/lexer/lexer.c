@@ -108,6 +108,15 @@ void parse_line(char *line)
             write(1, str.s, str.count);
             ft_putendl("]\n", 1);
         }
+        else if (token.type == TOKEN_PIPE)
+        {
+            pipe_cmd(NOT IMPLEMENTED);
+        }
+        else if (token.type)
+        {
+            /* code */
+        }
+        
         else if (token.type == TOKEN_CHAR)
         {
             ft_putstr("Token = CHAR, text = [", 1);

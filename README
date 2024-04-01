@@ -8,4 +8,4 @@
 - Makefile: I added a rule for my part `$(lexer)` has been added to the Makefile. This will help with building and testing the code. It is expected that you too ma friend you will add your own rule to the Makefile for your respective part.
 - Shared Folder: A shared folder for the core and common function that is expected to be utilized in both parts (me & you) .. so think ahead before implementing any new logic cause there will be function such as strlen (don't  waist your time bruh hhh)....
 - Progress: You can check the progress of the project by running `make`.
-    -test for double and single quotes and also escaping with '\' char..
+    - test for double and single quotes and also escaping with '\' char..
