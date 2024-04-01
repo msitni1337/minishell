@@ -110,13 +110,24 @@ void parse_line(char *line)
         }
         else if (token.type == TOKEN_PIPE)
         {
-            pipe_cmd(NOT IMPLEMENTED);
+            cmd_pipe(NOT IMPLEMENTED);
         }
-        else if (token.type)
+        else if (token.type == TOKEN_REDIRECT_IN)
         {
-            /* code */
+            cmd_set_infile(NOT IMPLEMENTED);
         }
-        
+        else if (token.type == TOKEN_REDIRECT_OUT)
+        {
+            cmd_set_outfile(NOT IMPLEMENTED);
+        }
+        else if (token.type == TOKEN_HERE_DOC)
+        {
+            cmd_set_heredoc(NOT IMPLEMENTED);
+        }
+        else if (token.type == TOKEN_APPEND)
+        {
+            cmd_set_append(NOT IMPLEMENTED);
+        }
         else if (token.type == TOKEN_CHAR)
         {
             ft_putstr("Token = CHAR, text = [", 1);

@@ -22,9 +22,7 @@ typedef struct s_cmd
     char* bin_path;
     char** args;
     int infile;
-    int is_here_doc;
     int outfile;
-    int append;
 } t_cmd;
 
 int ft_isspace(char c);
