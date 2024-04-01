@@ -1,8 +1,10 @@
 #ifndef LEXER_H
 # define LEXER_H
 
-#define USED(x) ((void)(x))
+#define DQUOTE '"'
+#define SQUOTE '\''
 
+#include "common.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <readline/readline.h>
@@ -12,7 +14,7 @@ typedef enum e_token_type
 {
     TOKEN_INVALID,
     TOKEN_EOF,
-    TOKEN_STRING, // todo
+    TOKEN_CHAR,
     TOKEN_SQUOTE,
     TOKEN_DQUOTE,
     TOKEN_PIPE,
@@ -32,15 +34,24 @@ typedef enum e_token_type
 
 typedef struct s_token 
 {
-    char *value;
+    char c;
     t_token_type type;
 } t_token;
 
 typedef struct s_lexer 
 {
-    char *line;
-    int count;
-    int pos;
+    const char *line;
+    size_t count;
+    size_t pos;
 } t_lexer;
+
+// methods:
+t_lexer new_lexer(char *line);
+t_token get_next_token(t_lexer *lexer, int ignore_spaces);
+void parse_line(char *line);
+
+// utils:
+void trim_spaces(t_lexer *lexer);
+
 
 #endif
