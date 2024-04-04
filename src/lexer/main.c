@@ -1,4 +1,5 @@
 #include "lexer.h"
+#include "dynamic_arrays.h"
 
 int main(int c, char **v, char **env)
 {

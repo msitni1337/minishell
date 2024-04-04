@@ -96,18 +96,19 @@ void parse_line(char *line)
         assert(token.type != TOKEN_INVALID);
         if (token.type == TOKEN_DQUOTE)
         {
-            ft_putstr("Token = DQUOTE, text = [", 1);
+            ft_putstr_fd("Token = DQUOTE, text = [", 1);
             str = get_dquote_string(&lexer);
             write(1, str.s, str.count);
-            ft_putendl("]\n", 1);
+            ft_putendl_fd("]\n", 1);
         }
         else if (token.type == TOKEN_SQUOTE)
         {
-            ft_putstr("Token = SQUOTE, text = [", 1);
+            ft_putstr_fd("Token = SQUOTE, text = [", 1);
             str = get_squote_string(&lexer);
             write(1, str.s, str.count);
-            ft_putendl("]\n", 1);
+            ft_putendl_fd("]\n", 1);
         }
+        /*
         else if (token.type == TOKEN_PIPE)
         {
             cmd_pipe(NOT IMPLEMENTED);
@@ -128,9 +129,10 @@ void parse_line(char *line)
         {
             cmd_set_append(NOT IMPLEMENTED);
         }
+        */
         else if (token.type == TOKEN_CHAR)
         {
-            ft_putstr("Token = CHAR, text = [", 1);
+            ft_putstr_fd("Token = CHAR, text = [", 1);
             str = get_string_whitespace(&lexer);
             /*TODO:
                 Here we need to check for string expansions too,
@@ -139,7 +141,7 @@ void parse_line(char *line)
                 then I'll choose the best place to inject it ..
             */
             write(1, str.s, str.count);
-            ft_putendl("]\n", 1);
+            ft_putendl_fd("]\n", 1);
         }
         token = get_next_token(&lexer, TRUE);
     }
