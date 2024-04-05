@@ -42,8 +42,11 @@ t_string get_string_delim(t_lexer *lexer, const char delim)
         lexer->pos++;
     }
     if (lexer->line[lexer->pos] == delim)
-        return res;
-    return res; // todo => need to throw error "syntax error"
+		{
+     	lexer->pos++;
+			return res;
+		}
+		return res; // todo => need to throw error "syntax error"
 }
 
 t_string get_dquote_string(t_lexer *lexer)
