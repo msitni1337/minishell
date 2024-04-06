@@ -42,55 +42,23 @@ t_string get_string_delim(t_lexer *lexer, const char delim)
         lexer->pos++;
     }
     if (lexer->line[lexer->pos] == delim)
-		{
-     	lexer->pos++;
-			return res;
-		}
-		return res; // todo => need to throw error "syntax error"
-}
-
-t_string get_dquote_string(t_lexer *lexer)
-{
-    t_token token;
-    t_string res;
-
-    USED(token);
-
-    res = get_string_delim(lexer, DQUOTE);
-    /* MSG 1
-        This is for Nmellal (Hope You're good :):
-        here gonna be code for handling string expansion such as env_var
-        replacing => cmd $VAR1 $VAR2 and escaping chars eg ==> \
-        now we're returning just the parsed str..
-        ...
-    */
-
-    return res;
-}
-
-t_string get_squote_string(t_lexer *lexer)
-{
-    t_token token;
-    t_string res;
-
-    USED(token);
-    res = get_string_delim(lexer, SQUOTE);
-
-    /* MSG 2 same as MSG 1 with some special cases
-        bla bla bla more code
-        ...
-    */
-
-    return res;
+    {
+        lexer->pos++;
+        return res;
+    }
+    return res; // todo => need to throw error "syntax error"
 }
 
 void parse_line(char *line)
 {
     t_lexer lexer;
+    t_node *root;
     t_token token;
+
     t_string str;
 
     lexer = new_lexer(line);
+    root = create_node(NODE_CMD, NODE_CMD_AC);
     token = get_next_token(&lexer, TRUE);
     // To crash program if invalid token.. just fot testing purposes
     assert(token.type != TOKEN_INVALID);
@@ -99,30 +67,58 @@ void parse_line(char *line)
         assert(token.type != TOKEN_INVALID);
         if (token.type == TOKEN_DQUOTE)
         {
-            ft_putstr_fd("Token = DQUOTE, text = [", 1);
-            str = get_dquote_string(&lexer);
-            write(1, str.s, str.count);
-            ft_putendl_fd("]\n", 1);
+            if (root->args_req == -1 || root->childs_count < root->args_req)
+            {
+                add_dquote_token(&root, &lexer, TRUE);
+            }
+            else
+            {
+                // handle backtracing to last valid node ..
+                assert(!"No implemented");
+            }
         }
         else if (token.type == TOKEN_SQUOTE)
         {
-            ft_putstr_fd("Token = SQUOTE, text = [", 1);
-            str = get_squote_string(&lexer);
-            write(1, str.s, str.count);
-            ft_putendl_fd("]\n", 1);
+            if (root->args_req == -1 || root->childs_count < root->args_req)
+            {
+                add_squote_token(&root, &lexer, TRUE);
+            }
+            else
+            {
+                // handle backtracing to last valid node ..
+                assert(!"No implemented");
+            }
+        }
+        else if (token.type == TOKEN_REDIRECT_IN)
+        {
+            if (root->args_req == -1 || root->childs_count < root->args_req)
+            {
+                add_redirect_node(&root, &lexer, NODE_REDIRECT_IN);
+                
+            }
+            else
+            {
+                // handle backtracing to last valid node ..
+                assert(!"No implemented");
+            }
+        }
+        else if (token.type == TOKEN_REDIRECT_OUT)
+        {
+            if (root->args_req == -1 || root->childs_count < root->args_req)
+            {
+                add_redirect_node(&root, &lexer, NODE_REDIRECT_IN);
+                
+            }
+            else
+            {
+                // handle backtracing to last valid node ..
+                assert(!"No implemented");
+            }
         }
         /*
         else if (token.type == TOKEN_PIPE)
         {
             cmd_pipe(NOT IMPLEMENTED);
-        }
-        else if (token.type == TOKEN_REDIRECT_IN)
-        {
-            cmd_set_infile(NOT IMPLEMENTED);
-        }
-        else if (token.type == TOKEN_REDIRECT_OUT)
-        {
-            cmd_set_outfile(NOT IMPLEMENTED);
         }
         else if (token.type == TOKEN_HERE_DOC)
         {
