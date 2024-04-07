@@ -1,6 +1,7 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+#include "dynamic_arrays.h"
 #include "shared.h"
 
 #include <stdio.h>

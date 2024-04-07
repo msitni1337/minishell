@@ -52,18 +52,20 @@ t_string get_string_delim(t_lexer *lexer, const char delim)
 void parse_line(char *line)
 {
     t_lexer lexer;
+    t_arr roots;
     t_node *root;
     t_token token;
 
     t_string str;
 
     lexer = new_lexer(line);
-    root = create_node(NODE_CMD, NODE_CMD_AC);
+    roots = init_da(sizeof(t_node *), create_node(NODE_CMD, NODE_CMD_AC));
     token = get_next_token(&lexer, TRUE);
     // To crash program if invalid token.. just fot testing purposes
     assert(token.type != TOKEN_INVALID);
     while (token.type != TOKEN_EOF)
     {
+        root = ARR_LAST(roots, t_node **);
         assert(token.type != TOKEN_INVALID);
         if (token.type == TOKEN_DQUOTE)
         {
@@ -85,34 +87,53 @@ void parse_line(char *line)
             }
             else
             {
+                assert(roots.count > 0);
+                roots.count--;
                 // handle backtracing to last valid node ..
-                assert(!"No implemented");
+                // assert(!"No implemented");
             }
         }
+        else if (token.type == TOKEN_CHAR)
+        {
+            ft_putstr_fd("Token = CHAR, text = [", 1);
+            str = get_string_whitespace(&lexer);
+            /*TODO:
+                Here we need to check for string expansions too,
+                But depending on the context I choosed to delay implementing
+                this part until the structure of the code becomes more clear
+                then I'll choose the best place to inject it ..
+            */
+            write(1, str.s, str.count);
+            ft_putendl_fd("]\n", 1);
+        }
+
+        
         else if (token.type == TOKEN_REDIRECT_IN)
         {
             if (root->args_req == -1 || root->childs_count < root->args_req)
             {
-                add_redirect_node(&root, &lexer, NODE_REDIRECT_IN);
-                
+                add_to_arr(&roots, add_redirect_node(&root, &lexer, NODE_REDIRECT_IN));
             }
             else
             {
+                assert(roots.count > 0);
+                roots.count--;
                 // handle backtracing to last valid node ..
-                assert(!"No implemented");
+                // assert(!"No implemented");
             }
         }
         else if (token.type == TOKEN_REDIRECT_OUT)
         {
             if (root->args_req == -1 || root->childs_count < root->args_req)
             {
-                add_redirect_node(&root, &lexer, NODE_REDIRECT_IN);
-                
+                add_to_arr(&roots, add_redirect_node(&root, &lexer, NODE_REDIRECT_OUT));
             }
             else
             {
+                assert(roots.count > 0);
+                roots.count--;
                 // handle backtracing to last valid node ..
-                assert(!"No implemented");
+                // assert(!"No implemented");
             }
         }
         /*
@@ -129,19 +150,6 @@ void parse_line(char *line)
             cmd_set_append(NOT IMPLEMENTED);
         }
         */
-        else if (token.type == TOKEN_CHAR)
-        {
-            ft_putstr_fd("Token = CHAR, text = [", 1);
-            str = get_string_whitespace(&lexer);
-            /*TODO:
-                Here we need to check for string expansions too,
-                But depending on the context I choosed to delay implementing
-                this part until the structure of the code becomes more clear
-                then I'll choose the best place to inject it ..
-            */
-            write(1, str.s, str.count);
-            ft_putendl_fd("]\n", 1);
-        }
         token = get_next_token(&lexer, TRUE);
     }
 }
