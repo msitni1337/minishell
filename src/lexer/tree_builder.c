@@ -19,7 +19,10 @@ void append_node(t_node **parent, t_node *child, size_t *count)
 
     (*count)++;
     if (*parent == NULL)
-        return *parent = child;
+    {
+        *parent = child;
+        return;
+    }
     node = *parent;
     while (node->next)
         node = node->next;
@@ -66,6 +69,7 @@ t_node *add_str_node(t_node **root, t_lexer *lexer, int as_child)
     return node;
 }
 
+/*
 t_node *add_redirect_node(t_node **root, t_lexer *lexer, t_node_type type)
 {
     t_node *node;
@@ -74,3 +78,4 @@ t_node *add_redirect_node(t_node **root, t_lexer *lexer, t_node_type type)
     append_node(&((*root)->next), node, &((*root)->childs_count));
     return node;
 }
+*/

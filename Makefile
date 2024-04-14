@@ -1,4 +1,4 @@
-LEXER_SRC = src/lexer/lexer.c src/lexer/main.c src/lexer/tokenizer.c src/lexer/utils.c src/shared/common.c
+LEXER_SRC = src/lexer/lexer.c src/lexer/main.c src/lexer/tokenizer.c src/lexer/tree_builder.c src/lexer/utils.c src/shared/common.c src/shared/dynamic_arrays.c src/shared/free.c src/shared/garbage_collector.c
 LEXER_OBJ = $(LEXER_SRC:.c=.o)
 
 LIBFT_DIR=lib/libft
@@ -7,7 +7,7 @@ LIBFT=libft.a
 CC = cc
 NAME = minishell
 LEXER = lexer
-CFLAGS = -Wall -Werror -Wextra -Iincludes -g3
+CFLAGS = -Wall -Werror -Wextra -Iincludes -g3 -fsanitize=address
 LDFLAGS = -lreadline -L$(LIBFT_DIR) -lft
 
 

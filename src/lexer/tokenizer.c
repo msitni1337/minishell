@@ -68,12 +68,12 @@ t_token get_next_token(t_lexer *lexer, int ignore_spaces)
     }
     else if (current == '&' && lexer->line[lexer->pos + 1] == '&')
     {
-        token.type = TOKEN_AND_OPERATOR;
+        token.type = TOKEN_AND;
         lexer->pos += 2;
     }
     else if (current == '|' && lexer->line[lexer->pos + 1] == '|')
     {
-        token.type = TOKEN_OR_OPERATOR;
+        token.type = TOKEN_OR;
         lexer->pos += 2;
     }
     else if (current == '|')
@@ -83,7 +83,7 @@ t_token get_next_token(t_lexer *lexer, int ignore_spaces)
     }
     else
     {
-        token.type = TOKEN_CHAR;
+        token.type = TOKEN_STRING;
         lexer->pos++;
     }
     return token;

@@ -16,7 +16,7 @@ typedef enum e_token_type
 {
     TOKEN_INVALID,
     TOKEN_EOF,
-    TOKEN_STR,
+    TOKEN_STRING,
     TOKEN_SQUOTE,
     TOKEN_DQUOTE,
     TOKEN_PIPE,
@@ -24,8 +24,8 @@ typedef enum e_token_type
     TOKEN_REDIRECT_OUT,
     TOKEN_APPEND,
     TOKEN_HERE_DOC,
-    TOKEN_AND_OPERATOR,
-    TOKEN_OR_OPERATOR,
+    TOKEN_AND,
+    TOKEN_OR,
     TOKEN_OPEN_PAREN,
     TOKEN_CLOSE_PAREN,
     TOKEN_OPEN_CURLY,
@@ -84,14 +84,18 @@ t_node *create_node();
 void init_root(t_node **root);
 t_node *add_dquote_node(t_node **root, t_lexer *lexer, int as_child);
 t_node *add_squote_node(t_node **root, t_lexer *lexer, int as_child);
-t_node *add_redirect_node(t_node **root, t_lexer *lexer, t_node_type type);
+// t_node *add_redirect_node(t_node **root, t_lexer *lexer, t_node_type type);
 int is_valid_redirect_parent(t_node_type type);
 t_node *create_node(t_node_type type);
+void append_node(t_node **parent, t_node *child, size_t *count);
+t_node *add_dquote_node(t_node **root, t_lexer *lexer, int as_child);
+t_node *add_squote_node(t_node **root, t_lexer *lexer, int as_child);
+t_node *add_str_node(t_node **root, t_lexer *lexer, int as_child);
 
 // Lexer:
 t_lexer new_lexer(char *line);
 t_token get_next_token(t_lexer *lexer, int ignore_spaces);
-void parse_line(char *line);
+t_node* parse_line(char *line);
 t_string get_dquote_string(t_lexer *lexer);
 t_string get_squote_string(t_lexer *lexer);
 t_string get_string_delim(t_lexer *lexer, const char delim);
