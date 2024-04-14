@@ -11,16 +11,12 @@
 
 #define DQUOTE '"'
 #define SQUOTE '\''
-#define NODE_INF -1
-#define NODE_CMD_AC NODE_INF
-#define NODE_STR_AC 0
-#define NODE_REDIRECT_AC 1
 
 typedef enum e_token_type
 {
     TOKEN_INVALID,
     TOKEN_EOF,
-    TOKEN_CHAR,
+    TOKEN_STR,
     TOKEN_SQUOTE,
     TOKEN_DQUOTE,
     TOKEN_PIPE,
@@ -40,7 +36,8 @@ typedef enum e_token_type
 typedef enum e_node_type
 {
     NODE_CMD,
-    NODE_STR,
+    NODE_CMD_ARGS,
+    NODE_STRING,
     NODE_SQUOTE,
     NODE_DQUOTE,
     NODE_PIPE,
@@ -65,7 +62,7 @@ typedef struct s_token
 typedef struct s_node
 {
     t_node_type type;
-    unsigned int args_req;
+    // unsigned int args_req;
 
     t_string token_str;
 
@@ -88,6 +85,9 @@ void init_root(t_node **root);
 t_node *add_dquote_node(t_node **root, t_lexer *lexer, int as_child);
 t_node *add_squote_node(t_node **root, t_lexer *lexer, int as_child);
 t_node *add_redirect_node(t_node **root, t_lexer *lexer, t_node_type type);
+int is_valid_redirect_parent(t_node_type type);
+t_node *create_node(t_node_type type);
+
 // Lexer:
 t_lexer new_lexer(char *line);
 t_token get_next_token(t_lexer *lexer, int ignore_spaces);

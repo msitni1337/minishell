@@ -49,105 +49,135 @@ t_string get_string_delim(t_lexer *lexer, const char delim)
     return res; // todo => need to throw error "syntax error"
 }
 
+t_node *get_node_by_type(t_node *root, t_node_type type, int create_new)
+{
+    t_node *tmp;
+
+    tmp = root;
+    if (!tmp)
+        return NULL;
+    tmp = root->children;
+    while (tmp && tmp->type != type)
+        tmp = tmp->next;
+    if (!tmp && create_new)
+    {
+        tmp = create_node(type);
+        append_node(&(root->children), tmp, &(root->childs_count));
+    }
+    return tmp;
+}
+
 void parse_line(char *line)
 {
     t_lexer lexer;
     t_arr roots;
-    t_node *root;
+    t_node *curr_cmd;
     t_token token;
 
     t_string str;
 
     lexer = new_lexer(line);
-    roots = init_da(sizeof(t_node *), create_node(NODE_CMD, NODE_CMD_AC));
     token = get_next_token(&lexer, TRUE);
+    if (token.type == TOKEN_PIPE || token.type == TOKEN_AND || token.type == TOKEN_OR)
+        assert(!"Throw syntax error");
+    roots = init_da(sizeof(t_node *), create_node(NODE_CMD));
     // To crash program if invalid token.. just fot testing purposes
     assert(token.type != TOKEN_INVALID);
     while (token.type != TOKEN_EOF)
     {
-        root = ARR_LAST(roots, t_node **);
+        curr_cmd = ARR_LAST(roots, t_node **);
         assert(token.type != TOKEN_INVALID);
         if (token.type == TOKEN_DQUOTE)
         {
-            if (root->args_req == -1 || root->childs_count < root->args_req)
-            {
-                add_dquote_token(&root, &lexer, TRUE);
-            }
-            else
-            {
-                // handle backtracing to last valid node ..
-                assert(!"No implemented");
-            }
+            t_node *cmd_args_node = get_node_by_type(curr_cmd->children, NODE_CMD_ARGS, TRUE);
+            add_dquote_token(&cmd_args_node, &lexer, TRUE);
         }
         else if (token.type == TOKEN_SQUOTE)
         {
-            if (root->args_req == -1 || root->childs_count < root->args_req)
-            {
-                add_squote_token(&root, &lexer, TRUE);
-            }
-            else
-            {
-                assert(roots.count > 0);
-                roots.count--;
-                // handle backtracing to last valid node ..
-                // assert(!"No implemented");
-            }
+            t_node *cmd_args_node = get_node_by_type(curr_cmd->children, NODE_CMD_ARGS, TRUE);
+            add_squote_token(&cmd_args_node, &lexer, TRUE);
         }
-        else if (token.type == TOKEN_CHAR)
+        else if (token.type == TOKEN_STR)
         {
-            ft_putstr_fd("Token = CHAR, text = [", 1);
-            str = get_string_whitespace(&lexer);
-            /*TODO:
-                Here we need to check for string expansions too,
-                But depending on the context I choosed to delay implementing
-                this part until the structure of the code becomes more clear
-                then I'll choose the best place to inject it ..
-            */
-            write(1, str.s, str.count);
-            ft_putendl_fd("]\n", 1);
+            t_node *cmd_args_node = get_node_by_type(curr_cmd->children, NODE_CMD_ARGS, TRUE);
+            add_str_token(&cmd_args_node, &lexer, TRUE);
         }
-
-        
         else if (token.type == TOKEN_REDIRECT_IN)
         {
-            if (root->args_req == -1 || root->childs_count < root->args_req)
+            t_node *cmd_red_in_node = get_node_by_type(curr_cmd->children, NODE_REDIRECT_IN, TRUE);
+            token = get_next_token(&lexer, TRUE);
+            if (token.type == TOKEN_STR || token.type == TOKEN_DQUOTE || token.type == TOKEN_SQUOTE)
             {
-                add_to_arr(&roots, add_redirect_node(&root, &lexer, NODE_REDIRECT_IN));
+                t_node *node = create_node(token.type);
+                if (token.type == TOKEN_SQUOTE)
+                    node->token_str = get_string_delim(&lexer, SQUOTE);
+                else if (token.type == TOKEN_DQUOTE)
+                    node->token_str = get_string_delim(&lexer, DQUOTE);
+                else
+                    node->token_str = get_string_whitespace(&lexer);
+                append_node(&(cmd_red_in_node->children), node, &(cmd_red_in_node->childs_count));
             }
             else
-            {
-                assert(roots.count > 0);
-                roots.count--;
-                // handle backtracing to last valid node ..
-                // assert(!"No implemented");
-            }
+                assert(!"Throw syntax error");
         }
         else if (token.type == TOKEN_REDIRECT_OUT)
         {
-            if (root->args_req == -1 || root->childs_count < root->args_req)
+            t_node *cmd_red_in_node = get_node_by_type(curr_cmd->children, NODE_REDIRECT_OUT, TRUE);
+            token = get_next_token(&lexer, TRUE);
+            if (token.type == TOKEN_STR || token.type == TOKEN_DQUOTE || token.type == TOKEN_SQUOTE)
             {
-                add_to_arr(&roots, add_redirect_node(&root, &lexer, NODE_REDIRECT_OUT));
+                t_node *node = create_node(token.type);
+                if (token.type == TOKEN_SQUOTE)
+                    node->token_str = get_string_delim(&lexer, SQUOTE);
+                else if (token.type == TOKEN_DQUOTE)
+                    node->token_str = get_string_delim(&lexer, DQUOTE);
+                else
+                    node->token_str = get_string_whitespace(&lexer);
+                append_node(&(cmd_red_in_node->children), node, &(cmd_red_in_node->childs_count));
             }
             else
+                assert(!"Throw syntax error");
+        }
+        else if (token.type == TOKEN_HERE_DOC)
+        {
+            t_node *cmd_red_in_node = get_node_by_type(curr_cmd->children, NODE_HERE_DOC, TRUE);
+            token = get_next_token(&lexer, TRUE);
+            if (token.type == TOKEN_STR || token.type == TOKEN_DQUOTE || token.type == TOKEN_SQUOTE)
             {
-                assert(roots.count > 0);
-                roots.count--;
-                // handle backtracing to last valid node ..
-                // assert(!"No implemented");
+                t_node *node = create_node(token.type);
+                if (token.type == TOKEN_SQUOTE)
+                    node->token_str = get_string_delim(&lexer, SQUOTE);
+                else if (token.type == TOKEN_DQUOTE)
+                    node->token_str = get_string_delim(&lexer, DQUOTE);
+                else
+                    node->token_str = get_string_whitespace(&lexer);
+                append_node(&(cmd_red_in_node->children), node, &(cmd_red_in_node->childs_count));
             }
+            else
+                assert(!"Throw syntax error");
+        }
+        else if (token.type == TOKEN_APPEND)
+        {
+            t_node *cmd_red_in_node = get_node_by_type(curr_cmd->children, NODE_APPEND, TRUE);
+            token = get_next_token(&lexer, TRUE);
+            if (token.type == TOKEN_STR || token.type == TOKEN_DQUOTE || token.type == TOKEN_SQUOTE)
+            {
+                t_node *node = create_node(token.type);
+                if (token.type == TOKEN_SQUOTE)
+                    node->token_str = get_string_delim(&lexer, SQUOTE);
+                else if (token.type == TOKEN_DQUOTE)
+                    node->token_str = get_string_delim(&lexer, DQUOTE);
+                else
+                    node->token_str = get_string_whitespace(&lexer);
+                append_node(&(cmd_red_in_node->children), node, &(cmd_red_in_node->childs_count));
+            }
+            else
+                assert(!"Throw syntax error");
         }
         /*
         else if (token.type == TOKEN_PIPE)
         {
             cmd_pipe(NOT IMPLEMENTED);
-        }
-        else if (token.type == TOKEN_HERE_DOC)
-        {
-            cmd_set_heredoc(NOT IMPLEMENTED);
-        }
-        else if (token.type == TOKEN_APPEND)
-        {
-            cmd_set_append(NOT IMPLEMENTED);
         }
         */
         token = get_next_token(&lexer, TRUE);
