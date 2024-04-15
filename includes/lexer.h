@@ -1,15 +1,6 @@
 #ifndef LEXER_H
 #define LEXER_H
-
-#include "dynamic_arrays.h"
 #include "shared.h"
-
-#include <unistd.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <readline/readline.h>
-#include <readline/history.h>
 
 #define DQUOTE '"'
 #define SQUOTE '\''

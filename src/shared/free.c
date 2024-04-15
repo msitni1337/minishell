@@ -13,9 +13,3 @@ void free_arr(char**arr)
     if (arr)
         free(tmp);
 }
-
-void free_cmd(t_cmd cmd)
-{
-    free(cmd.bin_path);
-    free_arr(cmd.args);
-}

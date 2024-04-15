@@ -6,8 +6,13 @@
 #define FALSE   0
 
 #include <stddef.h>
+#include <stdio.h>
 #include <assert.h>
+#include <signal.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 #include "libft.h"
 
 #define USED(x) ((void)(x))
@@ -18,27 +23,16 @@ typedef struct s_string
     size_t count;
 }   t_string;
 
-typedef struct s_redirect
-{
-    t_string value;
-    int append;
-} t_redirect;
 
-typedef struct s_cmd
-{
-    char* bin_path;
-    char** args;
 
-    char **here_doc;
-    t_redirect *infile;
-    t_redirect *outfile;
+// initialization
+void init_shell();
+void setup_signal_handlers();
 
-} t_cmd;
-
+// utils
 int ft_isspace(char c);
 
 // freeing
-void free_cmd(t_cmd cmd);
 void free_arr(char**arr);
 
 #endif

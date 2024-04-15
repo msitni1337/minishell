@@ -46,6 +46,7 @@ t_string get_string_delim(t_lexer *lexer, const char delim)
         lexer->pos++;
         return res;
     }
+    assert(!"NO END QUOTE PROVIDED");
     return res; // todo => need to throw error "syntax error"
 }
 
@@ -67,7 +68,7 @@ t_node *get_node_by_type(t_node *root, t_node_type type, int create_new)
     return tmp;
 }
 
-t_node * parse_line(char *line)
+t_node *parse_line(char *line)
 {
     t_lexer lexer;
     t_node *root;
@@ -78,8 +79,10 @@ t_node * parse_line(char *line)
     token = get_next_token(&lexer, TRUE);
     // To crash program if invalid token.. just fot testing purposes
     assert(token.type != TOKEN_INVALID);
+    if(token.type == TOKEN_EOF)
+        return NULL;
     if (token.type == TOKEN_PIPE || token.type == TOKEN_AND || token.type == TOKEN_OR)
-        assert(!"Throw syntax error");
+        assert(!"Throw syntax error\n");
     // roots = init_da(sizeof(t_node *), create_node(NODE_CMD));
     root = create_node(NODE_CMD);
     root->list_count++;
@@ -199,10 +202,18 @@ t_node * parse_line(char *line)
         }
         else if (token.type == TOKEN_PIPE)
         {
-            t_node*node = create_node(NODE_PIPE);
+            t_node *node = create_node(NODE_PIPE);
             append_node(&root, node, &(root->list_count));
+            token = get_next_token(&lexer, TRUE);
+            assert(token.type != TOKEN_INVALID);
+            if (token.type == TOKEN_EOF || token.type == TOKEN_PIPE || token.type == TOKEN_AND || token.type == TOKEN_OR)
+                assert(!"THROW SYNTAX ERROR\n");
+            curr_cmd = create_node(NODE_CMD);
+            append_node(&root, curr_cmd, &(root->list_count));
+            continue;
+            continue;
         }
-        
+
         token = get_next_token(&lexer, TRUE);
         assert(token.type != TOKEN_INVALID);
     }
