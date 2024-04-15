@@ -13,6 +13,16 @@ t_node *create_node(t_node_type type)
     return res;
 }
 
+t_node*get_last_node(t_node*node)
+{
+    t_node*last;
+
+    last = node;
+    while (last && last->next)
+        last = last->next;
+    return last;    
+}
+
 void append_node(t_node **parent, t_node *child, size_t *count)
 {
     t_node *node;

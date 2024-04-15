@@ -197,12 +197,12 @@ t_node * parse_line(char *line)
             else
                 assert(!"Throw syntax error");
         }
-        /*
         else if (token.type == TOKEN_PIPE)
         {
-            cmd_pipe(NOT IMPLEMENTED);
+            t_node*node = create_node(NODE_PIPE);
+            append_node(&root, node, &(root->list_count));
         }
-        */
+        
         token = get_next_token(&lexer, TRUE);
         assert(token.type != TOKEN_INVALID);
     }

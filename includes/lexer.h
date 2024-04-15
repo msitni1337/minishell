@@ -4,6 +4,8 @@
 #include "dynamic_arrays.h"
 #include "shared.h"
 
+#include <unistd.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <readline/readline.h>
@@ -91,6 +93,7 @@ void append_node(t_node **parent, t_node *child, size_t *count);
 t_node *add_dquote_node(t_node **root, t_lexer *lexer, int as_child);
 t_node *add_squote_node(t_node **root, t_lexer *lexer, int as_child);
 t_node *add_str_node(t_node **root, t_lexer *lexer, int as_child);
+t_node*get_last_node(t_node*node);
 
 // Lexer:
 t_lexer new_lexer(char *line);
