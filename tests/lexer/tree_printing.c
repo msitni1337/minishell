@@ -24,20 +24,10 @@ char *get_node_type(t_node_type type)
         return "NODE_APPEND";
     case NODE_HERE_DOC:
         return "NODE_HERE_DOC";
-    case NODE_AND_OPERATOR:
-        return "NODE_AND_OPERATOR";
-    case NODE_OR_OPERATOR:
-        return "NODE_OR_OPERATOR";
-    case NODE_OPEN_PAREN:
-        return "NODE_OPEN_PAREN";
-    case NODE_CLOSE_PAREN:
-        return "NODE_CLOSE_PAREN";
-    case NODE_OPEN_CURLY:
-        return "NODE_OPEN_CURLY";
-    case NODE_CLOSE_CURLY:
-        return "NODE_CLOSE_CURLY";
+    case NODE_SUBSHELL:
+        return "NODE_SUBSHELL";
     default:
-        assert("!NOT POSSIBLE");
+        assert(!"NOT POSSIBLE");
     }
     return "";
 }
@@ -80,7 +70,7 @@ int main(int c, char **v, char **env)
     USED(c);
     USED(v);
     USED(env);
-    
+
     init_shell();
     char *line;
 

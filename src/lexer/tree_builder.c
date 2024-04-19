@@ -23,16 +23,17 @@ t_node *get_last_node(t_node *node)
     return last;
 }
 
-void append_node(t_node **parent, t_node *child, size_t *count)
+void append_node(t_node **parent, t_node *child)
 {
     t_node *node;
 
-    (*count)++;
     if (*parent == NULL)
     {
         *parent = child;
+        child->list_count++;
         return;
     }
+    (*parent)->list_count++;
     node = *parent;
     while (node->next)
         node = node->next;
