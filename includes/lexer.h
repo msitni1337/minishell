@@ -4,6 +4,7 @@
 
 #define DQUOTE '"'
 #define SQUOTE '\''
+#define IS_CMD_TOKEN(token) (token.type == TOKEN_DQUOTE || token.type == TOKEN_SQUOTE || token.type == TOKEN_STRING || token.type == TOKEN_REDIRECT_IN || token.type == TOKEN_REDIRECT_OUT || token.type == TOKEN_HERE_DOC || token.type == TOKEN_APPEND)
 
 typedef enum e_token_type
 {
@@ -75,21 +76,19 @@ typedef struct s_lexer
 // Tree Builder:
 t_node *create_node();
 void init_root(t_node **root);
-t_node *add_dquote_node(t_node **root, t_lexer *lexer, int as_child);
-t_node *add_squote_node(t_node **root, t_lexer *lexer, int as_child);
-// t_node *add_redirect_node(t_node **root, t_lexer *lexer, t_node_type type);
+void append_child(t_node *parent, t_node *child);
 int is_valid_redirect_parent(t_node_type type);
 t_node *create_node(t_node_type type);
 void append_node(t_node **parent, t_node *child, size_t *count);
-t_node *add_dquote_node(t_node **root, t_lexer *lexer, int as_child);
-t_node *add_squote_node(t_node **root, t_lexer *lexer, int as_child);
-t_node *add_str_node(t_node **root, t_lexer *lexer, int as_child);
-t_node*get_last_node(t_node*node);
+t_node *add_dquote_node(t_node *root, t_lexer *lexer);
+t_node *add_squote_node(t_node *root, t_lexer *lexer);
+t_node *add_str_node(t_node *root, t_lexer *lexer);
+t_node *get_last_node(t_node *node);
 
 // Lexer:
 t_lexer new_lexer(char *line);
 t_token get_next_token(t_lexer *lexer, int ignore_spaces);
-t_node* parse_line(char *line);
+t_node *parse_line(char *line);
 t_string get_dquote_string(t_lexer *lexer);
 t_string get_squote_string(t_lexer *lexer);
 t_string get_string_delim(t_lexer *lexer, const char delim);

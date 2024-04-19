@@ -68,6 +68,48 @@ t_node *get_node_by_type(t_node *root, t_node_type type, int create_new)
     return tmp;
 }
 
+void add_redirect_node(t_lexer *lexer, t_node *curr_cmd, t_node_type type)
+{
+    t_token token;
+    t_node *red_node;
+
+    red_node = create_node(type);
+    append_child(curr_cmd, red_node);
+    token = get_next_token(lexer, TRUE);
+    if (token.type == TOKEN_SQUOTE)
+        add_squote_node(red_node, lexer);
+    else if (token.type == TOKEN_DQUOTE)
+        add_dquote_node(red_node, lexer);
+    else if (token.type == TOKEN_STRING)
+        add_str_node(red_node, lexer);
+    else
+        assert(!"Throw syntax error");
+}
+
+t_token fill_cmd(t_node *curr_cmd, t_token token,t_lexer*lexer)
+{
+    while (IS_CMD_TOKEN(token))
+    {
+        if (token.type == TOKEN_DQUOTE)
+            add_dquote_node(curr_cmd, lexer);
+        else if (token.type == TOKEN_SQUOTE)
+            add_squote_node(curr_cmd, lexer);
+        else if (token.type == TOKEN_STRING)
+            add_str_node(curr_cmd, lexer);
+        else if (token.type == TOKEN_REDIRECT_IN)
+            add_redirect_node(lexer, curr_cmd, NODE_REDIRECT_IN);
+        else if (token.type == TOKEN_REDIRECT_OUT)
+            add_redirect_node(lexer, curr_cmd, NODE_REDIRECT_OUT);
+        else if (token.type == TOKEN_HERE_DOC)
+            add_redirect_node(lexer, curr_cmd, NODE_HERE_DOC);
+        else if (token.type == TOKEN_APPEND)
+            add_redirect_node(lexer, curr_cmd, NODE_APPEND);
+        token = get_next_token(lexer, TRUE);
+        assert(token.type != TOKEN_INVALID);
+    }
+    return token;
+}
+
 t_node *parse_line(char *line)
 {
     t_lexer lexer;
@@ -79,9 +121,9 @@ t_node *parse_line(char *line)
     token = get_next_token(&lexer, TRUE);
     // To crash program if invalid token.. just fot testing purposes
     assert(token.type != TOKEN_INVALID);
-    if(token.type == TOKEN_EOF)
+    if (token.type == TOKEN_EOF)
         return NULL;
-    if (token.type == TOKEN_PIPE || token.type == TOKEN_AND || token.type == TOKEN_OR)
+    if (!IS_CMD_TOKEN(token))
         assert(!"Throw syntax error\n");
     // roots = init_da(sizeof(t_node *), create_node(NODE_CMD));
     root = create_node(NODE_CMD);
@@ -89,116 +131,10 @@ t_node *parse_line(char *line)
     curr_cmd = root;
     while (token.type != TOKEN_EOF)
     {
-        if (token.type == TOKEN_DQUOTE)
+        if (IS_CMD_TOKEN(token))
         {
-            t_node *cmd_args_node = get_node_by_type(curr_cmd, NODE_CMD_ARGS, TRUE);
-            add_dquote_node(&cmd_args_node, &lexer, TRUE);
-        }
-        else if (token.type == TOKEN_SQUOTE)
-        {
-            t_node *cmd_args_node = get_node_by_type(curr_cmd, NODE_CMD_ARGS, TRUE);
-            add_squote_node(&cmd_args_node, &lexer, TRUE);
-        }
-        else if (token.type == TOKEN_STRING)
-        {
-            t_node *cmd_args_node = get_node_by_type(curr_cmd, NODE_CMD_ARGS, TRUE);
-            add_str_node(&cmd_args_node, &lexer, TRUE);
-        }
-        else if (token.type == TOKEN_REDIRECT_IN)
-        {
-            t_node *cmd_red_in_node = get_node_by_type(curr_cmd, NODE_REDIRECT_IN, TRUE);
-            token = get_next_token(&lexer, TRUE);
-            if (token.type == TOKEN_STRING || token.type == TOKEN_DQUOTE || token.type == TOKEN_SQUOTE)
-            {
-                t_node *node = create_node(NODE_STRING);
-                if (token.type == TOKEN_SQUOTE)
-                {
-                    node->token_str = get_string_delim(&lexer, SQUOTE);
-                    node->type = NODE_SQUOTE;
-                }
-                else if (token.type == TOKEN_DQUOTE)
-                {
-                    node->token_str = get_string_delim(&lexer, DQUOTE);
-                    node->type = NODE_DQUOTE;
-                }
-                else
-                    node->token_str = get_string_whitespace(&lexer);
-                append_node(&(cmd_red_in_node->children), node, &(cmd_red_in_node->childs_count));
-            }
-            else
-                assert(!"Throw syntax error");
-        }
-        else if (token.type == TOKEN_REDIRECT_OUT)
-        {
-            t_node *cmd_red_in_node = get_node_by_type(curr_cmd, NODE_REDIRECT_OUT, TRUE);
-            token = get_next_token(&lexer, TRUE);
-            if (token.type == TOKEN_STRING || token.type == TOKEN_DQUOTE || token.type == TOKEN_SQUOTE)
-            {
-                t_node *node = create_node(NODE_STRING);
-                if (token.type == TOKEN_SQUOTE)
-                {
-                    node->token_str = get_string_delim(&lexer, SQUOTE);
-                    node->type = NODE_SQUOTE;
-                }
-                else if (token.type == TOKEN_DQUOTE)
-                {
-                    node->token_str = get_string_delim(&lexer, DQUOTE);
-                    node->type = NODE_DQUOTE;
-                }
-                else
-                    node->token_str = get_string_whitespace(&lexer);
-                append_node(&(cmd_red_in_node->children), node, &(cmd_red_in_node->childs_count));
-            }
-            else
-                assert(!"Throw syntax error");
-        }
-        else if (token.type == TOKEN_HERE_DOC)
-        {
-            t_node *cmd_red_in_node = get_node_by_type(curr_cmd, NODE_HERE_DOC, TRUE);
-            token = get_next_token(&lexer, TRUE);
-            if (token.type == TOKEN_STRING || token.type == TOKEN_DQUOTE || token.type == TOKEN_SQUOTE)
-            {
-                t_node *node = create_node(NODE_STRING);
-                if (token.type == TOKEN_SQUOTE)
-                {
-                    node->token_str = get_string_delim(&lexer, SQUOTE);
-                    node->type = NODE_SQUOTE;
-                }
-                else if (token.type == TOKEN_DQUOTE)
-                {
-                    node->token_str = get_string_delim(&lexer, DQUOTE);
-                    node->type = NODE_DQUOTE;
-                }
-                else
-                    node->token_str = get_string_whitespace(&lexer);
-                append_node(&(cmd_red_in_node->children), node, &(cmd_red_in_node->childs_count));
-            }
-            else
-                assert(!"Throw syntax error");
-        }
-        else if (token.type == TOKEN_APPEND)
-        {
-            t_node *cmd_red_in_node = get_node_by_type(curr_cmd, NODE_APPEND, TRUE);
-            token = get_next_token(&lexer, TRUE);
-            if (token.type == TOKEN_STRING || token.type == TOKEN_DQUOTE || token.type == TOKEN_SQUOTE)
-            {
-                t_node *node = create_node(NODE_STRING);
-                if (token.type == TOKEN_SQUOTE)
-                {
-                    node->token_str = get_string_delim(&lexer, SQUOTE);
-                    node->type = NODE_SQUOTE;
-                }
-                else if (token.type == TOKEN_DQUOTE)
-                {
-                    node->token_str = get_string_delim(&lexer, DQUOTE);
-                    node->type = NODE_DQUOTE;
-                }
-                else
-                    node->token_str = get_string_whitespace(&lexer);
-                append_node(&(cmd_red_in_node->children), node, &(cmd_red_in_node->childs_count));
-            }
-            else
-                assert(!"Throw syntax error");
+            token = fill_cmd(curr_cmd, token, &lexer);
+            continue;
         }
         else if (token.type == TOKEN_PIPE)
         {
@@ -211,9 +147,7 @@ t_node *parse_line(char *line)
             curr_cmd = create_node(NODE_CMD);
             append_node(&root, curr_cmd, &(root->list_count));
             continue;
-            continue;
         }
-
         token = get_next_token(&lexer, TRUE);
         assert(token.type != TOKEN_INVALID);
     }
