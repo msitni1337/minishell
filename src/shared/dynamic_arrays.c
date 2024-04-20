@@ -1,9 +1,11 @@
 #include "dynamic_arrays.h"
 
+
+
 t_arr init_da(size_t size, void*elem)
 {
 	t_arr res;
-	
+
 	ft_memset(&res, 0, sizeof(t_arr));
 	res.elem_size = size;
 	expand_arr(&res);
@@ -28,7 +30,7 @@ t_arr *expand_arr(t_arr *arr)
 
 t_arr *add_to_arr(t_arr *arr, void *data)
 {
-	if (arr->count >= arr->capacity) 
+	if (arr->count >= arr->capacity)
 		expand_arr(arr);
 	ft_memcpy(((unsigned char*)arr->data) + arr->elem_size * arr->count, data, arr->elem_size);
 	arr->count++;
