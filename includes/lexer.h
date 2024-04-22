@@ -4,7 +4,7 @@
 
 #define DQUOTE '"'
 #define SQUOTE '\''
-#define IS_CMD_TOKEN(token) (token.type == TOKEN_DQUOTE || token.type == TOKEN_SQUOTE || token.type == TOKEN_STRING || token.type == TOKEN_REDIRECT_IN || token.type == TOKEN_REDIRECT_OUT || token.type == TOKEN_HERE_DOC || token.type == TOKEN_APPEND)
+#define IS_CMD_TOKEN(token) (token.type == TOKEN_DQUOTE || token.type == TOKEN_SQUOTE || token.type == TOKEN_STRING || token.type == TOKEN_REDIRECT_IN || token.type == TOKEN_REDIRECT_OUT || token.type == TOKEN_HERE_DOC || token.type == TOKEN_APPEND || token.type == TOKEN_OPEN_PAREN)
 
 typedef enum e_token_type
 {
@@ -78,6 +78,7 @@ t_node *add_dquote_node(t_node *root, t_lexer *lexer);
 t_node *add_squote_node(t_node *root, t_lexer *lexer);
 t_node *add_str_node(t_node *root, t_lexer *lexer);
 t_node *get_last_node(t_node *node);
+t_token fill_cmd(t_node **root, t_token token, t_lexer *lexer, int as_child);
 
 // Lexer:
 t_lexer new_lexer(char *line);
