@@ -82,6 +82,8 @@ t_token parse_subshell(t_node *root, t_lexer *lexer)
             token = fill_cmd(&subshell, token, lexer, TRUE);
             continue;
         }
+        else if (subshell->childs_count == 0)
+            assert(!"THROW SYNTAX ERROR\n");
         else if (token.type == TOKEN_PIPE)
         {
             t_node *node = create_node(NODE_PIPE);
@@ -169,12 +171,12 @@ t_token fill_cmd(t_node **root, t_token token, t_lexer *lexer, int as_child)
         else if (token.type == TOKEN_APPEND)
             add_redirect_node(lexer, curr_cmd, NODE_APPEND);
         else if (token.type == TOKEN_OPEN_PAREN)
-        {
             parse_subshell(curr_cmd, lexer);
-        }
         token = get_next_token(lexer, TRUE);
         assert(token.type != TOKEN_INVALID);
     }
+    if (curr_cmd->childs_count == 0)
+        assert(!"THROW SYNTAX ERROR\n");
     return token;
 }
 
@@ -195,15 +197,15 @@ t_node *parse_line(char *line)
     while (token.type != TOKEN_EOF)
     {
         if (IS_CMD_TOKEN(token))
-        {
             fill_cmd(&root, token, &lexer, FALSE);
-        }
-        else if (token.type == TOKEN_PIPE)
+        else if (root->childs_count == 0)
+            assert(!"THROW SYNTAX ERROR\n");
+        if (token.type == TOKEN_PIPE)
         {
             t_node *node = create_node(NODE_PIPE);
             append_node(&root, node);
             token = get_next_token(&lexer, TRUE);
-            if (!IS_CMD_TOKEN(token) && token.type != TOKEN_OPEN_PAREN)
+            if (!IS_CMD_TOKEN(token))
                 assert(!"THROW SYNTAX ERROR\n");
             continue;
         }
@@ -212,7 +214,7 @@ t_node *parse_line(char *line)
             t_node *node = create_node(NODE_AND);
             append_node(&root, node);
             token = get_next_token(&lexer, TRUE);
-            if (!IS_CMD_TOKEN(token) && token.type != TOKEN_OPEN_PAREN)
+            if (!IS_CMD_TOKEN(token))
                 assert(!"THROW SYNTAX ERROR\n");
             continue;
         }
@@ -221,17 +223,14 @@ t_node *parse_line(char *line)
             t_node *node = create_node(NODE_OR);
             append_node(&root, node);
             token = get_next_token(&lexer, TRUE);
-            if (!IS_CMD_TOKEN(token) && token.type != TOKEN_OPEN_PAREN)
+            if (!IS_CMD_TOKEN(token))
                 assert(!"THROW SYNTAX ERROR\n");
             continue;
         }
-        // else if (token.type == TOKEN_OPEN_PAREN)
-        // {
-        //     token = parse_subshell(&root, &lexer);
-        //     assert(token.type == TOKEN_CLOSE_PAREN);
-        // }
         else if (token.type == TOKEN_CLOSE_PAREN)
             assert(!"THROW SYNTAX ERROR");
+        else
+            assert(!"THROW SYNTAX ERROR\n");
         token = get_next_token(&lexer, TRUE);
         assert(token.type != TOKEN_INVALID);
     }
