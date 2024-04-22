@@ -8,10 +8,15 @@ LIBFT=libft.a
 EXEC_SRC = $(wildcard src/environments/*.c)
 EXEC_OBJ = $(EXEC_SRC:.c=.o)
 
+BUILTIN_SRC = $(wildcard src/built-ins/*.c)
+BUILTIN_OBJ = $(BUILTIN_SRC:.c=.o)
+
+
 CC = cc
 NAME = minishell
 LEXER = lexer
 EXEC = exec
+BUILTIN = built-ins
 CFLAGS = -Wall -Werror -Wextra -Iincludes -g3 -fsanitize=address
 LDFLAGS = -lreadline -L$(LIBFT_DIR) -lft
 
@@ -21,10 +26,13 @@ LDFLAGS = -lreadline -L$(LIBFT_DIR) -lft
 %.o : %.c
 	$(CC) $(CFLAGS) $< -c -o $@
 
-all : $(EXEC)
+all : $(LIBFT) $(BUILTIN) 
 
 $(EXEC): $(LEXER_OBJ) $(EXEC_OBJ) $(LIBFT)
-	$(CC) $(CFLAGS) $(LEXER_OBJ) $(EXEC_OBJ) -o $(EXEC) $(LDFLAGS)
+	$(CC) $(CFLAGS) $(LEXER_OBJ) $(LIBFT) $(EXEC_OBJ) -o $(EXEC) $(LDFLAGS)
+
+$(BUILTIN): $(LEXER_OBJ) $(EXEC_OBJ) $(BUILTIN_OBJ) $(LIBFT)
+	$(CC) $(CFLAGS) $(LEXER_OBJ) $(EXEC_OBJ) $(BUILTIN_OBJ) -o $(BUILTIN) $(LDFLAGS)
 
 # NOT IMPLEMENTED
 
@@ -39,6 +47,8 @@ $(LIBFT):
 
 clean :
 	make clean -C ${LIBFT_DIR}
+	rm -f $(EXEC_OBJ)
+	rm -f $(BUILTIN_OBJ)
 	rm -f $(LEXER_OBJ)
 
 fclean : clean

@@ -6,7 +6,7 @@
 /*   By: nmellal <nmellal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 16:56:12 by nmellal           #+#    #+#             */
-/*   Updated: 2024/04/20 18:43:46 by nmellal          ###   ########.fr       */
+/*   Updated: 2024/04/22 15:33:41 by nmellal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ void	take_env(t_lstenv **lstenv, const char **envp)
 		i++;
 	}
 }
-char	*get_env(t_lstenv *lstenv, char *data)
+char	*get_env_lst(t_lstenv *lstenv, char *data)
 {
 	t_lstenv	*current;
 
@@ -159,21 +159,21 @@ void	add_to_env(t_lstenv **lstenv, char *key, char *value)
 
 	tmp = ft_strjoin(key, "=");
 	new_env = ft_strjoin(tmp, value);
-	if (get_env(*lstenv, key))
+	if (get_env_lst(*lstenv, key))
 		remove_env(lstenv, key);
 	add_env_end(lstenv, new_env);
 	free(tmp);
 }
 
-int	main(int ac, char **av, const char **envp)
-{
-	t_shell env;
+// int	main(int ac, char **av, const char **envp)
+// {
+// 	t_shell env;
 
-	USED(ac);
-	USED(av);
-	init_shell(&env);
-	take_env(&env.env_list, envp);
-	printf("%s\n", get_env(env.env_list, "HOME"));
-	add_to_env(&env.env_list, "HOME", "/home/msitini");
-	printf("%s\n", get_env(env.env_list, "HOME"));
-}
+// 	USED(ac);
+// 	USED(av);
+// 	init_shell(&env);
+// 	take_env(&env.env_list, envp);
+// 	printf("%s\n", get_env_lst(env.env_list, "HOME"));
+// 	add_to_env(&env.env_list, "HOME", "/home/msitini");
+// 	printf("%s\n", get_env_lst(env.env_list, "HOME"));
+// }
