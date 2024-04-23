@@ -1,5 +1,44 @@
 #include "lexer.h"
 
+char *get_token_type(t_token_type type)
+{
+    switch (type)
+    {
+    case TOKEN_INVALID:
+        return "TOKEN_INVALID";
+    case TOKEN_EOF:
+        return "TOKEN_EOF";
+    case TOKEN_SQUOTE:
+        return "TOKEN_SQUOTE";
+    case TOKEN_DQUOTE:
+        return "TOKEN_DQUOTE";
+    case TOKEN_STRING:
+        return "TOKEN_STRING";
+    case TOKEN_PIPE:
+        return "TOKEN_PIPE";
+    case TOKEN_REDIRECT_IN:
+        return "TOKEN_REDIRECT_IN";
+    case TOKEN_REDIRECT_OUT:
+        return "TOKEN_REDIRECT_OUT";
+    case TOKEN_APPEND:
+        return "TOKEN_APPEND";
+    case TOKEN_HERE_DOC:
+        return "TOKEN_HERE_DOC";
+    case TOKEN_AND:
+        return "TOKEN_AND";
+    case TOKEN_OR:
+        return "TOKEN_OR";
+    case TOKEN_OPEN_PAREN:
+        return "TOKEN_OPEN_PAREN";
+    case TOKEN_CLOSE_PAREN:
+        return "TOKEN_CLOSE_PAREN";
+    default:
+        assert(!"NOT POSSIBLE");
+        break;
+    }
+    return "";
+}
+
 char *get_node_type(t_node_type type)
 {
     switch (type)
@@ -24,6 +63,10 @@ char *get_node_type(t_node_type type)
         return "NODE_APPEND";
     case NODE_HERE_DOC:
         return "NODE_HERE_DOC";
+    case NODE_AND:
+        return "NODE_AND";
+    case NODE_OR:
+        return "NODE_OR";
     case NODE_SUBSHELL:
         return "NODE_SUBSHELL";
     default:

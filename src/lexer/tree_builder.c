@@ -104,12 +104,7 @@ t_node *add_str_node(t_node *root, t_lexer *lexer)
     node = create_node(NODE_STRING);
     node->token_str = get_string_whitespace(lexer);
     append_child(root, node);
-    /*
-    if (as_child)
-        append_node(&((*root)->children), node, &((*root)->childs_count));
-    else
-        append_node(&((*root)->next), node, &((*root)->list_count));
-    */
+
     return node;
 }
 

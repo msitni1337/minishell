@@ -197,8 +197,8 @@ t_node *parse_line(char *line)
     while (token.type != TOKEN_EOF)
     {
         if (IS_CMD_TOKEN(token))
-            fill_cmd(&root, token, &lexer, FALSE);
-        else if (root->childs_count == 0)
+            token = fill_cmd(&root, token, &lexer, FALSE);
+        else if (root->list_count == 0)
             assert(!"THROW SYNTAX ERROR\n");
         if (token.type == TOKEN_PIPE)
         {
@@ -229,8 +229,6 @@ t_node *parse_line(char *line)
         }
         else if (token.type == TOKEN_CLOSE_PAREN)
             assert(!"THROW SYNTAX ERROR");
-        else
-            assert(!"THROW SYNTAX ERROR\n");
         token = get_next_token(&lexer, TRUE);
         assert(token.type != TOKEN_INVALID);
     }

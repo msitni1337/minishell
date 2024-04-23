@@ -31,16 +31,6 @@ t_token get_next_token(t_lexer *lexer, int ignore_spaces)
         token.type = TOKEN_REDIRECT_IN;
         lexer->pos++;
     }
-    else if (current == DQUOTE)
-    {
-        token.type = TOKEN_DQUOTE;
-        lexer->pos++;
-    }
-    else if (current == SQUOTE)
-    {
-        token.type = TOKEN_SQUOTE;
-        lexer->pos++;
-    }
     else if (current == '(')
     {
         token.type = TOKEN_OPEN_PAREN;

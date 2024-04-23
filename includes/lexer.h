@@ -4,7 +4,7 @@
 
 #define DQUOTE '"'
 #define SQUOTE '\''
-#define IS_CMD_TOKEN(token) (token.type == TOKEN_DQUOTE || token.type == TOKEN_SQUOTE || token.type == TOKEN_STRING || token.type == TOKEN_REDIRECT_IN || token.type == TOKEN_REDIRECT_OUT || token.type == TOKEN_HERE_DOC || token.type == TOKEN_APPEND || token.type == TOKEN_OPEN_PAREN)
+#define IS_CMD_TOKEN(token) (token.type == TOKEN_STRING || token.type == TOKEN_REDIRECT_IN || token.type == TOKEN_REDIRECT_OUT || token.type == TOKEN_HERE_DOC || token.type == TOKEN_APPEND || token.type == TOKEN_OPEN_PAREN)
 
 typedef enum e_token_type
 {
