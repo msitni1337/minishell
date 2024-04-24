@@ -16,7 +16,7 @@ CC = cc
 NAME = minishell
 LEXER = lexer
 EXEC = exec
-BUILTIN = built-ins
+BUILTIN = builtin
 CFLAGS = -Wall -Werror -Wextra -Iincludes -g3 -fsanitize=address
 LDFLAGS = -lreadline -L$(LIBFT_DIR) -lft
 
@@ -29,7 +29,7 @@ LDFLAGS = -lreadline -L$(LIBFT_DIR) -lft
 all : $(LIBFT) $(BUILTIN) 
 
 $(EXEC): $(LEXER_OBJ) $(EXEC_OBJ) $(LIBFT)
-	$(CC) $(CFLAGS) $(LEXER_OBJ) $(LIBFT) $(EXEC_OBJ) -o $(EXEC) $(LDFLAGS)
+	$(CC) $(CFLAGS) $(LEXER_OBJ) $(EXEC_OBJ) -o $(EXEC) $(LDFLAGS)
 
 $(BUILTIN): $(LEXER_OBJ) $(EXEC_OBJ) $(BUILTIN_OBJ) $(LIBFT)
 	$(CC) $(CFLAGS) $(LEXER_OBJ) $(EXEC_OBJ) $(BUILTIN_OBJ) -o $(BUILTIN) $(LDFLAGS)

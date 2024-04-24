@@ -6,7 +6,7 @@
 /*   By: nmellal <nmellal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 17:05:58 by nmellal           #+#    #+#             */
-/*   Updated: 2024/04/21 18:01:39 by nmellal          ###   ########.fr       */
+/*   Updated: 2024/04/23 17:10:55 by nmellal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,6 @@ void	add_to_env(t_lstenv **lstenv, char *key, char *value);
 char	*get_env_value(t_lstenv *lstenv, char *data);
 char	*get_env_lst(t_lstenv *lstenv, char *data);
 void	take_env(t_lstenv **lstenv, const char **envp);
-
+char	*find_env_key(t_lstenv *lstenv, char *data);
 
 #endif

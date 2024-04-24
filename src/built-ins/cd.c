@@ -6,7 +6,7 @@
 /*   By: nmellal <nmellal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/21 17:59:15 by nmellal           #+#    #+#             */
-/*   Updated: 2024/04/22 15:51:05 by nmellal          ###   ########.fr       */
+/*   Updated: 2024/04/23 16:58:28 by nmellal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,25 +103,25 @@ void change_directory(char *path, t_shell *shell)
 	}
 }
 
-int main(int ac, char **av, const char **envp)
-{
-	t_shell shell;
+// int main(int ac, char **av, const char **envp)
+// {
+// 	t_shell shell;
 
-	init_shell(&shell);
-	take_env(&shell.env_list, envp);
-	printf("before\n");
-	printf("%s\n", get_env_lst(shell.env_list, "PWD"));
-	if (ac == 2)
-		change_directory(av[1], &shell);
-	else if (ac == 1)
-		change_directory(NULL, &shell);
-	else
-	{
-		write(2, "cd: too many arguments\n", 24);
-		return (1);
-	}
-	printf("after\n");
-	printf("%s\n", get_env_lst(shell.env_list, "PWD"));
-	printf("%s\n", get_env_lst(shell.env_list, "OLDPWD"));
-	return (0);
-}
+// 	init_shell(&shell);
+// 	take_env(&shell.env_list, envp);
+// 	printf("before\n");
+// 	printf("%s\n", get_env_lst(shell.env_list, "PWD"));
+// 	if (ac == 2)
+// 		change_directory(av[1], &shell);
+// 	else if (ac == 1)
+// 		change_directory(NULL, &shell);
+// 	else
+// 	{
+// 		write(2, "cd: too many arguments\n", 24);
+// 		return (1);
+// 	}
+// 	printf("after\n");
+// 	printf("%s\n", get_env_lst(shell.env_list, "PWD"));
+// 	printf("%s\n", get_env_lst(shell.env_list, "OLDPWD"));
+// 	return (0);
+// }

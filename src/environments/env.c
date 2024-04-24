@@ -6,7 +6,7 @@
 /*   By: nmellal <nmellal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 16:56:12 by nmellal           #+#    #+#             */
-/*   Updated: 2024/04/22 15:33:41 by nmellal          ###   ########.fr       */
+/*   Updated: 2024/04/23 17:08:23 by nmellal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,6 +165,28 @@ void	add_to_env(t_lstenv **lstenv, char *key, char *value)
 	free(tmp);
 }
 
+char	*find_env_key(t_lstenv *lstenv, char *data)
+{
+	t_lstenv	*current;
+	char		*key;
+	int			i;
+
+	current = lstenv;
+	while (current)
+	{
+		if (ft_strncmp(current->data, data, ft_strlen(data)) == 0)
+		{
+			i = 0;
+			while (current->data[i] != '=')
+				i++;
+			key = ft_substr(current->data, 0, i);
+			return (key);
+		}
+		current = current->next;
+	}
+	return (NULL);
+}
+
 // int	main(int ac, char **av, const char **envp)
 // {
 // 	t_shell env;
@@ -173,7 +195,5 @@ void	add_to_env(t_lstenv **lstenv, char *key, char *value)
 // 	USED(av);
 // 	init_shell(&env);
 // 	take_env(&env.env_list, envp);
-// 	printf("%s\n", get_env_lst(env.env_list, "HOME"));
-// 	add_to_env(&env.env_list, "HOME", "/home/msitini");
-// 	printf("%s\n", get_env_lst(env.env_list, "HOME"));
+// 	printf("%s\n", find_env_key(env.env_list, "HOME"));
 // }
