@@ -58,6 +58,7 @@ void append_child(t_node *parent, t_node *child)
     *tmp = child;
 }
 
+/*
 // todo: no need for passing as_child arg ?
 t_node *add_dquote_node(t_node *root, t_lexer *lexer)
 {
@@ -96,17 +97,8 @@ t_node *add_squote_node(t_node *root, t_lexer *lexer)
     }
     return node;
 }
+*/
 
-t_node *add_str_node(t_node *root, t_lexer *lexer)
-{
-    t_node *node;
-
-    node = create_node(NODE_STRING);
-    node->token_str = get_string_whitespace(lexer);
-    append_child(root, node);
-
-    return node;
-}
 
 /*
 t_node *add_redirect_node(t_node **root, t_lexer *lexer, t_node_type type)

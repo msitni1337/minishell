@@ -1,55 +1,5 @@
 #include "lexer.h"
 
-t_string get_string_whitespace(t_lexer *lexer)
-{
-    t_string res;
-    int escape;
-
-    res.s = &(lexer->line[lexer->pos - 1]);
-    res.count = 1;
-    escape = FALSE;
-    while (lexer->pos < lexer->count)
-    {
-        if (!escape && (ft_isspace(lexer->line[lexer->pos]) || is_special(lexer->line[lexer->pos])))
-            break;
-        if (lexer->line[lexer->pos] == '\\')
-            escape = !escape;
-        else
-            escape = FALSE;
-        res.count++;
-        lexer->pos++;
-    }
-    return res;
-}
-
-t_string get_string_delim(t_lexer *lexer, const char delim)
-{
-    t_string res;
-    int escape;
-
-    res.s = &(lexer->line[lexer->pos]);
-    res.count = 0;
-    escape = FALSE;
-    while (lexer->pos < lexer->count)
-    {
-        if (!escape && lexer->line[lexer->pos] == delim)
-            break;
-        if (lexer->line[lexer->pos] == '\\')
-            escape = !escape;
-        else
-            escape = FALSE;
-        res.count++;
-        lexer->pos++;
-    }
-    if (lexer->line[lexer->pos] == delim)
-    {
-        lexer->pos++;
-        return res;
-    }
-    assert(!"NO END QUOTE PROVIDED");
-    return res; // todo => need to throw error "syntax error"
-}
-
 t_node *get_node_by_type(t_node *root, t_node_type type)
 {
     t_node *tmp;
@@ -63,12 +13,12 @@ t_node *get_node_by_type(t_node *root, t_node_type type)
     return tmp;
 }
 
-t_token parse_subshell(t_node *root, t_lexer *lexer)
+t_token parse_subshell(t_node *root, t_lexer *lexer, t_node_type type)
 {
     t_node *subshell;
     t_token token;
 
-    subshell = create_node(NODE_SUBSHELL);
+    subshell = create_node(type);
     append_child(root, subshell);
     token = get_next_token(lexer, TRUE);
     if (token.type == TOKEN_EOF)
@@ -133,14 +83,16 @@ void add_redirect_node(t_lexer *lexer, t_node *curr_cmd, t_node_type type)
     red_node = create_node(type);
     append_child(curr_cmd, red_node);
     token = get_next_token(lexer, TRUE);
-    if (token.type == TOKEN_SQUOTE)
-        add_squote_node(red_node, lexer);
-    else if (token.type == TOKEN_DQUOTE)
-        add_dquote_node(red_node, lexer);
-    else if (token.type == TOKEN_STRING)
-        add_str_node(red_node, lexer);
-    else if (type == NODE_REDIRECT_IN && token.type == TOKEN_OPEN_PAREN)
-        parse_subshell(red_node, lexer);
+    if (token.type == TOKEN_STRING)
+    {
+        if (add_str_node(red_node, lexer) == NULL)
+            assert(!"throw syntax error");
+    }
+    /*
+else if (type == NODE_REDIRECT_IN && token.type == TOKEN_OPEN_PAREN
+    && lexer->line[lexer->pos - 2] == '<')
+    parse_subshell(red_node, lexer);
+    */
     else
         assert(!"Throw syntax error");
 }
@@ -156,12 +108,11 @@ t_token fill_cmd(t_node **root, t_token token, t_lexer *lexer, int as_child)
         append_node(root, curr_cmd);
     while (IS_CMD_TOKEN(token))
     {
-        if (token.type == TOKEN_DQUOTE)
-            add_dquote_node(curr_cmd, lexer);
-        else if (token.type == TOKEN_SQUOTE)
-            add_squote_node(curr_cmd, lexer);
-        else if (token.type == TOKEN_STRING)
-            add_str_node(curr_cmd, lexer);
+        if (token.type == TOKEN_STRING)
+        {
+            if (add_str_node(curr_cmd, lexer) == NULL)
+                assert(!"THROW SYNTAX ERROR");
+        }
         else if (token.type == TOKEN_REDIRECT_IN)
             add_redirect_node(lexer, curr_cmd, NODE_REDIRECT_IN);
         else if (token.type == TOKEN_REDIRECT_OUT)
@@ -171,7 +122,9 @@ t_token fill_cmd(t_node **root, t_token token, t_lexer *lexer, int as_child)
         else if (token.type == TOKEN_APPEND)
             add_redirect_node(lexer, curr_cmd, NODE_APPEND);
         else if (token.type == TOKEN_OPEN_PAREN)
-            parse_subshell(curr_cmd, lexer);
+            parse_subshell(curr_cmd, lexer, NODE_SUBSHELL);
+        else if (token.type == TOKEN_SUBSHELL_ARG)
+            parse_subshell(curr_cmd, lexer, NODE_SUBSHELL_ARG);
         token = get_next_token(lexer, TRUE);
         assert(token.type != TOKEN_INVALID);
     }

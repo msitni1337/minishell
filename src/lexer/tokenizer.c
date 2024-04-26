@@ -30,6 +30,11 @@ t_token get_next_token(t_lexer *lexer, int ignore_spaces)
     {
         token.type = TOKEN_REDIRECT_IN;
         lexer->pos++;
+        if (lexer->line[lexer->pos] == '(')
+        {
+            token.type = TOKEN_SUBSHELL_ARG;
+            lexer->pos++;
+        }
     }
     else if (current == '(')
     {
