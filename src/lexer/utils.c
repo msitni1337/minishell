@@ -15,3 +15,9 @@ void trim_spaces(t_lexer *lexer)
     while (lexer->pos < lexer->count && ft_isspace(lexer->line[lexer->pos]))
         lexer->pos++;
 }
+
+int is_special(char c)
+{
+    return (c == '(' || c == ')' || c == '<' ||
+     c == '>' || c == '|');
+}

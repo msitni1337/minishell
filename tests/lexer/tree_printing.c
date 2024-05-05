@@ -1,19 +1,48 @@
 #include "lexer.h"
 
+char *get_token_type(t_token_type type)
+{
+    switch (type)
+    {
+    case TOKEN_INVALID:
+        return "TOKEN_INVALID";
+    case TOKEN_EOF:
+        return "TOKEN_EOF";
+    case TOKEN_STRING:
+        return "TOKEN_STRING";
+    case TOKEN_PIPE:
+        return "TOKEN_PIPE";
+    case TOKEN_REDIRECT_IN:
+        return "TOKEN_REDIRECT_IN";
+    case TOKEN_REDIRECT_OUT:
+        return "TOKEN_REDIRECT_OUT";
+    case TOKEN_APPEND:
+        return "TOKEN_APPEND";
+    case TOKEN_HERE_DOC:
+        return "TOKEN_HERE_DOC";
+    case TOKEN_AND:
+        return "TOKEN_AND";
+    case TOKEN_OR:
+        return "TOKEN_OR";
+    case TOKEN_OPEN_PAREN:
+        return "TOKEN_OPEN_PAREN";
+    case TOKEN_CLOSE_PAREN:
+        return "TOKEN_CLOSE_PAREN";
+    default:
+        assert(!"NOT POSSIBLE");
+        break;
+    }
+    return "";
+}
+
 char *get_node_type(t_node_type type)
 {
     switch (type)
     {
     case NODE_CMD:
         return "NODE_CMD";
-    case NODE_CMD_ARGS:
-        return "NODE_CMD_ARGS";
     case NODE_STRING:
         return "NODE_STRING";
-    case NODE_SQUOTE:
-        return "NODE_SQUOTE";
-    case NODE_DQUOTE:
-        return "NODE_DQUOTE";
     case NODE_PIPE:
         return "NODE_PIPE";
     case NODE_REDIRECT_IN:
@@ -24,20 +53,15 @@ char *get_node_type(t_node_type type)
         return "NODE_APPEND";
     case NODE_HERE_DOC:
         return "NODE_HERE_DOC";
-    case NODE_AND_OPERATOR:
-        return "NODE_AND_OPERATOR";
-    case NODE_OR_OPERATOR:
-        return "NODE_OR_OPERATOR";
-    case NODE_OPEN_PAREN:
-        return "NODE_OPEN_PAREN";
-    case NODE_CLOSE_PAREN:
-        return "NODE_CLOSE_PAREN";
-    case NODE_OPEN_CURLY:
-        return "NODE_OPEN_CURLY";
-    case NODE_CLOSE_CURLY:
-        return "NODE_CLOSE_CURLY";
+    case NODE_AND:
+        return "NODE_AND";
+    case NODE_OR:
+        return "NODE_OR";
+    case NODE_SUBSHELL:
+        return "NODE_SUBSHELL";
+
     default:
-        assert("!NOT POSSIBLE");
+        assert(!"NOT POSSIBLE");
     }
     return "";
 }
@@ -80,7 +104,7 @@ int main(int c, char **v, char **env)
     USED(c);
     USED(v);
     USED(env);
-    
+
     init_shell();
     char *line;
 

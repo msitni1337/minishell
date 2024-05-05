@@ -9,6 +9,7 @@ int main(int c, char **v)
         printf("%d => %s\n", i, v[i]);
 
     printf("infile content:\n");
+    lseek(0, 0, SEEK_SET);
     char buff[BUFF_SZ];
     int bytes;
     while ((bytes = read(0, buff, BUFF_SZ - 1)) > 0)
@@ -16,4 +17,5 @@ int main(int c, char **v)
         buff[bytes] = 0;
         printf("%s", buff);
     }
+    return 0;
 }

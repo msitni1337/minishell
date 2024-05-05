@@ -1,4 +1,4 @@
-LEXER_SRC = src/lexer/lexer.c src/lexer/tokenizer.c src/lexer/tree_builder.c src/lexer/utils.c src/shared/common.c src/shared/dynamic_arrays.c src/shared/free.c src/shared/garbage_collector.c src/shell/initialization.c src/shell/signals.c
+LEXER_SRC = src/lexer/lexer.c src/lexer/tokenizer.c src/lexer/tree_builder.c src/lexer/utils.c src/shared/common.c src/shared/dynamic_arrays.c src/shared/free.c src/shared/garbage_collector.c src/lexer/strings.c src/shell/initialization.c src/shell/signals.c tests/lexer/tree_printing.c 
 
 LEXER_OBJ = $(LEXER_SRC:.c=.o)
 
