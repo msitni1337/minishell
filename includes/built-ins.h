@@ -24,10 +24,10 @@ void	ft_echo(int ac, char **av);
 void	check_echo_options(char **av);
 /* cd */
 
-void change_directory(char *path, t_shell *shell);
-void	go_to_path(char *path, t_shell *shell);
-void return_to_oldpwd(t_shell *shell);
-void go_to_home(t_shell *shell);
+int change_directory(int c, char **path, t_shell *shell);
+int	go_to_path(char *path);
+int return_to_oldpwd();
+int go_to_home();
 
 /* pwd */
 void	ft_pwd(int ac, char **av);

@@ -26,9 +26,10 @@ int exec_subshell(t_cmd cmd)
 int exec_builtin(t_cmd cmd)
 {
     int ret_value;
-    
+
     if (!ft_strcmp(cmd.argv[0], "cd"))
     {
+        ret_value = change_directory(cmd.argc, cmd.argv);
     }
     else if (!ft_strcmp(cmd.argv[0], "echo"))
     {

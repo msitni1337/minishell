@@ -12,19 +12,7 @@
 
 #ifndef ENV_H
 #define ENV_H
-#include "dynamic_arrays.h"
-
-typedef struct s_lstenv
-{
-	char *data;
-	struct s_lstenv *next;
-}   t_lstenv;
-
-typedef struct s_shell
-{
-	t_lstenv *env_list;
-	char * working_dir;
-}   t_shell;
+#include "shared.h"
 
 void init_shell(t_shell *shell);
 t_lstenv *create_nodes(char *data);

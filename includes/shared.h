@@ -23,7 +23,20 @@ typedef struct s_string
     size_t count;
 }   t_string;
 
+typedef struct s_lstenv
+{
+	char *data;
+	struct s_lstenv *next;
+}   t_lstenv;
 
+typedef struct s_shell
+{
+	t_lstenv *env_list;
+	char * working_dir;
+}   t_shell;
+
+// global variable:
+t_shell shell;
 
 // initialization
 void init_shell();

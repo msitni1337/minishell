@@ -2,6 +2,7 @@
 #define INTERPRETER_H
 
 #include "lexer.h"
+#include "built-ins.h"
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <errno.h>

@@ -12,24 +12,16 @@
 
 #include "built-ins.h"
 
-static int ft_strcmp(const char *s1, const char *s2)
-{
-	while (*s1 && *s2 && *s1 == *s2)
-	{
-		s1++;
-		s2++;
-	}
-	return ((unsigned char)*s1 - (unsigned char)*s2);
-}
+// todo return correct values..
 
-void go_to_home(t_shell *shell)
+int go_to_home()
 {
 	char *new_path;
 	char old_path[PATH_MAX];
 
 	if (getcwd(old_path, sizeof(old_path)) != NULL)
-		shell->working_dir = ft_strdup(old_path);
-	new_path = get_env_value(shell->env_list, "HOME");
+		shell.working_dir = ft_strdup(old_path);
+	new_path = get_env_value(shell.env_list, "HOME");
 	if (new_path == NULL)
 	{
 		write(2, "cd: HOME not set\n", 17);
@@ -40,17 +32,20 @@ void go_to_home(t_shell *shell)
 		perror("minishell: cd");
 		exit(EXIT_FAILURE);
 	}
-	add_to_env(&shell->env_list, "OLDPWD", shell->working_dir);
-	add_to_env(&shell->env_list, "PWD", new_path);
+	add_to_env(&shell.env_list, "OLDPWD", shell.working_dir);
+	add_to_env(&shell.env_list, "PWD", new_path);
 }
-void return_to_oldpwd(t_shell *shell)
+
+// todo return correct values..
+
+int return_to_oldpwd()
 {
 	char *new_path;
 	char old_path[PATH_MAX];
 
 	if (getcwd(old_path, sizeof(old_path)) != NULL)
-		shell->working_dir = ft_strdup(old_path);
-	new_path = get_env_value(shell->env_list, "OLDPWD");
+		shell.working_dir = ft_strdup(old_path);
+	new_path = get_env_value(shell.env_list, "OLDPWD");
 	if (new_path == NULL)
 	{
 		write(2, "cd: OLDPWD not set\n", 19);
@@ -61,11 +56,14 @@ void return_to_oldpwd(t_shell *shell)
 		perror("minishell: cd");
 		exit(EXIT_FAILURE);
 	}
-	add_to_env(&shell->env_list, "OLDPWD", shell->working_dir);
-	add_to_env(&shell->env_list, "PWD", new_path);
+	add_to_env(&shell.env_list, "OLDPWD", shell.working_dir);
+	add_to_env(&shell.env_list, "PWD", new_path);
 }
 
-void	go_to_path(char *path, t_shell *shell)
+
+// todo return correct values..
+
+int	go_to_path(char *path)
 {
 	char old_path[PATH_MAX];
 
@@ -78,29 +76,39 @@ void	go_to_path(char *path, t_shell *shell)
 	{
 		if (getcwd(old_path, sizeof(old_path)) != NULL)
 		{
-			shell->working_dir = ft_strdup(old_path);
+			shell.working_dir = ft_strdup(old_path);
 			if (chdir(path) == -1)
 			{
 				perror("minishell: cd");
 				exit(EXIT_FAILURE);
 			}
 		}
-		add_to_env(&shell->env_list, "OLDPWD", shell->working_dir);
-		add_to_env(&shell->env_list, "PWD", getcwd(NULL, 0));
+		add_to_env(&shell.env_list, "OLDPWD", shell.working_dir);
+		add_to_env(&shell.env_list, "PWD", getcwd(NULL, 0));
 	}
 }
 
-void change_directory(char *path, t_shell *shell)
+// TODO: make cd print exact error message + return correct value..
+
+int change_directory(int c, char **path, t_shell *shell)
 {
-	if (path == NULL)
-		go_to_home(shell);
+	int ret_value;
+
+	if (c > 2)
+	{
+		// todo print error "bash too many args"
+		ret_value = 1;
+	}
+	else if (c == 1)
+		ret_value = go_to_home(shell);
 	else
 	{
-		if (ft_strcmp(path, "-") == 0)
-			return_to_oldpwd(shell);
+		if (ft_strcmp(path[1], "-") == 0)
+			ret_value = return_to_oldpwd();
 		else
-			go_to_path(path, shell);
+			ret_value = go_to_path(path);
 	}
+	return ret_value;
 }
 
 // int main(int ac, char **av, const char **envp)
