@@ -4,7 +4,7 @@
 
 #define DQUOTE '"'
 #define SQUOTE '\''
-#define IS_CMD_TOKEN(token) (token.type == TOKEN_STRING || token.type == TOKEN_REDIRECT_IN || token.type == TOKEN_REDIRECT_OUT || token.type == TOKEN_HERE_DOC || token.type == TOKEN_APPEND || token.type == TOKEN_OPEN_PAREN || token.type == TOKEN_SUBSHELL_ARG)
+#define IS_CMD_TOKEN(token) (token.type == TOKEN_STRING || token.type == TOKEN_REDIRECT_IN || token.type == TOKEN_REDIRECT_OUT || token.type == TOKEN_HERE_DOC || token.type == TOKEN_APPEND || token.type == TOKEN_OPEN_PAREN)
 
 typedef enum e_token_type
 {
@@ -22,25 +22,25 @@ typedef enum e_token_type
     TOKEN_OR,
     TOKEN_OPEN_PAREN,
     TOKEN_CLOSE_PAREN,
-    TOKEN_SUBSHELL_ARG
+//    TOKEN_SUBSHELL_ARG
 } t_token_type;
 
 typedef enum e_node_type
 {
-    NODE_CMD,
-    NODE_CMD_ARGS,
-    NODE_STRING,
+    NODE_CMD = (1 << 0),
+//    NODE_CMD_ARGS = (1 << 1),
+    NODE_STRING = (1 << 1),
     // NODE_SQUOTE,
     // NODE_DQUOTE,
-    NODE_PIPE,
-    NODE_REDIRECT_IN,
-    NODE_REDIRECT_OUT,
-    NODE_APPEND,
-    NODE_HERE_DOC,
-    NODE_AND,
-    NODE_OR,
-    NODE_SUBSHELL,
-    NODE_SUBSHELL_ARG,
+    NODE_PIPE = (1 << 2),
+    NODE_REDIRECT_IN = (1 << 3),
+    NODE_REDIRECT_OUT = (1 << 4),
+    NODE_APPEND = (1 << 5),
+    NODE_HERE_DOC = (1 << 6),
+    NODE_AND = (1 << 7),
+    NODE_OR = (1 << 8),
+    NODE_SUBSHELL = (1 << 9),
+//    NODE_SUBSHELL_ARG = (1 << 11),
 } t_node_type;
 
 typedef struct s_token

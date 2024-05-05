@@ -22,7 +22,7 @@ t_token parse_subshell(t_node *root, t_lexer *lexer, t_node_type type)
     append_child(root, subshell);
     token = get_next_token(lexer, TRUE);
     if (token.type == TOKEN_EOF)
-        return token;
+        assert(!"SYNTAX ERROR");
     // roots = init_da(sizeof(t_node *), create_node(NODE_CMD));
     // root = NULL;
     while (token.type != TOKEN_EOF)
@@ -123,8 +123,10 @@ t_token fill_cmd(t_node **root, t_token token, t_lexer *lexer, int as_child)
             add_redirect_node(lexer, curr_cmd, NODE_APPEND);
         else if (token.type == TOKEN_OPEN_PAREN)
             parse_subshell(curr_cmd, lexer, NODE_SUBSHELL);
+        /*
         else if (token.type == TOKEN_SUBSHELL_ARG)
             parse_subshell(curr_cmd, lexer, NODE_SUBSHELL_ARG);
+        */
         token = get_next_token(lexer, TRUE);
         assert(token.type != TOKEN_INVALID);
     }

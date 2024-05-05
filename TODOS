@@ -1,1 +1,3 @@
 ## DO WE NEED TO IMPLEMENT A MECHANISM TO CHANGE ENV VARIABLES?
+## Galloc need to set buffers to zero
+## improve error printing

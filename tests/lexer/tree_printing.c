@@ -28,8 +28,6 @@ char *get_token_type(t_token_type type)
         return "TOKEN_OPEN_PAREN";
     case TOKEN_CLOSE_PAREN:
         return "TOKEN_CLOSE_PAREN";
-    case TOKEN_SUBSHELL_ARG:
-        return "TOKEN_SUBSHELL_ARG";
     default:
         assert(!"NOT POSSIBLE");
         break;
@@ -43,8 +41,6 @@ char *get_node_type(t_node_type type)
     {
     case NODE_CMD:
         return "NODE_CMD";
-    case NODE_CMD_ARGS:
-        return "NODE_CMD_ARGS";
     case NODE_STRING:
         return "NODE_STRING";
     case NODE_PIPE:
@@ -63,8 +59,6 @@ char *get_node_type(t_node_type type)
         return "NODE_OR";
     case NODE_SUBSHELL:
         return "NODE_SUBSHELL";
-    case NODE_SUBSHELL_ARG:
-        return "NODE_SUBSHELL_ARG";
 
     default:
         assert(!"NOT POSSIBLE");

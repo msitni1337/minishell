@@ -4,7 +4,7 @@ int get_string_whitespace(t_lexer *lexer, t_string *s)
 {
     while (lexer->pos < lexer->count)
     {
-        if (ft_isspace(lexer->line[lexer->pos]) || lexer->line[lexer->pos] == DQUOTE || lexer->line[lexer->pos] == SQUOTE)
+        if (ft_isspace(lexer->line[lexer->pos]) || lexer->line[lexer->pos] == DQUOTE || lexer->line[lexer->pos] == SQUOTE || is_special(lexer->line[lexer->pos]))
             break;
         s->count++;
         lexer->pos++;
