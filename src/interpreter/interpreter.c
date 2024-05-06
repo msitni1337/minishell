@@ -1,5 +1,17 @@
 #include "interpreter.h"
 
+void print_cmd(t_cmd cmd)
+{
+    if (cmd.type != CMD_SUBSHELL)
+        printf("cmd argv0 = %s\n", cmd.argv[0]);
+    printf("infile = %d \n", cmd.infile);
+    printf("outfile = %d \n", cmd.outfile);
+    printf("argc = %lu \n", cmd.argc);
+    printf("argv = %p \n", cmd.argv);
+    printf("binary path = %s \n", cmd.bin_path);
+    printf("subshell = %p \n", cmd.subshell);
+}
+
 t_node *get_next_node_by_type(t_node *root, t_node_type type)
 {
     t_node *tmp;
@@ -13,6 +25,8 @@ t_node *get_next_node_by_type(t_node *root, t_node_type type)
 int open_file_as(char *fname, t_cmd *cmd, t_node_type type)
 {
     int fd;
+    int p_flags;
+    int m_flags;
 
     assert(type != NODE_HERE_DOC);
     assert(type != NODE_APPEND);
@@ -20,11 +34,31 @@ int open_file_as(char *fname, t_cmd *cmd, t_node_type type)
         close(cmd->infile);
     if (cmd->outfile != STDOUT_FILENO)
         close(cmd->outfile);
-    fd = open(fname, O_RDONLY);
+
+    if (type == NODE_REDIRECT_IN)
+    {
+        p_flags = O_RDONLY;
+        m_flags = 0;
+    }
+
+    if (type == NODE_REDIRECT_OUT)
+    {
+        p_flags = O_WRONLY | O_CREAT | O_TRUNC;
+        m_flags = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+    }
+
+    if (type == NODE_APPEND)
+    {
+        p_flags = O_WRONLY | O_APPEND | O_CREAT;
+        m_flags = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+    }
+
+
+    fd = open(fname, p_flags, m_flags);
     if (fd < 0)
     {
         perror(fname);
-        return fd;
+        return errno;
     }
     if (type == NODE_REDIRECT_IN)
         cmd->infile = fd;
@@ -36,6 +70,7 @@ int open_file_as(char *fname, t_cmd *cmd, t_node_type type)
 // todo return all fds.
 int open_files(t_node *cmd_node, t_cmd *cmd)
 {
+    int ret_value;
     t_node *node;
 
     if (cmd->outfile != STDOUT_FILENO)
@@ -49,8 +84,9 @@ int open_files(t_node *cmd_node, t_cmd *cmd)
         char *name = ft_substr(node->children->token_str.s, 0, node->children->token_str.count);
         assert(node->type != NODE_HERE_DOC);
         assert(node->type != NODE_APPEND);
-        if (open_file_as(name, cmd, node->type))
-            return -1;
+        ret_value = open_file_as(name, cmd, node->type);
+        if (ret_value)
+            return ret_value;
         node = get_next_node_by_type(node->next, NODE_REDIRECT_IN | NODE_REDIRECT_OUT | NODE_APPEND | NODE_HERE_DOC);
     }
     return 0;
@@ -65,7 +101,7 @@ size_t get_argc(t_node *cmd_node)
     while (cmd_node)
     {
         argc++;
-        cmd_node = get_next_node_by_type(cmd_node, NODE_STRING);
+        cmd_node = get_next_node_by_type(cmd_node->next, NODE_STRING);
     }
     return argc;
 }
@@ -76,6 +112,7 @@ void get_argv(t_node *cmd_node, t_cmd *cmd)
     size_t i;
     cmd->argc = get_argc(cmd_node);
     cmd->argv = malloc(sizeof(char *) * (cmd->argc + 1));
+    cmd->argv[cmd->argc] = NULL;
 
     i = 0;
     tmp = get_next_node_by_type(cmd_node->children, NODE_STRING);
@@ -83,7 +120,7 @@ void get_argv(t_node *cmd_node, t_cmd *cmd)
     {
         cmd->argv[i] = ft_substr(tmp->token_str.s, 0, tmp->token_str.count);
         i++;
-        tmp = get_next_node_by_type(tmp, NODE_STRING);
+        tmp = get_next_node_by_type(tmp->next, NODE_STRING);
     }
 }
 
@@ -139,8 +176,8 @@ int get_cmd_path(t_cmd *cmd)
     }
     else
     {
-        cmd->binary = get_binary_path(argv0);
-        if (!cmd->binary)
+        cmd->bin_path = get_binary_path(argv0);
+        if (!cmd->bin_path)
         {
             /*TODO LOG ERROR  "command not found" */
             perror("command not found");
@@ -152,24 +189,28 @@ int get_cmd_path(t_cmd *cmd)
 
 int parse_cmd(t_node *node, t_cmd *cmd)
 {
+    int ret_value;
     t_node *subshell;
 
-    open_files(node, cmd);
+    ret_value = open_files(node, cmd);
+    if (ret_value)
+        return ret_value;
     subshell = get_next_node_by_type(node->children, NODE_SUBSHELL);
     if (subshell)
     {
-        cmd->is_subshell = TRUE;
+        cmd->type = CMD_SUBSHELL;
         cmd->subshell = subshell;
     }
     else
     {
-        cmd->is_subshell = FALSE;
+        cmd->type = CMD_BINARY;
         get_argv(node, cmd);
         if (cmd->argc > 0)
         {
             if (is_builtin(cmd->argv[0]))
-                return 0;
-            return get_cmd_path(cmd);
+                cmd->type = CMD_BUILTIN;
+            else
+                return get_cmd_path(cmd);
         }
     }
     return 0;
@@ -185,6 +226,7 @@ int interpret_root(t_node *root)
     node = root;
     cmd.infile = STDIN_FILENO;
     cmd.outfile = STDOUT_FILENO;
+    ret_value = 0;
     while (node)
     {
         ret_value = parse_cmd(node, &cmd);

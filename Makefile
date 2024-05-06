@@ -43,7 +43,7 @@ LDFLAGS = -lreadline -L$(LIBFT_DIR) -lft
 all : $(NAME)
 
 $(NAME): $(LIBFT) $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) $(LDFLAGS)
+	$(CC) $(CFLAGS) $(OBJ) -o tests/minishell/$(NAME) $(LDFLAGS)
 
 $(BUILTIN): $(LIBFT) $(LEXER_OBJ) $(ENV_OBJ) $(BUILTIN_OBJ)
 	$(CC) $(CFLAGS) $(LEXER_OBJ) $(ENV_OBJ) $(BUILTIN_OBJ) -o $(BUILTIN) $(LDFLAGS)

@@ -95,7 +95,9 @@ int exec_bin(t_cmd cmd, int wait)
         dup2(cmd.infile, STDIN_FILENO);
         dup2(cmd.outfile, STDOUT_FILENO);
         // todo need to emplement exported envp to pass it to binary..
-        execve(cmd.binary, cmd.argv, shell.exported_env);
+
+        execve(cmd.bin_path, cmd.argv, shell.exported_env);
+        printf("##########%s##########\n", cmd.bin_path);
         perror(cmd.argv[0]);
         exit(errno);
     }
@@ -104,20 +106,17 @@ int exec_bin(t_cmd cmd, int wait)
 
 int execute_cmd(t_cmd cmd, int wait)
 {
-    if (cmd.is_subshell)
-    {
+    if (cmd.type == CMD_SUBSHELL)
         return exec_subshell(cmd, wait);
-    }
-    else
+    else if (cmd.type == CMD_BINARY)
+        return exec_bin(cmd, wait);
+    else if (cmd.type == CMD_BUILTIN)
     {
-        if (cmd.is_builtin)
-        {
-            if (wait == TRUE)
-                return exec_builtin(cmd);
-            else
-                return exec_builtin_no_wait(cmd);
-        }
+        if (wait == TRUE)
+            return exec_builtin(cmd);
         else
-            return exec_bin(cmd, wait);
+            return exec_builtin_no_wait(cmd);
     }
+    assert(!"IMPOSSIBLE TO REACH");
+    return 0;
 }

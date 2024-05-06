@@ -17,11 +17,10 @@ void start_shell()
 
         if (cmd_root)
             print_tree(cmd_root);
-        free(line);
-        line = readline(PROMPT);
-        free(line);
+        readline("PRESS ENTER TO EXECUTE TREE");
         if (cmd_root)
             shell.last_exit_value = interpret_root(cmd_root);
+        free(line);
 
         line = readline(PROMPT);
     }
