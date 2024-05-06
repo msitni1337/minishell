@@ -16,10 +16,10 @@ void start_shell()
             print_tree(cmd_root);
         free(line);
         line = readline(PROMPT);
+        free(line);
         if (cmd_root)
             shell.last_exit_value = interpret_root(cmd_root);
 
-        free(line);
         line = readline(PROMPT);
     }
 }

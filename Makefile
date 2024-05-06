@@ -1,17 +1,29 @@
-LEXER_SRC = src/lexer/lexer.c src/lexer/tokenizer.c src/lexer/tree_builder.c src/lexer/utils.c src/shared/common.c src/shared/dynamic_arrays.c src/shared/free.c src/shared/garbage_collector.c src/lexer/strings.c src/shell/initialization.c src/shell/signals.c tests/lexer/tree_printing.c 
-
-LEXER_OBJ = $(LEXER_SRC:.c=.o)
-
+# LIBS
 LIBFT_DIR=lib/libft
 LIBFT=libft.a
 
-EXEC_SRC = $(wildcard src/environments/*.c)
-EXEC_OBJ = $(EXEC_SRC:.c=.o)
+# SRCS
+SHARED_SRC = $(wildcard src/shared/*.c)
+SHARED_OBJ = $(SHARED_SRC:.c=.o)
+
+SHELL_SRC = $(wildcard src/shell/*.c)
+SHELL_OBJ = $(SHELL_SRC:.c=.o)
+
+LEXER_SRC = $(wildcard src/lexer/*.c)
+LEXER_OBJ = $(LEXER_SRC:.c=.o)
+
+ENV_SRC = $(wildcard src/environments/*.c)
+ENV_OBJ = $(EXEC_SRC:.c=.o)
 
 BUILTIN_SRC = $(wildcard src/built-ins/*.c)
 BUILTIN_OBJ = $(BUILTIN_SRC:.c=.o)
 
+TEST_SRC = tests/lexer/tree_printing.c
+TEST_OBJ = $(TEST_SRC:.c=.o)
 
+OBJ = $(SHARED_OBJ) $(SHELL_OBJ) $(BUILTIN_OBJ) $(ENV_OBJ) $(LEXER_OBJ) $(TEST_OBJ)
+
+# VARS
 CC = cc
 NAME = minishell
 LEXER = lexer
@@ -26,20 +38,18 @@ LDFLAGS = -lreadline -L$(LIBFT_DIR) -lft
 %.o : %.c
 	$(CC) $(CFLAGS) $< -c -o $@
 
-all : $(LIBFT) $(BUILTIN) 
+all : $(NAME)
 
-$(EXEC): $(LEXER_OBJ) $(EXEC_OBJ) $(LIBFT)
-	$(CC) $(CFLAGS) $(LEXER_OBJ) $(EXEC_OBJ) -o $(EXEC) $(LDFLAGS)
-
-$(BUILTIN): $(LEXER_OBJ) $(EXEC_OBJ) $(BUILTIN_OBJ) $(LIBFT)
-	$(CC) $(CFLAGS) $(LEXER_OBJ) $(EXEC_OBJ) $(BUILTIN_OBJ) -o $(BUILTIN) $(LDFLAGS)
-
-# NOT IMPLEMENTED
-
-$(NAME): $(OBJ)
+$(NAME): $(LIBFT) $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) $(LDFLAGS)
 
-$(LEXER): $(LEXER_OBJ) $(LIBFT)
+$(EXEC): $(LIBFT) $(LEXER_OBJ) $(ENV_OBJ)
+	$(CC) $(CFLAGS) $(LEXER_OBJ) $(ENV_OBJ) -o $(EXEC) $(LDFLAGS)
+
+$(BUILTIN): $(LIBFT) $(LEXER_OBJ) $(ENV_OBJ) $(BUILTIN_OBJ)
+	$(CC) $(CFLAGS) $(LEXER_OBJ) $(ENV_OBJ) $(BUILTIN_OBJ) -o $(BUILTIN) $(LDFLAGS)
+
+$(LEXER): $(LIBFT) $(SHARED_OBJ) $(tests) $(LEXER_OBJ)
 	$(CC) $(CFLAGS) $(LEXER_OBJ) -o $(LEXER) $(LDFLAGS)
 
 $(LIBFT):
@@ -47,12 +57,13 @@ $(LIBFT):
 
 clean :
 	make clean -C ${LIBFT_DIR}
-	rm -f $(EXEC_OBJ)
-	rm -f $(BUILTIN_OBJ)
-	rm -f $(LEXER_OBJ)
+	rm -f $(OBJ)
 
 fclean : clean
 	make fclean -C ${LIBFT_DIR}
+	rm -f $(NAME)
+	rm -f $(EXEC)
+	rm -f $(BUILTIN)
 	rm -f $(LEXER)
 
 re : fclean all

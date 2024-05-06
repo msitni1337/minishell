@@ -22,7 +22,7 @@ int exec_subshell(t_cmd cmd, int wait)
         dup2(cmd.infile, STDIN_FILENO);
         dup2(cmd.outfile, STDOUT_FILENO);
         ret_value = interpret_root(cmd.subshell);
-        gexit(ret_value);
+        exit(ret_value);
     }
     return 0;
 }
@@ -58,7 +58,7 @@ int exec_builtin_no_wait(t_cmd cmd)
     if (pid == 0)
     {
         ret_value = exec_builtin(cmd);
-        gexit(ret_value);
+        exit(ret_value);
     }
     return 0;
 }
@@ -86,7 +86,8 @@ int exec_bin(t_cmd cmd, int wait)
         dup2(cmd.outfile, STDOUT_FILENO);
         // todo need to emplement exported envp to pass it to binary..
         execve(cmd.binary, cmd.argv, shell.exported_env);
-        gexit(0);
+        perror(errno);
+        exit(errno);
     }
     return 0;
 }
