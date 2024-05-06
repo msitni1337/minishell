@@ -24,8 +24,8 @@ int go_to_home()
 	new_path = get_env_value(shell.env_list, "HOME");
 	if (new_path == NULL)
 	{
-		write(2, "cd: HOME not set\n", 17);
-		return;
+		write(STDERR_FILENO, "cd: HOME not set\n", 17);
+		return 1;
 	}
 	if (chdir(new_path) == -1)
 	{
@@ -34,11 +34,12 @@ int go_to_home()
 	}
 	add_to_env(&shell.env_list, "OLDPWD", shell.working_dir);
 	add_to_env(&shell.env_list, "PWD", new_path);
+	return 0;
 }
 
 // todo return correct values..
 
-int return_to_oldpwd(t_cmd*cmd)
+int return_to_oldpwd(t_cmd *cmd)
 {
 	char *new_path;
 	char old_path[PATH_MAX];
@@ -49,7 +50,7 @@ int return_to_oldpwd(t_cmd*cmd)
 	if (new_path == NULL)
 	{
 		write(STDERR_FILENO, "cd: OLDPWD not set\n", 19);
-		return;
+		return 1;
 	}
 	if (chdir(new_path) == -1)
 	{
@@ -58,24 +59,26 @@ int return_to_oldpwd(t_cmd*cmd)
 	}
 
 	ft_putendl_fd(new_path, cmd->outfile);
-	
+
 	add_to_env(&shell.env_list, "OLDPWD", shell.working_dir);
 	add_to_env(&shell.env_list, "PWD", new_path);
+	return 0;
 }
-
 
 // todo return correct values..
 
-int	go_to_path(char *path)
+int go_to_path(char *path)
 {
+	int ret_value;
 	char old_path[PATH_MAX];
 
-	if (access(path, F_OK) == -1)
+	ret_value = access(path, F_OK);
+	if (ret_value == -1)
 	{
 		perror("minishell: cd");
-		exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE); //keep exiting now untill gexit is implemented
 	}
-	else
+	else if (ret_value == 0)
 	{
 		if (getcwd(old_path, sizeof(old_path)) != NULL)
 		{
@@ -83,12 +86,17 @@ int	go_to_path(char *path)
 			if (chdir(path) == -1)
 			{
 				perror("minishell: cd");
-				exit(EXIT_FAILURE);
+				exit(EXIT_FAILURE); //keep exiting now untill gexit is implemented
 			}
 		}
 		add_to_env(&shell.env_list, "OLDPWD", shell.working_dir);
 		add_to_env(&shell.env_list, "PWD", getcwd(NULL, 0));
 	}
+	else
+	{
+		perror("minishell: cd");
+	}
+	return ret_value;
 }
 
 // TODO: make cd print exact error message + return correct value..

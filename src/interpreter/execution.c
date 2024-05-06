@@ -7,7 +7,10 @@ int exec_subshell(t_cmd cmd, int wait)
 
     pid = fork();
     if (pid == -1)
-        exit_with_error();
+    {
+        perror(cmd.argv[0]);
+        exit(errno);
+    }
     if (pid)
     {
         if (wait == FALSE)
@@ -45,6 +48,7 @@ int exec_builtin(t_cmd cmd)
         assert(!"NOT IMPLEMENTED");
     else if (!ft_strcmp(cmd.argv[0], "exit"))
         assert(!"NOT IMPLEMENTED");
+    return ret_value;
 }
 
 int exec_builtin_no_wait(t_cmd cmd)
@@ -54,7 +58,10 @@ int exec_builtin_no_wait(t_cmd cmd)
 
     pid = fork();
     if (pid == -1)
-        exit_with_error();
+    {
+        perror(cmd.argv[0]);
+        exit(errno);
+    }
     if (pid == 0)
     {
         ret_value = exec_builtin(cmd);
@@ -70,7 +77,10 @@ int exec_bin(t_cmd cmd, int wait)
 
     pid = fork();
     if (pid == -1)
-        exit_with_error();
+    {
+        perror(cmd.argv[0]);
+        exit(errno);
+    }
     if (pid)
     {
         if (wait == FALSE)
@@ -86,7 +96,7 @@ int exec_bin(t_cmd cmd, int wait)
         dup2(cmd.outfile, STDOUT_FILENO);
         // todo need to emplement exported envp to pass it to binary..
         execve(cmd.binary, cmd.argv, shell.exported_env);
-        perror(errno);
+        perror(cmd.argv[0]);
         exit(errno);
     }
     return 0;

@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <assert.h>
-#include <signal.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <readline/readline.h>
@@ -37,20 +36,8 @@ typedef struct s_shell
 	int last_exit_value;
 } t_shell;
 
-typedef struct s_cmd
-{
-	int is_subshell;
-	int is_builtin;
-	int infile;
-	int outfile;
-	size_t argc;
-	char **argv;
-	char *binary;
-	t_node *subshell;
-} t_cmd;
-
 // global variable:
-t_shell shell;
+extern t_shell shell;
 
 // utils
 int ft_isspace(char c);

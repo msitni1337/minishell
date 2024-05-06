@@ -12,7 +12,7 @@
 
 #include "built-ins.h"
 
-void	check_echo_options(char **av)
+int	check_echo_options(char **av)
 {
 	int	i;
 	int	j;
@@ -37,6 +37,7 @@ void	check_echo_options(char **av)
 	}
 	if (av[1] && av[1][0] != '-')
 		write(1, "\n", 1);
+	return 0;
 }
 
 int ft_echo(int ac, char **av)
@@ -44,9 +45,9 @@ int ft_echo(int ac, char **av)
 	if (ac == 1)
 	{
 		write(1, "\n", 1);
-		return ;
+		return 0;
 	}
-	check_echo_options(av);
+	return check_echo_options(av);
 }
 
 // int main(int ac, char **av)

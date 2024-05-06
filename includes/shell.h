@@ -1,5 +1,6 @@
 #ifndef SHELL_H
 #define SHELL_H
+#include <signal.h>
 #include "shared.h"
 #include "interpreter.h"
 

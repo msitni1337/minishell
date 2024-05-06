@@ -11,14 +11,6 @@
 /* ************************************************************************** */
 
 #include "env.h"
-#include "shared.h"
-#include <stdio.h>
-
-void	init_shell(t_shell *shell)
-{
-	shell->env_list = NULL;
-	shell->working_dir = NULL;
-}
 
 void	print_list(t_lstenv *head)
 {

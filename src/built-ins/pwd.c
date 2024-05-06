@@ -12,12 +12,10 @@
 
 #include "built-ins.h"
 
-int		ft_pwd(int ac, char **av)
+int		ft_pwd()
 {
 	char path[PATH_MAX];
 
-	USED(ac);
-	USED(av);
 	if (getcwd(path, sizeof(path)) != NULL)
 	{
 		ft_putendl_fd(path, 1);
@@ -25,8 +23,9 @@ int		ft_pwd(int ac, char **av)
 	else
 	{
 		perror("minishell: pwd");
-		return ;
+		return errno;
 	}
+	return 0;
 }
 
 // int main(int ac, char **av, const char **envp)

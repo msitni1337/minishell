@@ -37,9 +37,7 @@ int open_file_as(char *fname, t_cmd *cmd, t_node_type type)
 int open_files(t_node *cmd_node, t_cmd *cmd)
 {
     t_node *node;
-    int fd;
 
-    fd = 0;
     if (cmd->outfile != STDOUT_FILENO)
         close(cmd->outfile);
     cmd->outfile = STDOUT_FILENO;
@@ -94,19 +92,19 @@ int is_builtin(const char *s)
     return !ft_strcmp(s, "cd") || !ft_strcmp(s, "echo") || !ft_strcmp(s, "pwd") || !ft_strcmp(s, "export") || !ft_strcmp(s, "unset") || !ft_strcmp(s, "env") || !ft_strcmp(s, "exit");
 }
 
-char *get_cmd_path(char *cmd)
+char *get_binary_path(char *cmd)
 {
     char *tmp;
     char **paths;
     int i;
 
-    paths = ft_split(get_env_value(shell.env_list, "PATH="), ":");
+    paths = ft_split(get_env_value(shell.env_list, "PATH="), ':');
     i = 0;
     while (paths && paths[i])
     {
         tmp = paths[i];
         paths[i] = ft_strjoin(tmp, "/");
-        free(tmp);
+        // free(tmp);
         i++;
     }
     i = 0;
@@ -115,21 +113,19 @@ char *get_cmd_path(char *cmd)
         tmp = ft_strjoin(paths[i], cmd);
         if (!access(tmp, X_OK))
         {
-            free(tmp);
-            free_arr(paths);
+            // free(tmp);
+            // free_arr(paths);
             return tmp;
         }
-        free(tmp);
+        // free(tmp);
         i++;
     }
     free_arr(paths);
     return NULL;
 }
 
-int get_binary_path(t_cmd *cmd)
+int get_cmd_path(t_cmd *cmd)
 {
-    char *path;
-    char **paths;
     char *argv0;
 
     argv0 = cmd->argv[0];
@@ -143,10 +139,13 @@ int get_binary_path(t_cmd *cmd)
     }
     else
     {
-        cmd->binary = get_cmd_path(cmd->argv[0]);
+        cmd->binary = get_binary_path(argv0);
         if (!cmd->binary)
-            /*TODO LOG ERROR "command not found" */
+        {
+            /*TODO LOG ERROR  "command not found" */
+            perror("command not found");
             return 127;
+        }
     }
     return 0;
 }
@@ -170,7 +169,7 @@ int parse_cmd(t_node *node, t_cmd *cmd)
         {
             if (is_builtin(cmd->argv[0]))
                 return 0;
-            return get_binary_path(cmd->argv);
+            return get_cmd_path(cmd);
         }
     }
     return 0;
@@ -182,7 +181,6 @@ int interpret_root(t_node *root)
     int pip[2];
     t_cmd cmd;
     t_node *node;
-    size_t i;
 
     node = root;
     cmd.infile = STDIN_FILENO;
@@ -197,13 +195,16 @@ int interpret_root(t_node *root)
             if (node->type == NODE_PIPE)
             {
                 if (pipe(pip) == -1)
-                    exitwitherror();
+                {
+                    perror(cmd.argv[0]);
+                    exit(errno);
+                }
                 if (!ret_value)
                 {
                     if (cmd.outfile != STDOUT_FILENO)
                         close(cmd.outfile);
                     cmd.outfile = pip[1];
-                    execute_cmd_async(cmd);
+                    execute_cmd(cmd, FALSE);
                     cmd.infile = pip[0]; // this gonna serve for the next cmd
                 }
                 else
@@ -218,7 +219,7 @@ int interpret_root(t_node *root)
                     break;
                 else
                 {
-                    ret_value = execute_cmd(cmd);
+                    ret_value = execute_cmd(cmd, TRUE);
                     if (ret_value)
                         break;
                     cmd.infile = 0;
@@ -227,7 +228,7 @@ int interpret_root(t_node *root)
             }
             else if (node->type == NODE_OR && !ret_value)
             {
-                ret_value = execute_cmd(cmd);
+                ret_value = execute_cmd(cmd, TRUE);
                 if (!ret_value)
                     break;
                 cmd.infile = 0;
@@ -237,7 +238,7 @@ int interpret_root(t_node *root)
         }
         else if (!ret_value)
         {
-            ret_value = execute_cmd(cmd);
+            ret_value = execute_cmd(cmd, TRUE);
         }
     }
     return ret_value;

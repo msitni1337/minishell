@@ -1,4 +1,4 @@
-#include "shared.h"
+#include "shell.h"
 
 void init_shell(char**envp)
 {

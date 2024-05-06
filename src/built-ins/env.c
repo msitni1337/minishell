@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "built-ins.h"
-
+/*
 void	ft_env(t_shell *shell, char **av, const char **envp)
 {
 	USED(av);
@@ -19,6 +19,7 @@ void	ft_env(t_shell *shell, char **av, const char **envp)
 	take_env(&shell->env_list, envp);
 	print_list(shell->env_list);
 }
+*/
 
 // int main(int ac, char **av, const char **envp)
 // {

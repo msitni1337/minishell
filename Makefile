@@ -9,25 +9,27 @@ SHARED_OBJ = $(SHARED_SRC:.c=.o)
 SHELL_SRC = $(wildcard src/shell/*.c)
 SHELL_OBJ = $(SHELL_SRC:.c=.o)
 
-LEXER_SRC = $(wildcard src/lexer/*.c)
-LEXER_OBJ = $(LEXER_SRC:.c=.o)
-
 ENV_SRC = $(wildcard src/environments/*.c)
-ENV_OBJ = $(EXEC_SRC:.c=.o)
+ENV_OBJ = $(ENV_SRC:.c=.o)
 
 BUILTIN_SRC = $(wildcard src/built-ins/*.c)
 BUILTIN_OBJ = $(BUILTIN_SRC:.c=.o)
 
+LEXER_SRC = $(wildcard src/lexer/*.c)
+LEXER_OBJ = $(LEXER_SRC:.c=.o)
+
+EXEC_SRC = $(wildcard src/interpreter/*.c)
+EXEC_OBJ = $(EXEC_SRC:.c=.o)
+
 TEST_SRC = tests/lexer/tree_printing.c
 TEST_OBJ = $(TEST_SRC:.c=.o)
 
-OBJ = $(SHARED_OBJ) $(SHELL_OBJ) $(BUILTIN_OBJ) $(ENV_OBJ) $(LEXER_OBJ) $(TEST_OBJ)
+OBJ = $(SHARED_OBJ) $(SHELL_OBJ) $(BUILTIN_OBJ) $(ENV_OBJ) $(LEXER_OBJ) $(EXEC_OBJ) $(TEST_OBJ)
 
 # VARS
 CC = cc
 NAME = minishell
 LEXER = lexer
-EXEC = exec
 BUILTIN = builtin
 CFLAGS = -Wall -Werror -Wextra -Iincludes -g3 -fsanitize=address
 LDFLAGS = -lreadline -L$(LIBFT_DIR) -lft
@@ -42,9 +44,6 @@ all : $(NAME)
 
 $(NAME): $(LIBFT) $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) $(LDFLAGS)
-
-$(EXEC): $(LIBFT) $(LEXER_OBJ) $(ENV_OBJ)
-	$(CC) $(CFLAGS) $(LEXER_OBJ) $(ENV_OBJ) -o $(EXEC) $(LDFLAGS)
 
 $(BUILTIN): $(LIBFT) $(LEXER_OBJ) $(ENV_OBJ) $(BUILTIN_OBJ)
 	$(CC) $(CFLAGS) $(LEXER_OBJ) $(ENV_OBJ) $(BUILTIN_OBJ) -o $(BUILTIN) $(LDFLAGS)

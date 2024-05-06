@@ -14,7 +14,6 @@
 #define ENV_H
 #include "shared.h"
 
-void init_shell(t_shell *shell);
 t_lstenv *create_nodes(char *data);
 void print_list(t_lstenv *head);
 void free_list(t_lstenv *head);

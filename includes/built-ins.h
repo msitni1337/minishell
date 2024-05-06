@@ -16,12 +16,13 @@
 #include <fcntl.h>
 #include <errno.h>
 #include "env.h"
+#include "cmd.h"
 
 #define PATH_MAX 4096
 
 /* echo */
 int     ft_echo(int ac, char **av);
-void	check_echo_options(char **av);
+int	check_echo_options(char **av);
 /* cd */
 
 int change_directory(t_cmd cmd);
@@ -30,5 +31,5 @@ int return_to_oldpwd();
 int go_to_home();
 
 /* pwd */
-int	ft_pwd(int ac, char **av);
+int	ft_pwd();
 #endif
