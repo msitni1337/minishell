@@ -20,15 +20,15 @@
 #define PATH_MAX 4096
 
 /* echo */
-void	ft_echo(int ac, char **av);
+int     ft_echo(int ac, char **av);
 void	check_echo_options(char **av);
 /* cd */
 
-int change_directory(int c, char **path, t_shell *shell);
+int change_directory(t_cmd cmd);
 int	go_to_path(char *path);
 int return_to_oldpwd();
 int go_to_home();
 
 /* pwd */
-void	ft_pwd(int ac, char **av);
+int	ft_pwd(int ac, char **av);
 #endif

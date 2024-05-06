@@ -97,28 +97,3 @@ void print_tree(t_node *root)
         tmp = tmp->next;
     }
 }
-
-int main(int c, char **v, char **env)
-{
-    t_node *root;
-    USED(c);
-    USED(v);
-    USED(env);
-
-    init_shell();
-    char *line;
-
-    line = readline(PROMPT);
-    while (line != NULL)
-    {
-        root = parse_line(line);
-
-        if (root)
-            print_tree(root);
-
-        free(line);
-        line = readline(PROMPT);
-    }
-    ft_putendl_fd("exit", 1);
-    return 0;
-}

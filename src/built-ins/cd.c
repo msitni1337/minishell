@@ -38,7 +38,7 @@ int go_to_home()
 
 // todo return correct values..
 
-int return_to_oldpwd()
+int return_to_oldpwd(t_cmd*cmd)
 {
 	char *new_path;
 	char old_path[PATH_MAX];
@@ -48,7 +48,7 @@ int return_to_oldpwd()
 	new_path = get_env_value(shell.env_list, "OLDPWD");
 	if (new_path == NULL)
 	{
-		write(2, "cd: OLDPWD not set\n", 19);
+		write(STDERR_FILENO, "cd: OLDPWD not set\n", 19);
 		return;
 	}
 	if (chdir(new_path) == -1)
@@ -56,6 +56,9 @@ int return_to_oldpwd()
 		perror("minishell: cd");
 		exit(EXIT_FAILURE);
 	}
+
+	ft_putendl_fd(new_path, cmd->outfile);
+	
 	add_to_env(&shell.env_list, "OLDPWD", shell.working_dir);
 	add_to_env(&shell.env_list, "PWD", new_path);
 }
@@ -90,23 +93,23 @@ int	go_to_path(char *path)
 
 // TODO: make cd print exact error message + return correct value..
 
-int change_directory(int c, char **path, t_shell *shell)
+int change_directory(t_cmd cmd)
 {
 	int ret_value;
 
-	if (c > 2)
+	if (cmd.argc > 2)
 	{
 		// todo print error "bash too many args"
 		ret_value = 1;
 	}
-	else if (c == 1)
+	else if (cmd.argc == 1)
 		ret_value = go_to_home(shell);
 	else
 	{
-		if (ft_strcmp(path[1], "-") == 0)
-			ret_value = return_to_oldpwd();
+		if (ft_strcmp(cmd.argv[1], "-") == 0)
+			ret_value = return_to_oldpwd(&cmd);
 		else
-			ret_value = go_to_path(path);
+			ret_value = go_to_path(cmd.argv[1]);
 	}
 	return ret_value;
 }

@@ -12,7 +12,7 @@
 
 #include "built-ins.h"
 
-void	ft_pwd(int ac, char **av)
+int		ft_pwd(int ac, char **av)
 {
 	char path[PATH_MAX];
 

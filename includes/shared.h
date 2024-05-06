@@ -2,8 +2,8 @@
 #define COMMON_H
 #define PROMPT "millishell ~>"
 
-#define TRUE    1
-#define FALSE   0
+#define TRUE 1
+#define FALSE 0
 
 #include <stddef.h>
 #include <stdio.h>
@@ -19,33 +19,43 @@
 
 typedef struct s_string
 {
-    const char*s;
-    size_t count;
-}   t_string;
+	const char *s;
+	size_t count;
+} t_string;
 
 typedef struct s_lstenv
 {
 	char *data;
 	struct s_lstenv *next;
-}   t_lstenv;
+} t_lstenv;
 
 typedef struct s_shell
 {
+	char **exported_env;
 	t_lstenv *env_list;
-	char * working_dir;
-}   t_shell;
+	char *working_dir;
+	int last_exit_value;
+} t_shell;
+
+typedef struct s_cmd
+{
+	int is_subshell;
+	int is_builtin;
+	int infile;
+	int outfile;
+	size_t argc;
+	char **argv;
+	char *binary;
+	t_node *subshell;
+} t_cmd;
 
 // global variable:
 t_shell shell;
-
-// initialization
-void init_shell();
-void setup_signal_handlers();
 
 // utils
 int ft_isspace(char c);
 
 // freeing
-void free_arr(char**arr);
+void free_arr(char **arr);
 
 #endif

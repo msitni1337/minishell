@@ -3,20 +3,10 @@
 
 #include "lexer.h"
 #include "built-ins.h"
+#include "env.h"
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <errno.h>
-
-typedef struct s_cmd
-{
-    int is_subshell;
-    int is_builtin;
-    int infile;
-    int outfile;
-    size_t argc;
-    char**argv;
-    t_node* subshell;
-} t_cmd;
 
 //  interpreter:
 int interpret_root(t_node *root);

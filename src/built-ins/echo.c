@@ -39,7 +39,7 @@ void	check_echo_options(char **av)
 		write(1, "\n", 1);
 }
 
-void	ft_echo(int ac, char **av)
+int ft_echo(int ac, char **av)
 {
 	if (ac == 1)
 	{
