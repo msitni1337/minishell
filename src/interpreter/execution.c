@@ -18,8 +18,6 @@ int wait_all_childs()
     return ret_value;
 }
 
-void print_tree(t_node *root);
-
 int exec_subshell(t_cmd cmd, int wait)
 {
     int ret_value;
@@ -51,7 +49,7 @@ int exec_subshell(t_cmd cmd, int wait)
             dup2(cmd.outfile, STDOUT_FILENO);
         if (cmd.read_pipe != -1)
             close(cmd.read_pipe);
-        ret_value = interpret_root(cmd.subshell);
+        ret_value = interpret_root(cmd.subshell->children);
         exit(ret_value);
     }
     return 0;

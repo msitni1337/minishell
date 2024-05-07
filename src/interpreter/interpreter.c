@@ -256,7 +256,7 @@ int interpret_root(t_node *root)
                     cmd.outfile = pip[1];
                     cmd.read_pipe = pip[0];
                     execute_cmd(cmd, FALSE);
-                    //close(pip[1]);
+                    // close(pip[1]);
                 }
                 else
                 {
