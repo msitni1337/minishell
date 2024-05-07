@@ -53,7 +53,6 @@ int open_file_as(char *fname, t_cmd *cmd, t_node_type type)
         m_flags = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
     }
 
-
     fd = open(fname, p_flags, m_flags);
     if (fd < 0)
     {
@@ -170,9 +169,10 @@ int get_cmd_path(t_cmd *cmd)
     {
         if (access(argv0, X_OK))
         {
-            perror("bash");
+            perror("minishell");
             return errno;
         }
+        cmd->bin_path = argv0;
     }
     else
     {
@@ -192,6 +192,12 @@ int parse_cmd(t_node *node, t_cmd *cmd)
     int ret_value;
     t_node *subshell;
 
+    if (cmd->read_pipe != -1)
+    {
+        cmd->infile = dup(cmd->read_pipe);
+        close(cmd->read_pipe);
+        cmd->read_pipe = -1;
+    }
     ret_value = open_files(node, cmd);
     if (ret_value)
         return ret_value;
@@ -224,8 +230,10 @@ int interpret_root(t_node *root)
     t_node *node;
 
     node = root;
+    shell.childs_pids.count = 0;
     cmd.infile = STDIN_FILENO;
     cmd.outfile = STDOUT_FILENO;
+    cmd.read_pipe = -1;
     ret_value = 0;
     while (node)
     {
@@ -246,13 +254,14 @@ int interpret_root(t_node *root)
                     if (cmd.outfile != STDOUT_FILENO)
                         close(cmd.outfile);
                     cmd.outfile = pip[1];
+                    cmd.read_pipe = pip[0];
                     execute_cmd(cmd, FALSE);
-                    cmd.infile = pip[0]; // this gonna serve for the next cmd
+                    //close(pip[1]);
                 }
                 else
                 {
                     close(pip[1]);
-                    cmd.infile = pip[0]; // this gonna serve for the next cmd
+                    cmd.read_pipe = pip[0];
                 }
             }
             else if (node->type == NODE_AND)
@@ -283,5 +292,9 @@ int interpret_root(t_node *root)
             ret_value = execute_cmd(cmd, TRUE);
         }
     }
-    return ret_value;
+    if (cmd.infile != STDIN_FILENO)
+        close(cmd.infile);
+    if (cmd.outfile != STDOUT_FILENO)
+        close(cmd.outfile);
+    return wait_all_childs();
 }

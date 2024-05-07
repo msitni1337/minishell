@@ -12,7 +12,7 @@
 
 #ifndef ENV_H
 #define ENV_H
-#include "shared.h"
+#include "shell.h"
 
 t_lstenv *create_nodes(char *data);
 void print_list(t_lstenv *head);

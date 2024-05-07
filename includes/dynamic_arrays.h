@@ -7,16 +7,16 @@
 
 #include "shared.h"
 
-typedef struct s_arr
+typedef struct s_darr
 {
     void* data;
     size_t count;
     size_t elem_size;
     size_t capacity;
-} t_arr;
+} t_darr;
 
-t_arr* expand_arr(t_arr*arr);
-t_arr* add_to_arr(t_arr*arr, void*data);
-t_arr init_da(size_t size, void*elem);
+t_darr init_da(size_t elem_size, void*elem);
+t_darr* add_to_arr(t_darr*arr, void*data);
+t_darr* expand_arr(t_darr*arr);
 
 #endif

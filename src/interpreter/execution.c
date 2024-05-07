@@ -1,10 +1,30 @@
 #include "interpreter.h"
 
+int wait_all_childs()
+{
+    int ret_value;
+    int *pids;
+    size_t i;
+
+    pids = shell.childs_pids.data;
+    ret_value = 0;
+    i = 0;
+    while (i < shell.childs_pids.count)
+    {
+        waitpid(pids[i], &ret_value, 0);
+        WEXITSTATUS(ret_value);
+        i++;
+    }
+    return ret_value;
+}
+
+void print_tree(t_node *root);
+
 int exec_subshell(t_cmd cmd, int wait)
 {
     int ret_value;
     int pid;
-
+    
     pid = fork();
     if (pid == -1)
     {
@@ -13,17 +33,24 @@ int exec_subshell(t_cmd cmd, int wait)
     }
     if (pid)
     {
+        add_to_arr(&(shell.childs_pids), &pid);
         if (wait == FALSE)
             return 0;
-        waitpid(pid, &ret_value, 0);
-        WEXITSTATUS(ret_value);
-        return ret_value;
+        if (cmd.infile != STDIN_FILENO)
+            close(cmd.infile);
+        if (cmd.outfile != STDOUT_FILENO)
+            close(cmd.outfile);
+        return wait_all_childs();
     }
     else
     {
         // todo increment subshell level
-        dup2(cmd.infile, STDIN_FILENO);
-        dup2(cmd.outfile, STDOUT_FILENO);
+        if (cmd.infile != STDIN_FILENO)
+            dup2(cmd.infile, STDIN_FILENO);
+        if (cmd.outfile != STDOUT_FILENO)
+            dup2(cmd.outfile, STDOUT_FILENO);
+        if (cmd.read_pipe != -1)
+            close(cmd.read_pipe);
         ret_value = interpret_root(cmd.subshell);
         exit(ret_value);
     }
@@ -64,6 +91,8 @@ int exec_builtin_no_wait(t_cmd cmd)
     }
     if (pid == 0)
     {
+        if (cmd.read_pipe != -1)
+            close(cmd.read_pipe);
         ret_value = exec_builtin(cmd);
         exit(ret_value);
     }
@@ -72,7 +101,6 @@ int exec_builtin_no_wait(t_cmd cmd)
 
 int exec_bin(t_cmd cmd, int wait)
 {
-    int ret_value;
     int pid;
 
     pid = fork();
@@ -83,21 +111,30 @@ int exec_bin(t_cmd cmd, int wait)
     }
     if (pid)
     {
+        add_to_arr(&(shell.childs_pids), &pid);
         if (wait == FALSE)
             return 0;
-        waitpid(pid, &ret_value, 0);
-        WEXITSTATUS(ret_value);
-        return ret_value;
+        if (cmd.infile != STDIN_FILENO)
+            close(cmd.infile);
+        if (cmd.outfile != STDOUT_FILENO)
+            close(cmd.outfile);
+        return wait_all_childs();
     }
     else
     {
         // todo increment subshell level
-        dup2(cmd.infile, STDIN_FILENO);
-        dup2(cmd.outfile, STDOUT_FILENO);
+        if (cmd.infile != STDIN_FILENO)
+            dup2(cmd.infile, STDIN_FILENO);
+        if (cmd.outfile != STDOUT_FILENO)
+            dup2(cmd.outfile, STDOUT_FILENO);
+
+        if (cmd.read_pipe != -1)
+            close(cmd.read_pipe);
+
         // todo need to emplement exported envp to pass it to binary..
 
         execve(cmd.bin_path, cmd.argv, shell.exported_env);
-        printf("##########%s##########\n", cmd.bin_path);
+        printf("%s : execve failed\n", cmd.bin_path);
         perror(cmd.argv[0]);
         exit(errno);
     }

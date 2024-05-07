@@ -14,6 +14,7 @@ typedef struct s_cmd
     t_cmd_type type;
     int infile;
     int outfile;
+    int read_pipe;
     size_t argc;
     char **argv;
     char *bin_path;
