@@ -22,7 +22,7 @@ int exec_subshell(t_cmd cmd, int wait)
 {
     int ret_value;
     int pid;
-    
+
     pid = fork();
     if (pid == -1)
     {
@@ -66,7 +66,7 @@ int exec_builtin(t_cmd cmd)
     else if (!ft_strcmp(cmd.argv[0], "pwd"))
         ret_value = ft_pwd(cmd);
     else if (!ft_strcmp(cmd.argv[0], "export"))
-        assert(!"NOT IMPLEMENTED");
+        ret_value = ft_export(cmd);
     else if (!ft_strcmp(cmd.argv[0], "unset"))
         assert(!"NOT IMPLEMENTED");
     else if (!ft_strcmp(cmd.argv[0], "env"))
@@ -101,6 +101,7 @@ int exec_bin(t_cmd cmd, int wait)
 {
     int pid;
 
+    replace_env("_", cmd.argv[0]);
     pid = fork();
     if (pid == -1)
     {
@@ -132,8 +133,8 @@ int exec_bin(t_cmd cmd, int wait)
         // todo need to emplement exported envp to pass it to binary..
 
         execve(cmd.bin_path, cmd.argv, shell.exported_env);
-        //printf("%s : execve failed\n", cmd.bin_path);
-        //perror(cmd.argv[0]);
+        // printf("%s : execve failed\n", cmd.bin_path);
+        // perror(cmd.argv[0]);
         exit(0);
     }
     return 0;
@@ -147,6 +148,7 @@ int execute_cmd(t_cmd cmd, int wait)
         return exec_bin(cmd, wait);
     else if (cmd.type == CMD_BUILTIN)
     {
+        replace_env("_", cmd.argv[0]);
         if (wait == TRUE)
             return exec_builtin(cmd);
         else

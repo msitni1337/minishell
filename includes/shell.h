@@ -18,7 +18,7 @@ typedef struct s_shell
 extern t_shell shell;
 
 void start_shell();
-void init_shell(char **envp);
+void init_shell(const char **envp);
 void setup_signal_handlers();
 
 #endif

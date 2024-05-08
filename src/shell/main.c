@@ -1,6 +1,6 @@
 #include "shell.h"
 
-int main(int c, char **v, char **env)
+int main(int c, const char **v, const char **env)
 {
     (void) c;
     (void) v;

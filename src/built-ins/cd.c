@@ -16,11 +16,12 @@
 
 int go_to_home()
 {
+	char *old_path;
 	char *new_path;
-	char old_path[PATH_MAX];
+	char buff[PATH_MAX];
 
-	if (getcwd(old_path, sizeof(old_path)) != NULL)
-		shell.working_dir = ft_strdup(old_path);
+	if (getcwd(buff, sizeof(buff)) != NULL)
+		old_path = ft_strdup(buff);
 	new_path = get_env_value(shell.env_list, "HOME");
 	if (new_path == NULL)
 	{
@@ -32,8 +33,8 @@ int go_to_home()
 		perror("minishell: cd");
 		exit(EXIT_FAILURE);
 	}
-	add_to_env(&shell.env_list, "OLDPWD", shell.working_dir);
-	add_to_env(&shell.env_list, "PWD", new_path);
+	replace_env("OLDPWD", old_path);
+	replace_env("PWD", ft_strdup(new_path));
 	return 0;
 }
 
@@ -41,12 +42,13 @@ int go_to_home()
 
 int return_to_oldpwd(t_cmd *cmd)
 {
+	char *old_path;
 	char *new_path;
-	char old_path[PATH_MAX];
+	char buff[PATH_MAX];
 
-	if (getcwd(old_path, sizeof(old_path)) != NULL)
-		shell.working_dir = ft_strdup(old_path);
-	new_path = get_env_value(shell.env_list, "OLDPWD");
+	if (getcwd(buff, sizeof(buff)) != NULL)
+		old_path = ft_strdup(buff);
+	new_path = get_env_value(shell.env_list, "OLDPWD=");
 	if (new_path == NULL)
 	{
 		write(STDERR_FILENO, "cd: OLDPWD not set\n", 19);
@@ -60,8 +62,8 @@ int return_to_oldpwd(t_cmd *cmd)
 
 	ft_putendl_fd(new_path, cmd->outfile);
 
-	add_to_env(&shell.env_list, "OLDPWD", shell.working_dir);
-	add_to_env(&shell.env_list, "PWD", new_path);
+	replace_env("OLDPWD", old_path);
+	replace_env("PWD", ft_strdup(new_path));
 	return 0;
 }
 
@@ -70,27 +72,29 @@ int return_to_oldpwd(t_cmd *cmd)
 int go_to_path(char *path)
 {
 	int ret_value;
-	char old_path[PATH_MAX];
+	char *old_path;
+	char buff[PATH_MAX];
 
-	ret_value = access(path, F_OK);
+	ret_value = access(path, X_OK);
 	if (ret_value == -1)
 	{
 		perror("minishell: cd");
-		exit(EXIT_FAILURE); //keep exiting now untill gexit is implemented
+		exit(EXIT_FAILURE); // keep exiting now untill gexit is implemented
 	}
 	else if (ret_value == 0)
 	{
-		if (getcwd(old_path, sizeof(old_path)) != NULL)
+		if (getcwd(buff, sizeof(buff)) != NULL)
 		{
-			shell.working_dir = ft_strdup(old_path);
+			old_path = ft_strdup(buff);
 			if (chdir(path) == -1)
 			{
 				perror("minishell: cd");
-				exit(EXIT_FAILURE); //keep exiting now untill gexit is implemented
+				exit(EXIT_FAILURE); // keep exiting now untill gexit is implemented
 			}
+			getcwd(buff, sizeof(buff));
+			replace_env("OLDPWD", old_path);
+			replace_env("PWD", ft_strdup(buff));
 		}
-		add_to_env(&shell.env_list, "OLDPWD", shell.working_dir);
-		add_to_env(&shell.env_list, "PWD", getcwd(NULL, 0));
 	}
 	else
 	{

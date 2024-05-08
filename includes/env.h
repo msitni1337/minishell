@@ -20,10 +20,10 @@ void free_list(t_lstenv *head);
 void add_env_end(t_lstenv **lstenv, char *data);
 void remove_env(t_lstenv **lstenv, char *data);
 char *find_env(t_shell *shell, char *data);
-void	add_to_env(t_lstenv **lstenv, char *key, char *value);
 char	*get_env_value(t_lstenv *lstenv, char *data);
-char	*get_env_lst(t_lstenv *lstenv, char *data);
-void	take_env(t_lstenv **lstenv, const char **envp);
-char	*find_env_key(t_lstenv *lstenv, char *data);
+t_lstenv *get_env_node(char *data);
+void	take_env(const char **envp);
+void refresh_exported_env();
+void replace_env(char *key, char *value);
 
 #endif

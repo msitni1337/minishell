@@ -13,16 +13,16 @@ t_node *get_node_by_type(t_node *root, t_node_type type)
     return tmp;
 }
 
-t_token parse_subshell(t_node *root, t_lexer *lexer, t_node_type type)
+t_token parse_subshell(t_node *root, t_lexer *lexer)
 {
     t_node *subshell;
     t_token token;
 
-    subshell = create_node(type);
+    subshell = create_node(NODE_SUBSHELL);
     append_child(root, subshell);
     token = get_next_token(lexer, TRUE);
     if (token.type == TOKEN_EOF)
-        assert(!"SYNTAX ERROR");
+        assert(!"SYNTAX ERROR"); // syntax error unclosed paren
     // roots = init_da(sizeof(t_node *), create_node(NODE_CMD));
     // root = NULL;
     while (token.type != TOKEN_EOF)
@@ -71,7 +71,7 @@ t_token parse_subshell(t_node *root, t_lexer *lexer, t_node_type type)
         token = get_next_token(lexer, TRUE);
         assert(token.type != TOKEN_INVALID);
     }
-    assert(token.type == TOKEN_CLOSE_PAREN);
+    assert(token.type == TOKEN_CLOSE_PAREN); // syntax error unclosed paren
     return token;
 }
 
@@ -113,7 +113,9 @@ t_token fill_cmd(t_node **root, t_token token, t_lexer *lexer, int as_child)
         if (token.type == TOKEN_STRING)
         {
             if (add_str_node(curr_cmd, lexer) == NULL)
-                assert(!"THROW SYNTAX ERROR");
+                assert(!"THROW SYNTAX ERROR"); // Error Unclosed Quote..
+            if (get_node_by_type(curr_cmd, NODE_SUBSHELL))
+                assert(!"THROW SYNTAX ERROR"); // bash: syntax error near unexpected token `cat' -> (ls) cat       
         }
         else if (token.type == TOKEN_REDIRECT_IN)
             add_redirect_node(lexer, curr_cmd, NODE_REDIRECT_IN);
@@ -126,9 +128,9 @@ t_token fill_cmd(t_node **root, t_token token, t_lexer *lexer, int as_child)
         else if (token.type == TOKEN_OPEN_PAREN)
         {
             if (can_have_subshell == TRUE)
-                parse_subshell(curr_cmd, lexer, NODE_SUBSHELL);
+                parse_subshell(curr_cmd, lexer);
             else
-                assert(!"THROW SYNTAX ERROR");
+                assert(!"THROW SYNTAX ERROR"); // bash: syntax error near unexpected token `ls' -> cat (ls)
         }
         can_have_subshell = FALSE;
         /*

@@ -14,17 +14,10 @@
 
 void	ft_unset(t_shell *shell, char **av)
 {
-	int		i;
-	char	*key;
+	(void)shell;
+	(void)av;
 
-	i = 1;
-	while (av[i])
-	{
-		key = find_env_key(shell->env_list, av[i]);
-		if (key)
-			remove_env(&shell->env_list, key);
-		i++;
-	}
+
 }
 
 // int main(int ac, char **av, const char **envp)

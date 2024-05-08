@@ -32,4 +32,7 @@ int go_to_home();
 /* pwd */
 int	ft_pwd(t_cmd cmd);
 
+/* export */
+int ft_export(t_cmd cmd);
+
 #endif
