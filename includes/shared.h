@@ -2,6 +2,7 @@
 #define COMMON_H
 #define PROMPT "millishell ~> "
 
+#define bool unsigned char
 #define TRUE 1
 #define FALSE 0
 

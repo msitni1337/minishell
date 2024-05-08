@@ -100,7 +100,9 @@ else if (type == NODE_REDIRECT_IN && token.type == TOKEN_OPEN_PAREN
 t_token fill_cmd(t_node **root, t_token token, t_lexer *lexer, int as_child)
 {
     t_node *curr_cmd;
+    int can_have_subshell;
 
+    can_have_subshell = TRUE;
     curr_cmd = create_node(NODE_CMD);
     if (as_child)
         append_child(*root, curr_cmd);
@@ -122,7 +124,13 @@ t_token fill_cmd(t_node **root, t_token token, t_lexer *lexer, int as_child)
         else if (token.type == TOKEN_APPEND)
             add_redirect_node(lexer, curr_cmd, NODE_APPEND);
         else if (token.type == TOKEN_OPEN_PAREN)
-            parse_subshell(curr_cmd, lexer, NODE_SUBSHELL);
+        {
+            if (can_have_subshell == TRUE)
+                parse_subshell(curr_cmd, lexer, NODE_SUBSHELL);
+            else
+                assert(!"THROW SYNTAX ERROR");
+        }
+        can_have_subshell = FALSE;
         /*
         else if (token.type == TOKEN_SUBSHELL_ARG)
             parse_subshell(curr_cmd, lexer, NODE_SUBSHELL_ARG);

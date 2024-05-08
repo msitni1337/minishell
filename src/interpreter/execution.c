@@ -62,9 +62,9 @@ int exec_builtin(t_cmd cmd)
     if (!ft_strcmp(cmd.argv[0], "cd"))
         ret_value = change_directory(cmd);
     else if (!ft_strcmp(cmd.argv[0], "echo"))
-        ret_value = ft_echo(cmd.argc, cmd.argv);
+        ret_value = ft_echo(cmd);
     else if (!ft_strcmp(cmd.argv[0], "pwd"))
-        ret_value = ft_pwd(cmd.argc, cmd.argv);
+        ret_value = ft_pwd(cmd);
     else if (!ft_strcmp(cmd.argv[0], "export"))
         assert(!"NOT IMPLEMENTED");
     else if (!ft_strcmp(cmd.argv[0], "unset"))
@@ -132,9 +132,9 @@ int exec_bin(t_cmd cmd, int wait)
         // todo need to emplement exported envp to pass it to binary..
 
         execve(cmd.bin_path, cmd.argv, shell.exported_env);
-        printf("%s : execve failed\n", cmd.bin_path);
-        perror(cmd.argv[0]);
-        exit(errno);
+        //printf("%s : execve failed\n", cmd.bin_path);
+        //perror(cmd.argv[0]);
+        exit(0);
     }
     return 0;
 }

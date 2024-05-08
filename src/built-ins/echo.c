@@ -12,42 +12,55 @@
 
 #include "built-ins.h"
 
-int	check_echo_options(char **av)
+bool check_flags(char** argv, int*i)
 {
-	int	i;
-	int	j;
+	bool print_nl;
+	int j;
 
-	i = 1;
-	while (av[i] && av[i][0] == '-')
+	print_nl = TRUE;
+	while (argv[*i] && argv[*i][0] == '-')
 	{
 		j = 1;
-		while (av[i][j] == 'n')
+		while (argv[*i][j] == 'n')
 			j++;
-		if (av[i][j] == '\0')
-			i++;
+		if (argv[*i][j] == '\0')
+		{
+			(*i)++;
+			print_nl = FALSE;
+		}
 		else
 			break ;
 	}
-	while (av[i])
+	return print_nl;
+}
+
+int	check_echo_options(t_cmd cmd)
+{
+	bool print_nl;
+	int	i;
+
+	i = 1;
+	print_nl = check_flags(cmd.argv, &i);
+	while (cmd.argv[i])
 	{
-		write(1, av[i], ft_strlen(av[i]));
-		if (av[i + 1])
+		write(cmd.outfile, cmd.argv[i], ft_strlen(cmd.argv[i]));
+		if (cmd.argv[i + 1])
 			write(1, " ", 1);
 		i++;
 	}
-	if (av[1] && av[1][0] != '-')
+	if (print_nl == TRUE)
 		write(1, "\n", 1);
-	return 0;
+	return errno;
 }
 
-int ft_echo(int ac, char **av)
+int ft_echo(t_cmd cmd)
 {
-	if (ac == 1)
+	if (cmd.argc == 1)
 	{
-		write(1, "\n", 1);
-		return 0;
+		write(cmd.outfile, "\n", 1);
+		return errno;
 	}
-	return check_echo_options(av);
+	return check_echo_options(cmd);
 }
 
 // int main(int ac, char **av)

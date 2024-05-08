@@ -1,6 +1,0 @@
-- The `shell` variable is now a global variable so it will be consistent throughout the code.
-you know how to handle global variables so work your functions around that fact.
-- Built-in functions have different signatures now as you can see I modified the `cd` built-in to show you an example. And i want you to make the same for all of the rest (check cd built_in you'll find some todos and please fix return values to always return your exit value so I can hook them to the overall process).
-
-
-- Work rest for me: complete full execution of the AST tree.

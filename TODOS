@@ -1,4 +1,15 @@
-# IMPLEMENT BUILTIN CD USING CHDIR AND CHANGE THE $PWD VARIABLE SET ERRNO AND RETURN -1 IF ANY ERROR HAS BEEN APPEARS
-
-## Galloc need to set buffers to zero
-## improve error printing
+## [Garbage Collector]
+    # if malloc failed Galloc need to free everything and print error and exit the whole program. 
+    # Galloc need to set allocated buffer to zero calling memset after you call malloc.
+    # Galloc Need To implement following func:
+        - void*galloc(size_t size); --> Allocate size bytes of memory.
+        - void gfree(void*ptr); --> free the corresponding pointer.
+        - void gfreeall(); --> frees all pointer allocated except for the list of pointer.
+        - void gexit(int exit_code); --> frees everything even the list holding the ptrs + exiting with the exit_code.
+## [string expansion]
+    # You'll have everything you need to do in the file "./src/interpreter/strings_expansion.c".
+    # In that file I layed down the backbone of what you need to do you just need to implement the logic.
+    # this is an example: Variable $PWD = /home/dev
+        - string = hello"world my pwd is $PWD"and'I am inside of $PWD'right.
+        - after expansion it will return the following:
+        - helloworld my pwd is /home/devandI am inside of $PWDright.

@@ -12,13 +12,13 @@
 
 #include "built-ins.h"
 
-int		ft_pwd()
+int		ft_pwd(t_cmd cmd)
 {
 	char path[PATH_MAX];
 
 	if (getcwd(path, sizeof(path)) != NULL)
 	{
-		ft_putendl_fd(path, 1);
+		ft_putendl_fd(path, cmd.outfile);
 	}
 	else
 	{

@@ -13,11 +13,14 @@ void start_shell()
     line = readline(PROMPT);
     while (line != NULL)
     {
+        add_history(line);
         cmd_root = parse_line(line);
 
+/*
         if (cmd_root)
             print_tree(cmd_root);
         readline("PRESS ENTER TO EXECUTE TREE");
+*/
 
         if (cmd_root)
             shell.last_exit_value = interpret_root(cmd_root);
