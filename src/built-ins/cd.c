@@ -62,8 +62,8 @@ int return_to_oldpwd(t_cmd *cmd)
 
 	ft_putendl_fd(new_path, cmd->outfile);
 
-	replace_env("OLDPWD", old_path);
 	replace_env("PWD", ft_strdup(new_path));
+	replace_env("OLDPWD", old_path);
 	return 0;
 }
 
@@ -83,18 +83,16 @@ int go_to_path(char *path)
 	}
 	else if (ret_value == 0)
 	{
-		if (getcwd(buff, sizeof(buff)) != NULL)
+		getcwd(buff, sizeof(buff));
+		old_path = ft_strdup(buff);
+		if (chdir(path) == -1)
 		{
-			old_path = ft_strdup(buff);
-			if (chdir(path) == -1)
-			{
-				perror("minishell: cd");
-				exit(EXIT_FAILURE); // keep exiting now untill gexit is implemented
-			}
-			getcwd(buff, sizeof(buff));
-			replace_env("OLDPWD", old_path);
-			replace_env("PWD", ft_strdup(buff));
+			perror("minishell: cd");
+			exit(EXIT_FAILURE); // keep exiting now untill gexit is implemented
 		}
+		replace_env("OLDPWD", old_path);
+		getcwd(buff, sizeof(buff));
+		replace_env("PWD", ft_strdup(buff));
 	}
 	else
 	{

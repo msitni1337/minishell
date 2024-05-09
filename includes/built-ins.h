@@ -35,4 +35,7 @@ int	ft_pwd(t_cmd cmd);
 /* export */
 int ft_export(t_cmd cmd);
 
+/* unset */
+void	ft_unset(t_cmd cmd);
+
 #endif

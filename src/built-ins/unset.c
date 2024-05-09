@@ -12,12 +12,9 @@
 
 #include "built-ins.h"
 
-void	ft_unset(t_shell *shell, char **av)
+void	ft_unset(t_cmd cmd)
 {
-	(void)shell;
-	(void)av;
-
-
+	(void)cmd;
 }
 
 // int main(int ac, char **av, const char **envp)
