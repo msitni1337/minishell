@@ -31,7 +31,7 @@ CC = cc
 NAME = minishell
 LEXER = lexer
 BUILTIN = builtin
-CFLAGS = -Wall -Werror -Wextra -Iincludes #-g3 -fsanitize=address
+CFLAGS = -Wall -Werror -Wextra -Iincludes -g3 #-fsanitize=address
 LDFLAGS = -lreadline -L$(LIBFT_DIR) -lft
 
 

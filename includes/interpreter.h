@@ -10,7 +10,12 @@
 #include <fcntl.h>
 #include <errno.h>
 
-
+typedef enum e_expansion_state
+{
+    NORMAL,
+    DQUOTE_STATE,
+    SQUOTE_STATE,
+} t_expansion_state;
 
 //  interpreter:
 int interpret_root(t_node *root);
@@ -22,5 +27,6 @@ int wait_all_childs();
 //  utils:
 t_node *get_next_node_by_type(t_node *root, t_node_type type);
 
+char *expand_string(t_string string);
 
 #endif

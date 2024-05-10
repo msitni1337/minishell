@@ -24,28 +24,179 @@ bool contains_chars(t_string string, char *charset)
 
 size_t get_len(t_string string)
 {
-    (void) string;
+    t_expansion_state state;
     size_t len;
+    size_t i;
+
     len = 0;
-
-    /*
-        get the size of the resulted str after expanding all variables and removing quotes
-    */
-
+    i = 0;
+    state = NORMAL;
+    while (i < string.count)
+    {
+        if (state == NORMAL)
+        {
+            if (string.s[i] == '\'')
+            {
+                state = SQUOTE_STATE;
+                i++;
+                continue;
+            }
+            else if (string.s[i] == '"')
+            {
+                state = DQUOTE_STATE;
+                i++;
+                continue;
+            }
+            else if (string.s[i] == '$')
+            {
+                i++;
+                int count = 0;
+                while (string.s[i] && string.s[i] != '\'' && string.s[i] != '"')
+                {
+                    i++;
+                    count++;
+                }
+                len += ft_strlen(get_env_value(shell.env_list, ft_substr(string.s + i - count, 0, count)));
+                continue;
+            }
+            i++;
+            len++;
+        }
+        else if (state == DQUOTE_STATE)
+        {
+            if (string.s[i] == '"')
+            {
+                state = NORMAL;
+                i++;
+                continue;
+            }
+            else if (string.s[i] == '$')
+            {
+                i++;
+                int count = 0;
+                while (string.s[i] && !ft_isspace(string.s[i]) && string.s[i] != '\'' && string.s[i] != '"')
+                {
+                    i++;
+                    count++;
+                }
+                len += ft_strlen(get_env_value(shell.env_list, ft_substr(string.s + i - count, 0, count)));
+                continue;
+            }
+            i++;
+            len++;
+        }
+        else
+        {
+            if (string.s[i] == '\'')
+            {
+                state = NORMAL;
+                i++;
+                continue;
+            }
+            i++;
+            len++;
+        }
+    }
     return len;
 }
 
 char *perform_string_expansion(t_string string)
 {
+    printf("expanding: [%.*s]\n", (int)(string.count), string.s);
+    t_expansion_state state;
     char *res;
     size_t len;
+    size_t i;
+    size_t j;
+
     len = get_len(string);
     res = malloc(len + 1);
+    state = NORMAL;
+    i = 0;
+    j = 0;
 
-    /*
-        do logic of expanding the string
-    */
-
+    while (i < string.count)
+    {
+        if (state == NORMAL)
+        {
+            if (string.s[i] == '\'')
+            {
+                state = SQUOTE_STATE;
+                i++;
+                continue;
+            }
+            else if (string.s[i] == '"')
+            {
+                state = DQUOTE_STATE;
+                i++;
+                continue;
+            }
+            else if (string.s[i] == '$')
+            {
+                i++;
+                int count = 0;
+                while (string.s[i] && string.s[i] != '\'' && string.s[i] != '"')
+                {
+                    i++;
+                    count++;
+                }
+                if (get_env_value(shell.env_list, ft_substr(string.s + i - count, 0, count)))
+                    j = ft_strlcpy(res + j, get_env_value(shell.env_list, ft_substr(string.s + i - count, 0, count)), len - j + 1);
+                continue;
+            }
+            else
+            {
+                res[j] = string.s[i];
+                i++;
+                j++;
+            }
+        }
+        else if (state == DQUOTE_STATE)
+        {
+            if (string.s[i] == '"')
+            {
+                state = NORMAL;
+                i++;
+                continue;
+            }
+            else if (string.s[i] == '$')
+            {
+                i++;
+                int count = 0;
+                while (string.s[i] && !ft_isspace(string.s[i]) && string.s[i] != '\'' && string.s[i] != '"')
+                {
+                    i++;
+                    count++;
+                }
+                if (get_env_value(shell.env_list, ft_substr(string.s + i - count, 0, count)))
+                    j = ft_strlcpy(res + j, get_env_value(shell.env_list, ft_substr(string.s + i - count, 0, count)), len - j + 1);
+                continue;
+            }
+            else
+            {
+                res[j] = string.s[i];
+                i++;
+                j++;
+            }
+        }
+        else
+        {
+            if (string.s[i] == '\'')
+            {
+                state = NORMAL;
+                i++;
+                continue;
+            }
+            else
+            {
+                res[j] = string.s[i];
+                i++;
+                j++;
+            }
+        }
+    }
+    res[j] = 0;
+    printf("result: [%s]\n", res);
     return res;
 }
 
