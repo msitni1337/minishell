@@ -1,4 +1,4 @@
-## [Garbage Collector]
+## [Garbage Collector] [DONE]
     # if malloc failed Galloc need to free everything and print error and exit the whole program. 
     # Galloc need to set allocated buffer to zero calling memset after you call malloc.
     # Galloc Need To implement following func:
@@ -6,7 +6,7 @@
         - void gfree(void*ptr); --> free the corresponding pointer.
         - void gfreeall(); --> frees all pointer allocated except for the list of pointer.
         - void gexit(int exit_code); --> frees everything even the list holding the ptrs + exiting with the exit_code.
-## [string expansion]
+## [string expansion] [DONE]
     # You'll have everything you need to do in the file "./src/interpreter/strings_expansion.c".
     # In that file I layed down the backbone of what you need to do you just need to implement the logic.
     # this is an example: Variable $PWD = /home/dev
@@ -15,4 +15,10 @@
         - helloworld my pwd is /home/devandI am inside of $PWDright.
 
 
-## ADD working directory to PATH binary checking in case of an empty colon like "/usr/bin:" or "/usr/bin::/usr/sbin" ...
+## ADD working directory to PATH binary checking in case of an empty colon like "/usr/bin:" or "/usr/bin::/usr/sbin" ... [DONE]
+
+## We need a better env system with keys and values [DONE]
+
+## For error printing we need to check every perror and any write(stderr functions.. 
+
+## Garbage Collector integration

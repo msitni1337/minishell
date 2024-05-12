@@ -12,34 +12,22 @@
 
 #include "env.h"
 
-void add_env_end(t_lstenv **head, char *data)
+t_lstenv *add_env_end(t_lstenv **head, char *key, char *value)
 {
 	t_lstenv *current;
 
 	if (!*head)
 	{
-		*head = create_nodes(data);
-		return;
+		*head = create_nodes(key, value);
+		return *head;
 	}
 	current = *head;
 	while (current->next)
 		current = current->next;
-	current->next = create_nodes(data);
+	current->next = create_nodes(key, value);
+	return current->next;
 }
-char *find_env(t_shell *shell, char *data)
-{
-	t_lstenv *current;
-
-	current = shell->env_list;
-	while (current)
-	{
-		if (ft_strncmp(current->data, data, ft_strlen(data)) == 0)
-			return (current->data);
-		current = current->next;
-	}
-	return (NULL);
-}
-void remove_env(t_lstenv **lstenv, char *data)
+void remove_env(t_lstenv **lstenv, char *key)
 {
 	t_lstenv *current;
 	t_lstenv *prev;
@@ -48,7 +36,7 @@ void remove_env(t_lstenv **lstenv, char *data)
 	prev = NULL;
 	while (current)
 	{
-		if (ft_strncmp(current->data, data, ft_strlen(data)) == 0)
+		if (ft_strcmp(current->key, key) == 0)
 		{
 			if (prev)
 				prev->next = current->next;
@@ -59,71 +47,6 @@ void remove_env(t_lstenv **lstenv, char *data)
 		}
 		prev = current;
 		current = current->next;
-	}
-}
-
-void free_list(t_lstenv *head)
-{
-	t_lstenv *current;
-	t_lstenv *next;
-
-	current = head;
-	while (current)
-	{
-		next = current->next;
-		free(current);
-		current = next;
-	}
-}
-
-t_lstenv *create_nodes(char *data)
-{
-	t_lstenv *new_node;
-
-	new_node = malloc(sizeof(t_lstenv));
-	if (!new_node)
-	{
-		perror("malloc");
-		exit(1);
-	}
-	new_node->data = data;
-	new_node->next = NULL;
-	return (new_node);
-}
-
-void ft_swap(char **p1, char **p2)
-{
-	char *tmp;
-
-	tmp = *p1;
-	*p1 = *p2;
-	*p2 = tmp;
-}
-
-void sort_env_list(t_lstenv **head)
-{
-	bool is_swapped;
-	t_lstenv *current;
-	t_lstenv *prev;
-
-	if (head == NULL || *head == NULL || (*head)->next == NULL)
-		return;
-	is_swapped = TRUE;
-	while (is_swapped == TRUE)
-	{
-		is_swapped = FALSE;
-		prev = *head;
-		current = prev->next;
-		while (current)
-		{
-			if (ft_strcmp(current->data, prev->data) < 0)
-			{
-				ft_swap(&(current->data), &(prev->data));
-				is_swapped = TRUE;
-			}
-			prev = current;
-			current = prev->next;
-		}
 	}
 }
 
@@ -151,25 +74,113 @@ char *construct_env(char *key, char *value)
 	return tmp;
 }
 
-void add_or_replace_env(char *key, char *value)
+size_t exp_env_size()
 {
-	t_lstenv *node;
+	t_lstenv *lst;
+	size_t size;
+
+	size = 0;
+	lst = shell.env_list;
+	while (lst)
+	{
+		if (lst->is_set == TRUE)
+			size++;
+		lst = lst->next;
+	}
+	return (size);
+}
+
+char **get_env_arr()
+{
+	char **res;
+	size_t i;
+	t_lstenv *current;
+
+	res = malloc(sizeof(char**) * (exp_env_size() + 1));
+	current = shell.env_list;
+	i = 0;
+	while (current)
+	{
+		if (current->is_set == TRUE)
+		{
+			res[i] = construct_env(current->key, current->value);
+			i++;
+		}
+		current = current->next;
+	}
+	res[i] = NULL;
+	return res;
+}
+
+t_lstenv *create_nodes(char *key, char *value)
+{
+	t_lstenv *new_node;
+
+	new_node = malloc(sizeof(t_lstenv));
+	if (!new_node)
+	{
+		perror("malloc");
+		exit(1);
+	}
+	new_node->key = key;
+	new_node->value = value;
+	new_node->is_set = TRUE;
+	new_node->next = NULL;
+	return (new_node);
+}
+
+/*
+void ft_swap(char **p1, char **p2)
+{
 	char *tmp;
 
-	tmp = construct_env(key, value);
-	key = ft_strjoin(key, "=");
+	tmp = *p1;
+	*p1 = *p2;
+	*p2 = tmp;
+}
+void sort_env_list(t_lstenv **head)
+{
+	bool is_swapped;
+	t_lstenv *current;
+	t_lstenv *prev;
+
+	if (head == NULL || *head == NULL || (*head)->next == NULL)
+		return;
+	is_swapped = TRUE;
+	while (is_swapped == TRUE)
+	{
+		is_swapped = FALSE;
+		prev = *head;
+		current = prev->next;
+		while (current)
+		{
+			if (ft_strcmp(current->data, prev->data) < 0)
+			{
+				ft_swap(&(current->data), &(prev->data));
+				is_swapped = TRUE;
+			}
+			prev = current;
+			current = prev->next;
+		}
+	}
+}
+*/
+
+t_lstenv *add_or_replace_env(char *key, char *value)
+{
+	t_lstenv *node;
+
 	node = get_env_node(key);
 	if (node)
 	{
-		free(node->data);
-		node->data = tmp;
+		free(node->value);
+		node->value = value;
 	}
 	else
 	{
-		add_env_end(&(shell.env_list), tmp);
+		node = add_env_end(&(shell.env_list), key, value);
 	}
-	refresh_exported_env();
-
+	return node;
 	// -> free those when galloc is available
 	// free(key);
 	// free(value);
@@ -178,16 +189,18 @@ void add_or_replace_env(char *key, char *value)
 void increment_shlvl()
 {
 	t_lstenv *node;
-	char *key_end;
 	int shlvl;
 
-	node = get_env_node("SHLVL=");
+	node = get_env_node("SHLVL");
 	if (node)
 	{
-		key_end = ft_strchr(node->data, '=');
-		shlvl = ft_atoi(key_end + 1);
+		shlvl = ft_atoi(node->value);
 		shlvl++;
 		add_or_replace_env("SHLVL", ft_itoa(shlvl));
+	}
+	else
+	{
+		add_or_replace_env("SHLVL", ft_itoa(0));
 	}
 }
 
@@ -200,28 +213,16 @@ void take_env(const char **envp)
 	i = 0;
 	while (envp && envp[i])
 	{
-		if (ft_strncmp(envp[i], "_=", 2))
-			add_env_end(&result, ft_strdup(envp[i]));
+		char *key = ft_substr(envp[i], 0, ft_strchr(envp[i], '=') - envp[i]);
+		char *value = ft_strdup(ft_strchr(envp[i], '=') + 1);
+		add_env_end(&result, key, value);
 		i++;
 	}
 	shell.env_list = result;
 	increment_shlvl();
-	refresh_exported_env();
 }
 
-size_t lstenv_size(t_lstenv *lst)
-{
-	size_t size;
-
-	size = 0;
-	while (lst)
-	{
-		lst = lst->next;
-		size++;
-	}
-	return (size);
-}
-
+/*
 void refresh_exported_env()
 {
 	t_lstenv *env_lst;
@@ -248,6 +249,7 @@ void refresh_exported_env()
 	}
 	shell.exported_env = result;
 }
+*/
 
 t_lstenv *get_env_node(char *key)
 {
@@ -256,33 +258,26 @@ t_lstenv *get_env_node(char *key)
 	current = shell.env_list;
 	while (current)
 	{
-		if (ft_strncmp(current->data, key, ft_strlen(key)) == 0)
+		if (ft_strcmp(current->key, key) == 0)
 			return current;
 		current = current->next;
 	}
 	return (NULL);
 }
 
-char *get_env_value(t_lstenv *lstenv, char *data)
+char *get_env_value(char *key)
 {
 	t_lstenv *current;
-	char *value;
 
-	if (ft_strcmp(data, "?") == 0)
+	if (ft_strcmp(key, "?") == 0)
 		return ft_itoa(shell.last_exit_value);
-	if (ft_strcmp(data, "$") == 0)
+	if (ft_strcmp(key, "$") == 0)
 		return ft_itoa(getpid());
-	current = lstenv;
+	current = shell.env_list;
 	while (current)
 	{
-		if (ft_strncmp(current->data, data, ft_strlen(data)) == 0)
-		{
-			if (current->data[ft_strlen(data)] == '=')
-			{
-				value = ft_strchr(current->data, '=') + 1;
-				return (value);
-			}
-		}
+		if (ft_strcmp(current->key, key) == 0)
+			return current->value;
 		current = current->next;
 	}
 	return (NULL);

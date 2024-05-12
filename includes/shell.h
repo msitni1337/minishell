@@ -7,7 +7,6 @@
 
 typedef struct s_shell
 {
-	char **exported_env;
 	t_lstenv *env_list;
 	char *working_dir;
 	int last_exit_value;

@@ -14,16 +14,13 @@
 #define ENV_H
 #include "shell.h"
 
-t_lstenv *create_nodes(char *data);
-void print_list(t_lstenv *head);
-void free_list(t_lstenv *head);
-void add_env_end(t_lstenv **lstenv, char *data);
-void remove_env(t_lstenv **lstenv, char *data);
-char *find_env(t_shell *shell, char *data);
-char	*get_env_value(t_lstenv *lstenv, char *data);
-t_lstenv *get_env_node(char *data);
+t_lstenv *create_nodes(char *key, char *value);
 void	take_env(const char **envp);
-void refresh_exported_env();
-void add_or_replace_env(char *key, char *value);
+t_lstenv* add_env_end(t_lstenv **head, char *key, char *value);
+void remove_env(t_lstenv **lstenv, char *key);
+char	*get_env_value(char *key);
+t_lstenv *get_env_node(char *data);
+t_lstenv* add_or_replace_env(char *key, char *value);
+char **get_env_arr();
 
 #endif

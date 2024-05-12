@@ -26,7 +26,8 @@ typedef struct s_string
 typedef struct s_lstenv
 {
 	bool is_set;
-	char *data;
+	char *key;
+	char *value;
 	struct s_lstenv *next;
 } t_lstenv;
 

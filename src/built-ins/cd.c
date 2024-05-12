@@ -14,90 +14,64 @@
 
 // todo return correct values..
 
+int go_to_path(char *path)
+{
+	char *old_pwd;
+	char cwd[PATH_MAX];
+
+	getcwd(cwd, sizeof(cwd));
+	old_pwd = ft_strdup(cwd);
+	if (access(path, X_OK) == 0)
+	{
+		if (chdir(path) == -1)
+		{
+			perror("minishell: cd");
+			exit(EXIT_FAILURE);
+		}
+		add_or_replace_env("OLDPWD", old_pwd);
+		getcwd(cwd, sizeof(cwd));
+		add_or_replace_env("PWD", ft_strdup(cwd));
+		return 0;
+	}
+	else
+	{
+		perror("minishell: cd");
+		return 1;
+	}
+}
+
 int go_to_home()
 {
-	char *old_path;
-	char *new_path;
-	char buff[PATH_MAX];
+	char *home_path;
 
-	if (getcwd(buff, sizeof(buff)) != NULL)
-		old_path = ft_strdup(buff);
-	new_path = get_env_value(shell.env_list, "HOME");
-	if (new_path == NULL)
+	home_path = get_env_value("HOME");
+	if (home_path == NULL)
 	{
 		write(STDERR_FILENO, "cd: HOME not set\n", 17);
 		return 1;
 	}
-	if (chdir(new_path) == -1)
-	{
-		perror("minishell: cd");
-		exit(EXIT_FAILURE);
-	}
-	add_or_replace_env("OLDPWD", old_path);
-	add_or_replace_env("PWD", ft_strdup(new_path));
-	return 0;
+	return go_to_path(home_path);
 }
 
 // todo return correct values..
 
 int return_to_oldpwd(t_cmd *cmd)
 {
-	char *old_path;
-	char *new_path;
-	char buff[PATH_MAX];
+	int ret_value;
+	char *old_pwd;
+	char*tmp;
 
-	if (getcwd(buff, sizeof(buff)) != NULL)
-		old_path = ft_strdup(buff);
-	new_path = get_env_value(shell.env_list, "OLDPWD");
-	if (new_path == NULL)
+	old_pwd = get_env_value("OLDPWD");
+	if (old_pwd == NULL)
 	{
 		write(STDERR_FILENO, "cd: OLDPWD not set\n", 19);
 		return 1;
 	}
-	if (chdir(new_path) == -1)
-	{
-		perror("minishell: cd");
-		exit(EXIT_FAILURE);
-	}
-
-	ft_putendl_fd(new_path, cmd->outfile);
-
-	add_or_replace_env("PWD", ft_strdup(new_path));
-	add_or_replace_env("OLDPWD", old_path);
-	return 0;
-}
-
-// todo return correct values..
-
-int go_to_path(char *path)
-{
-	int ret_value;
-	char *old_path;
-	char buff[PATH_MAX];
-
-	ret_value = access(path, X_OK);
-	if (ret_value == -1)
-	{
-		perror("minishell: cd");
-		exit(EXIT_FAILURE); // keep exiting now untill gexit is implemented
-	}
-	else if (ret_value == 0)
-	{
-		getcwd(buff, sizeof(buff));
-		old_path = ft_strdup(buff);
-		if (chdir(path) == -1)
-		{
-			perror("minishell: cd");
-			exit(EXIT_FAILURE); // keep exiting now untill gexit is implemented
-		}
-		add_or_replace_env("OLDPWD", old_path);
-		getcwd(buff, sizeof(buff));
-		add_or_replace_env("PWD", ft_strdup(buff));
-	}
-	else
-	{
-		perror("minishell: cd");
-	}
+	tmp = ft_strdup(old_pwd);
+	ret_value = go_to_path(tmp);
+	if (ret_value == 0)
+		ft_pwd(*cmd);
+	free(tmp);
 	return ret_value;
 }
 
@@ -109,7 +83,7 @@ int change_directory(t_cmd cmd)
 
 	if (cmd.argc > 2)
 	{
-		// todo print error "bash too many args"
+		write(STDERR_FILENO, "cd: too many args\n", 19);
 		ret_value = 1;
 	}
 	else if (cmd.argc == 1)

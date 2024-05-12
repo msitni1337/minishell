@@ -73,7 +73,7 @@ size_t get_len(t_string string)
                 int count = parse_key_count(string.s + i);
                 if (count)
                 {
-                    len += ft_strlen(get_env_value(shell.env_list, ft_substr(string.s + i, 0, count)));
+                    len += ft_strlen(get_env_value(ft_substr(string.s + i, 0, count)));
                     i += count;
                 }
                 continue;
@@ -95,7 +95,7 @@ size_t get_len(t_string string)
                 int count = parse_key_count(string.s + i);
                 if (count)
                 {
-                    len += ft_strlen(get_env_value(shell.env_list, ft_substr(string.s + i, 0, count)));
+                    len += ft_strlen(get_env_value(ft_substr(string.s + i, 0, count)));
                     i += count;
                 }
                 continue;
@@ -156,8 +156,8 @@ char *perform_string_expansion(t_string string)
                 int count = parse_key_count(string.s + i);
                 if (count)
                 {
-                    if (get_env_value(shell.env_list, ft_substr(string.s + i, 0, count)))
-                        j += ft_strlcpy(res + j, get_env_value(shell.env_list, ft_substr(string.s + i, 0, count)), len - j + 1);
+                    if (get_env_value(ft_substr(string.s + i, 0, count)))
+                        j += ft_strlcpy(res + j, get_env_value(ft_substr(string.s + i, 0, count)), len - j + 1);
                     i += count;
                 }
                 else
@@ -188,8 +188,8 @@ char *perform_string_expansion(t_string string)
                 int count = parse_key_count(string.s + i);
                 if (count)
                 {
-                    if (get_env_value(shell.env_list, ft_substr(string.s + i, 0, count)))
-                        j += ft_strlcpy(res + j, get_env_value(shell.env_list, ft_substr(string.s + i, 0, count)), len - j + 1);
+                    if (get_env_value(ft_substr(string.s + i, 0, count)))
+                        j += ft_strlcpy(res + j, get_env_value(ft_substr(string.s + i, 0, count)), len - j + 1);
                     i += count;
                 }
                 else

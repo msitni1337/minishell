@@ -128,35 +128,64 @@ int is_builtin(const char *s)
     return !ft_strcmp(s, "cd") || !ft_strcmp(s, "echo") || !ft_strcmp(s, "pwd") || !ft_strcmp(s, "export") || !ft_strcmp(s, "unset") || !ft_strcmp(s, "env") || !ft_strcmp(s, "exit");
 }
 
-char *get_binary_path(char *cmd)
+char *check_bin_path(t_string path, char *cmd)
 {
     char *tmp;
-    char **paths;
+    char *fullpath;
+
+    if (path.count == 0)
+    {
+        fullpath = cmd;
+    }
+    else
+    {
+        fullpath = ft_substr(path.s, 0, path.count);
+        tmp = ft_strjoin(fullpath, "/");
+        free(fullpath);
+        fullpath = ft_strjoin(tmp, cmd);
+        free(tmp);
+        if (access(fullpath, X_OK))
+        {
+            free(fullpath);
+            return NULL;
+        }
+    }
+    return fullpath;
+}
+
+char *get_binary_path(char *cmd)
+{
+    t_string tmp;
+    char *full_path;
+    char *raw_path;
     int i;
 
-    paths = ft_split(get_env_value(shell.env_list, "PATH"), ':');
+    raw_path = get_env_value("PATH");
     i = 0;
-    while (paths && paths[i])
+    tmp.s = raw_path;
+    tmp.count = 0;
+    while (raw_path)
     {
-        tmp = paths[i];
-        paths[i] = ft_strjoin(tmp, "/");
-        // free(tmp);
-        i++;
-    }
-    i = 0;
-    while (paths && paths[i])
-    {
-        tmp = ft_strjoin(paths[i], cmd);
-        if (!access(tmp, X_OK))
+        if (raw_path[i] == ':')
         {
-            // free(tmp);
-            // free_arr(paths);
-            return tmp;
+            full_path = check_bin_path(tmp, cmd);
+            if (full_path)
+                return full_path;
+            i++;
+            tmp.s = raw_path + i;
+            tmp.count = 0;
+            continue;
         }
-        // free(tmp);
+        if (raw_path[i] == 0)
+        {
+            full_path = check_bin_path(tmp, cmd);
+            if (full_path)
+                return full_path;
+            break;
+        }
+        tmp.count++;
         i++;
     }
-    free_arr(paths);
     return NULL;
 }
 

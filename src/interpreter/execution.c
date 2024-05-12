@@ -130,11 +130,12 @@ int exec_bin(t_cmd cmd, int wait)
             close(cmd.read_pipe);
 
         // todo need to emplement exported envp to pass it to binary..
-
-        execve(cmd.bin_path, cmd.argv, shell.exported_env);
+        char**envp = get_env_arr();
+        // printf("cmd is = %s\n", cmd.bin_path);
+        execve(cmd.bin_path, cmd.argv, envp);
+        exit(errno);
         // printf("%s : execve failed\n", cmd.bin_path);
         // perror(cmd.argv[0]);
-        exit(0);
     }
     return 0;
 }
