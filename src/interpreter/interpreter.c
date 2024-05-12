@@ -134,7 +134,7 @@ char *get_binary_path(char *cmd)
     char **paths;
     int i;
 
-    paths = ft_split(get_env_value(shell.env_list, "PATH="), ':');
+    paths = ft_split(get_env_value(shell.env_list, "PATH"), ':');
     i = 0;
     while (paths && paths[i])
     {
@@ -296,5 +296,7 @@ int interpret_root(t_node *root)
         close(cmd.infile);
     if (cmd.outfile != STDOUT_FILENO)
         close(cmd.outfile);
-    return wait_all_childs();
+    if (ret_value == 0)
+        return wait_all_childs();
+    return ret_value;
 }

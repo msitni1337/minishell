@@ -22,6 +22,26 @@ bool contains_chars(t_string string, char *charset)
     return FALSE;
 }
 
+#define eq(c1, c2) ((c1) == (c2))
+
+size_t parse_key_count(const char *s)
+{
+    size_t count;
+
+    count = 0;
+    if (ft_isdigit(s[count]))
+        return ++count;
+    else if (eq(s[count], '$') || eq(s[count], '?') || eq(s[count], '*'))
+        return ++count;
+    while (s[count])
+    {
+        if (!ft_isalnum(s[count]) && !eq(s[count], '_'))
+            break;
+        count++;
+    }
+    return count;
+}
+
 size_t get_len(t_string string)
 {
     t_expansion_state state;
@@ -50,13 +70,12 @@ size_t get_len(t_string string)
             else if (string.s[i] == '$')
             {
                 i++;
-                int count = 0;
-                while (string.s[i] && string.s[i] != '\'' && string.s[i] != '"')
+                int count = parse_key_count(string.s + i);
+                if (count)
                 {
-                    i++;
-                    count++;
+                    len += ft_strlen(get_env_value(shell.env_list, ft_substr(string.s + i, 0, count)));
+                    i += count;
                 }
-                len += ft_strlen(get_env_value(shell.env_list, ft_substr(string.s + i - count, 0, count)));
                 continue;
             }
             i++;
@@ -73,19 +92,18 @@ size_t get_len(t_string string)
             else if (string.s[i] == '$')
             {
                 i++;
-                int count = 0;
-                while (string.s[i] && !ft_isspace(string.s[i]) && string.s[i] != '\'' && string.s[i] != '"')
+                int count = parse_key_count(string.s + i);
+                if (count)
                 {
-                    i++;
-                    count++;
+                    len += ft_strlen(get_env_value(shell.env_list, ft_substr(string.s + i, 0, count)));
+                    i += count;
                 }
-                len += ft_strlen(get_env_value(shell.env_list, ft_substr(string.s + i - count, 0, count)));
                 continue;
             }
             i++;
             len++;
         }
-        else
+        else if (state == SQUOTE_STATE)
         {
             if (string.s[i] == '\'')
             {
@@ -96,13 +114,14 @@ size_t get_len(t_string string)
             i++;
             len++;
         }
+        else
+            assert(!"IMPOSSIBLE");
     }
     return len;
 }
 
 char *perform_string_expansion(t_string string)
 {
-    printf("expanding: [%.*s]\n", (int)(string.count), string.s);
     t_expansion_state state;
     char *res;
     size_t len;
@@ -134,14 +153,18 @@ char *perform_string_expansion(t_string string)
             else if (string.s[i] == '$')
             {
                 i++;
-                int count = 0;
-                while (string.s[i] && string.s[i] != '\'' && string.s[i] != '"')
+                int count = parse_key_count(string.s + i);
+                if (count)
                 {
-                    i++;
-                    count++;
+                    if (get_env_value(shell.env_list, ft_substr(string.s + i, 0, count)))
+                        j = ft_strlcpy(res + j, get_env_value(shell.env_list, ft_substr(string.s + i, 0, count)), len - j + 1);
+                    i += count;
                 }
-                if (get_env_value(shell.env_list, ft_substr(string.s + i - count, 0, count)))
-                    j = ft_strlcpy(res + j, get_env_value(shell.env_list, ft_substr(string.s + i - count, 0, count)), len - j + 1);
+                else
+                {
+                    res[j] = '$';
+                    j++;
+                }
                 continue;
             }
             else
@@ -162,14 +185,18 @@ char *perform_string_expansion(t_string string)
             else if (string.s[i] == '$')
             {
                 i++;
-                int count = 0;
-                while (string.s[i] && !ft_isspace(string.s[i]) && string.s[i] != '\'' && string.s[i] != '"')
+                int count = parse_key_count(string.s + i);
+                if (count)
                 {
-                    i++;
-                    count++;
+                    if (get_env_value(shell.env_list, ft_substr(string.s + i, 0, count)))
+                        j = ft_strlcpy(res + j, get_env_value(shell.env_list, ft_substr(string.s + i, 0, count)), len - j + 1);
+                    i += count;
                 }
-                if (get_env_value(shell.env_list, ft_substr(string.s + i - count, 0, count)))
-                    j = ft_strlcpy(res + j, get_env_value(shell.env_list, ft_substr(string.s + i - count, 0, count)), len - j + 1);
+                else
+                {
+                    res[j] = '$';
+                    j++;
+                }
                 continue;
             }
             else
@@ -179,7 +206,7 @@ char *perform_string_expansion(t_string string)
                 j++;
             }
         }
-        else
+        else if (state == SQUOTE_STATE)
         {
             if (string.s[i] == '\'')
             {
@@ -194,9 +221,10 @@ char *perform_string_expansion(t_string string)
                 j++;
             }
         }
+        else
+            assert(!"IMPOSSIBLE");
     }
     res[j] = 0;
-    printf("result: [%s]\n", res);
     return res;
 }
 

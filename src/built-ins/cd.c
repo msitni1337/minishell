@@ -33,8 +33,8 @@ int go_to_home()
 		perror("minishell: cd");
 		exit(EXIT_FAILURE);
 	}
-	replace_env("OLDPWD", old_path);
-	replace_env("PWD", ft_strdup(new_path));
+	add_or_replace_env("OLDPWD", old_path);
+	add_or_replace_env("PWD", ft_strdup(new_path));
 	return 0;
 }
 
@@ -48,7 +48,7 @@ int return_to_oldpwd(t_cmd *cmd)
 
 	if (getcwd(buff, sizeof(buff)) != NULL)
 		old_path = ft_strdup(buff);
-	new_path = get_env_value(shell.env_list, "OLDPWD=");
+	new_path = get_env_value(shell.env_list, "OLDPWD");
 	if (new_path == NULL)
 	{
 		write(STDERR_FILENO, "cd: OLDPWD not set\n", 19);
@@ -62,8 +62,8 @@ int return_to_oldpwd(t_cmd *cmd)
 
 	ft_putendl_fd(new_path, cmd->outfile);
 
-	replace_env("PWD", ft_strdup(new_path));
-	replace_env("OLDPWD", old_path);
+	add_or_replace_env("PWD", ft_strdup(new_path));
+	add_or_replace_env("OLDPWD", old_path);
 	return 0;
 }
 
@@ -90,9 +90,9 @@ int go_to_path(char *path)
 			perror("minishell: cd");
 			exit(EXIT_FAILURE); // keep exiting now untill gexit is implemented
 		}
-		replace_env("OLDPWD", old_path);
+		add_or_replace_env("OLDPWD", old_path);
 		getcwd(buff, sizeof(buff));
-		replace_env("PWD", ft_strdup(buff));
+		add_or_replace_env("PWD", ft_strdup(buff));
 	}
 	else
 	{

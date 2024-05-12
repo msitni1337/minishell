@@ -101,7 +101,6 @@ int exec_bin(t_cmd cmd, int wait)
 {
     int pid;
 
-    replace_env("_", cmd.argv[0]);
     pid = fork();
     if (pid == -1)
     {
@@ -148,7 +147,6 @@ int execute_cmd(t_cmd cmd, int wait)
         return exec_bin(cmd, wait);
     else if (cmd.type == CMD_BUILTIN)
     {
-        replace_env("_", cmd.argv[0]);
         if (wait == TRUE)
             return exec_builtin(cmd);
         else

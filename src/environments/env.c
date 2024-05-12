@@ -12,17 +12,6 @@
 
 #include "env.h"
 
-void print_list(t_lstenv *head)
-{
-	t_lstenv *current;
-
-	current = head;
-	while (current)
-	{
-		printf("%s\n", current->data);
-		current = current->next;
-	}
-}
 void add_env_end(t_lstenv **head, char *data)
 {
 	t_lstenv *current;
@@ -162,7 +151,7 @@ char *construct_env(char *key, char *value)
 	return tmp;
 }
 
-void replace_env(char *key, char *value)
+void add_or_replace_env(char *key, char *value)
 {
 	t_lstenv *node;
 	char *tmp;
@@ -198,7 +187,7 @@ void increment_shlvl()
 		key_end = ft_strchr(node->data, '=');
 		shlvl = ft_atoi(key_end + 1);
 		shlvl++;
-		replace_env("SHLVL", ft_itoa(shlvl));
+		add_or_replace_env("SHLVL", ft_itoa(shlvl));
 	}
 }
 
@@ -278,13 +267,20 @@ char *get_env_value(t_lstenv *lstenv, char *data)
 	t_lstenv *current;
 	char *value;
 
+	if (ft_strcmp(data, "?") == 0)
+		return ft_itoa(shell.last_exit_value);
+	if (ft_strcmp(data, "$") == 0)
+		return ft_itoa(getpid());
 	current = lstenv;
 	while (current)
 	{
 		if (ft_strncmp(current->data, data, ft_strlen(data)) == 0)
 		{
-			value = ft_strchr(current->data, '=') + 1;
-			return (value);
+			if (current->data[ft_strlen(data)] == '=')
+			{
+				value = ft_strchr(current->data, '=') + 1;
+				return (value);
+			}
 		}
 		current = current->next;
 	}

@@ -17,8 +17,6 @@ int get_string_delim(t_lexer *lexer, t_string *s, const char delim)
     int is_closed;
 
     is_closed = FALSE;
-    lexer->pos++;
-    s->count++;
     while (lexer->pos < lexer->count && !is_closed)
     {
         if (lexer->line[lexer->pos] == delim)
