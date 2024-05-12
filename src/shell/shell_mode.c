@@ -2,9 +2,6 @@
 
 void print_tree(t_node *root);
 
-// global variable:
-t_shell shell;
-
 void start_shell()
 {
     t_node *cmd_root;

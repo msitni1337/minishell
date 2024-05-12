@@ -13,3 +13,6 @@
         - string = hello"world my pwd is $PWD"and'I am inside of $PWD'right.
         - after expansion it will return the following:
         - helloworld my pwd is /home/devandI am inside of $PWDright.
+
+
+## ADD working directory to PATH binary checking in case of an empty colon like "/usr/bin:" or "/usr/bin::/usr/sbin" ...

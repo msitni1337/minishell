@@ -17,6 +17,7 @@ typedef struct s_shell
 // global variable:
 extern t_shell shell;
 
+void execute_file();
 void start_shell();
 void init_shell(const char **envp);
 void setup_signal_handlers();

@@ -157,7 +157,7 @@ char *perform_string_expansion(t_string string)
                 if (count)
                 {
                     if (get_env_value(shell.env_list, ft_substr(string.s + i, 0, count)))
-                        j = ft_strlcpy(res + j, get_env_value(shell.env_list, ft_substr(string.s + i, 0, count)), len - j + 1);
+                        j += ft_strlcpy(res + j, get_env_value(shell.env_list, ft_substr(string.s + i, 0, count)), len - j + 1);
                     i += count;
                 }
                 else
@@ -189,7 +189,7 @@ char *perform_string_expansion(t_string string)
                 if (count)
                 {
                     if (get_env_value(shell.env_list, ft_substr(string.s + i, 0, count)))
-                        j = ft_strlcpy(res + j, get_env_value(shell.env_list, ft_substr(string.s + i, 0, count)), len - j + 1);
+                        j += ft_strlcpy(res + j, get_env_value(shell.env_list, ft_substr(string.s + i, 0, count)), len - j + 1);
                     i += count;
                 }
                 else

@@ -14,17 +14,19 @@ int get_string_whitespace(t_lexer *lexer, t_string *s)
 
 int get_string_delim(t_lexer *lexer, t_string *s, const char delim)
 {
-    int is_closed;
+    int num_of_delim;
 
-    is_closed = FALSE;
-    while (lexer->pos < lexer->count && !is_closed)
+    num_of_delim = 0;
+    while (lexer->pos < lexer->count && num_of_delim < 2)
     {
         if (lexer->line[lexer->pos] == delim)
-            is_closed = TRUE;
+            num_of_delim++;
         s->count++;
         lexer->pos++;
     }
-    return is_closed;
+    if (num_of_delim == 2)
+        return TRUE;
+    return FALSE;
 }
 
 int get_string(t_lexer *lexer, t_string *s)
@@ -37,7 +39,7 @@ int get_string(t_lexer *lexer, t_string *s)
         is_closed = get_string_delim(lexer, s, SQUOTE);
     else
         is_closed = get_string_whitespace(lexer, s);
-    while (is_closed && s->s[s->count] && !ft_isspace(s->s[s->count]) && !is_special(s->s[s->count]))
+    while (is_closed == TRUE && s->s[s->count] && !ft_isspace(s->s[s->count]) && !is_special(s->s[s->count]))
     {
         if (s->s[s->count] == DQUOTE)
             is_closed = get_string_delim(lexer, s, DQUOTE);
@@ -53,9 +55,10 @@ t_node *add_str_node(t_node *root, t_lexer *lexer)
 {
     t_node *node;
 
+    lexer->pos--;
     node = create_node(NODE_STRING);
-    node->token_str.count = 1;
-    node->token_str.s = &(lexer->line[lexer->pos - 1]);
+    node->token_str.count = 0;
+    node->token_str.s = lexer->line + lexer->pos;
     if (get_string(lexer, &(node->token_str)) == FALSE)
         return NULL;
     append_child(root, node);

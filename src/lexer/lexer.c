@@ -154,9 +154,9 @@ t_node *parse_line(char *line)
     lexer = new_lexer(line);
     token = get_next_token(&lexer, TRUE);
     // To crash program if invalid token.. just fot testing purposes
-    assert(IS_CMD_TOKEN(token) || token.type == TOKEN_OPEN_PAREN);
     if (token.type == TOKEN_EOF)
         return NULL;
+    assert(IS_CMD_TOKEN(token) || token.type == TOKEN_OPEN_PAREN);
     // roots = init_da(sizeof(t_node *), create_node(NODE_CMD));
     root = NULL;
     while (token.type != TOKEN_EOF)

@@ -200,7 +200,8 @@ void take_env(const char **envp)
 	i = 0;
 	while (envp && envp[i])
 	{
-		add_env_end(&result, ft_strdup(envp[i]));
+		if (ft_strncmp(envp[i], "_=", 2))
+			add_env_end(&result, ft_strdup(envp[i]));
 		i++;
 	}
 	shell.env_list = result;

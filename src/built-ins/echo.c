@@ -45,11 +45,11 @@ int	check_echo_options(t_cmd cmd)
 	{
 		write(cmd.outfile, cmd.argv[i], ft_strlen(cmd.argv[i]));
 		if (cmd.argv[i + 1])
-			write(1, " ", 1);
+			write(cmd.outfile, " ", 1);
 		i++;
 	}
 	if (print_nl == TRUE)
-		write(1, "\n", 1);
+		write(cmd.outfile, "\n", 1);
 	return errno;
 }
 

@@ -25,7 +25,7 @@ typedef struct s_string
 
 typedef struct s_lstenv
 {
-	bool is_exported;
+	bool is_set;
 	char *data;
 	struct s_lstenv *next;
 } t_lstenv;

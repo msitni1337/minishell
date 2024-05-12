@@ -22,15 +22,12 @@ int print_exported_env(t_cmd cmd)
     while (shell.exported_env && shell.exported_env[i])
     {
         tmp = shell.exported_env[i];
-        if (ft_strncmp(tmp, "_=", 2))
-        {
-            ft_putstr_fd("declare -x ", cmd.outfile);
-            write(cmd.outfile, tmp, ft_strchr(tmp, '=') + 1 - tmp);
-            ft_putchar_fd('"', cmd.outfile);
-            ft_putstr_fd(ft_strchr(tmp, '=') + 1, cmd.outfile);
-            ft_putchar_fd('"', cmd.outfile);
-            write(cmd.outfile, "\n", 1);
-        }
+        ft_putstr_fd("declare -x ", cmd.outfile);
+        write(cmd.outfile, tmp, ft_strchr(tmp, '=') + 1 - tmp);
+        ft_putchar_fd('"', cmd.outfile);
+        ft_putstr_fd(ft_strchr(tmp, '=') + 1, cmd.outfile);
+        ft_putchar_fd('"', cmd.outfile);
+        write(cmd.outfile, "\n", 1);
         i++;
     }
     return 0;

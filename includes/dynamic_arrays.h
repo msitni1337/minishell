@@ -1,6 +1,6 @@
 #ifndef DYNAMIC_ARRAYS_H
 #define DYNAMIC_ARRAYS_H
-#define DA_DEFAULT_CAPACITY 24
+#define DA_DEFAULT_CAPACITY 5
 
 #define ARR_AT(arr, type, i) (((type)(arr).data)[(i)])
 #define ARR_LAST(arr, type) ((type)(arr).data)[(arr).count - 1]
