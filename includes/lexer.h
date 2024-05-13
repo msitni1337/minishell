@@ -67,6 +67,7 @@ typedef struct s_lexer
     const char *line;
     size_t count;
     size_t pos;
+    bool has_here_doc;
 } t_lexer;
 
 // Tree Builder:
