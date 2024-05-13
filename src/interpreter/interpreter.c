@@ -71,6 +71,7 @@ int open_file_as(char *fname, t_cmd *cmd, t_node_type type)
     return 0;
 }
 
+
 // todo return all fds.
 int open_files(t_node *cmd_node, t_cmd *cmd)
 {
@@ -85,7 +86,7 @@ int open_files(t_node *cmd_node, t_cmd *cmd)
     node = get_next_node_by_type(cmd_node->children, NODE_REDIRECT_IN | NODE_REDIRECT_OUT | NODE_APPEND | NODE_HERE_DOC);
     while (node)
     {
-        char *name = expand_string(node->children->token_str);
+        char *name = expand_string(node->children->token_str, TRUE);
         ret_value = open_file_as(name, cmd, node->type);
         if (ret_value)
             return ret_value;
@@ -122,7 +123,7 @@ void get_argv(t_node *cmd_node, t_cmd *cmd)
     tmp = get_next_node_by_type(cmd_node->children, NODE_STRING);
     while (tmp)
     {
-        cmd->argv[i] = expand_string(tmp->token_str);
+        cmd->argv[i] = expand_string(tmp->token_str, TRUE);
         i++;
         tmp = get_next_node_by_type(tmp->next, NODE_STRING);
     }

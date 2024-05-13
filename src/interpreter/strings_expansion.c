@@ -42,7 +42,7 @@ size_t parse_key_count(const char *s)
     return count;
 }
 
-size_t get_len(t_string string)
+size_t get_len(t_string string, int expand_vars)
 {
     t_expansion_state state;
     size_t len;
@@ -67,7 +67,7 @@ size_t get_len(t_string string)
                 i++;
                 continue;
             }
-            else if (string.s[i] == '$')
+            else if (expand_vars && string.s[i] == '$')
             {
                 i++;
                 int count = parse_key_count(string.s + i);
@@ -89,7 +89,7 @@ size_t get_len(t_string string)
                 i++;
                 continue;
             }
-            else if (string.s[i] == '$')
+            else if (expand_vars && string.s[i] == '$')
             {
                 i++;
                 int count = parse_key_count(string.s + i);
@@ -120,7 +120,7 @@ size_t get_len(t_string string)
     return len;
 }
 
-char *perform_string_expansion(t_string string)
+char *perform_string_expansion(t_string string, int expand_vars)
 {
     t_expansion_state state;
     char *res;
@@ -128,7 +128,7 @@ char *perform_string_expansion(t_string string)
     size_t i;
     size_t j;
 
-    len = get_len(string);
+    len = get_len(string, expand_vars);
     res = malloc(len + 1);
     state = NORMAL;
     i = 0;
@@ -150,7 +150,7 @@ char *perform_string_expansion(t_string string)
                 i++;
                 continue;
             }
-            else if (string.s[i] == '$')
+            else if (expand_vars && string.s[i] == '$')
             {
                 i++;
                 int count = parse_key_count(string.s + i);
@@ -182,7 +182,7 @@ char *perform_string_expansion(t_string string)
                 i++;
                 continue;
             }
-            else if (string.s[i] == '$')
+            else if (expand_vars && string.s[i] == '$')
             {
                 i++;
                 int count = parse_key_count(string.s + i);
@@ -228,10 +228,10 @@ char *perform_string_expansion(t_string string)
     return res;
 }
 
-char *expand_string(t_string string)
+char *expand_string(t_string string, int expand_vars)
 {
     if (contains_chars(string, "'\"$") == TRUE)
-        return perform_string_expansion(string);
+        return perform_string_expansion(string, expand_vars);
     else
         return ft_substr(string.s, 0, string.count);
 }

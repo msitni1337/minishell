@@ -90,5 +90,6 @@ t_node *parse_line(char *line);
 // utils:
 void trim_spaces(t_lexer *lexer);
 int is_special(char c);
+char* expand_string(t_string string, int expand_vars);
 
 #endif

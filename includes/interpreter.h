@@ -27,6 +27,6 @@ int wait_all_childs();
 //  utils:
 t_node *get_next_node_by_type(t_node *root, t_node_type type);
 
-char *expand_string(t_string string);
+char *expand_string(t_string string, int expand_vars);
 
 #endif
