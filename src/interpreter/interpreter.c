@@ -28,14 +28,18 @@ int open_file_as(char *fname, t_cmd *cmd, t_node_type type)
     int p_flags;
     int m_flags;
 
-    assert(type != NODE_HERE_DOC);
-
     if (type == NODE_REDIRECT_IN)
     {
         if (cmd->infile != STDIN_FILENO)
             close(cmd->infile);
         p_flags = O_RDONLY;
         m_flags = 0;
+    }
+    if (type == NODE_HERE_DOC)
+    {
+        if (cmd->infile != STDIN_FILENO)
+            close(cmd->infile);
+        return 0;
     }
 
     if (type == NODE_REDIRECT_OUT)
@@ -60,7 +64,7 @@ int open_file_as(char *fname, t_cmd *cmd, t_node_type type)
         perror(fname);
         return errno;
     }
-    if (type == NODE_REDIRECT_IN || type == NODE_HERE_DOC)
+    if (type == NODE_REDIRECT_IN)
         cmd->infile = fd;
     if (type == NODE_REDIRECT_OUT || type == NODE_APPEND)
         cmd->outfile = fd;
@@ -82,10 +86,11 @@ int open_files(t_node *cmd_node, t_cmd *cmd)
     while (node)
     {
         char *name = expand_string(node->children->token_str);
-        assert(node->type != NODE_HERE_DOC);
         ret_value = open_file_as(name, cmd, node->type);
         if (ret_value)
             return ret_value;
+        if (node->type == NODE_HERE_DOC)
+            cmd->infile = node->children->here_doc_fd;
         node = get_next_node_by_type(node->next, NODE_REDIRECT_IN | NODE_REDIRECT_OUT | NODE_APPEND | NODE_HERE_DOC);
     }
     return 0;

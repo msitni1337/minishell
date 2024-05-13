@@ -75,6 +75,38 @@ t_token parse_subshell(t_node *root, t_lexer *lexer)
     return token;
 }
 
+void get_here_doc(t_node *node)
+{
+    int pip[2];
+    char *line;
+    char *delim;
+
+    node->here_doc_fd = -1;
+    delim = ft_substr(node->token_str.s, 0, node->token_str.count);
+    if (pipe(pip) == -1)
+    {
+        perror("pipe");
+        return;
+    }
+    line = readline(">");
+    node->here_doc_fd = pip[0];
+    while (line)
+    {
+        if (ft_strcmp(line, delim) == 0)
+        {
+            close(pip[1]);
+            free(line);
+            return;
+        }
+        ft_putendl_fd(line, pip[1]);
+        free(line);
+        line = readline(">");
+    }
+    // error -> bash: warning: here-document at line 13 delimited by end-of-file (wanted `hh')
+    close(pip[1]);
+    perror(delim);
+}
+
 void add_redirect_node(t_lexer *lexer, t_node *curr_cmd, t_node_type type)
 {
     t_token token;
@@ -85,8 +117,13 @@ void add_redirect_node(t_lexer *lexer, t_node *curr_cmd, t_node_type type)
     token = get_next_token(lexer, TRUE);
     if (token.type == TOKEN_STRING)
     {
-        if (add_str_node(red_node, lexer) == NULL)
+        t_node *node = add_str_node(red_node, lexer);
+        if (node == NULL)
             assert(!"throw syntax error");
+        if (type == NODE_HERE_DOC)
+        {
+            get_here_doc(node);
+        }
     }
     /*
 else if (type == NODE_REDIRECT_IN && token.type == TOKEN_OPEN_PAREN
@@ -115,7 +152,7 @@ t_token fill_cmd(t_node **root, t_token token, t_lexer *lexer, int as_child)
             if (add_str_node(curr_cmd, lexer) == NULL)
                 assert(!"THROW SYNTAX ERROR"); // Error Unclosed Quote..
             if (get_node_by_type(curr_cmd, NODE_SUBSHELL))
-                assert(!"THROW SYNTAX ERROR"); // bash: syntax error near unexpected token `cat' -> (ls) cat       
+                assert(!"THROW SYNTAX ERROR"); // bash: syntax error near unexpected token `cat' -> (ls) cat
         }
         else if (token.type == TOKEN_REDIRECT_IN)
             add_redirect_node(lexer, curr_cmd, NODE_REDIRECT_IN);

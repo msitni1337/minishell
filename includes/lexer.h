@@ -60,6 +60,7 @@ typedef struct s_node
     size_t list_count;
     struct s_node *children;
     size_t childs_count;
+    int here_doc_fd;
 } t_node;
 
 typedef struct s_lexer

@@ -44,6 +44,15 @@ void execute_file()
 
     line = read_entire_stdin(0);
     cmd_root = parse_line(line);
-    shell.last_exit_value = interpret_root(cmd_root);
+    if (cmd_root)
+    {
+        shell.last_exit_value = interpret_root(cmd_root);
+    }
+    else
+    {
+        close_fds();
+        shell.last_exit_value = 2;
+    }
+
     free(line);
 }

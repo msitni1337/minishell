@@ -12,6 +12,9 @@
 #include <assert.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "libft.h"
@@ -37,5 +40,6 @@ int ft_isspace(char c);
 
 // freeing
 void free_arr(char **arr);
+void close_fds();
 
 #endif

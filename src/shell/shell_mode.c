@@ -52,7 +52,12 @@ void start_shell()
 
         if (cmd_root)
             shell.last_exit_value = interpret_root(cmd_root);
-
+        else
+        {
+            close_fds();
+            shell.last_exit_value = 2;
+        }
+        
         free(line);
         prompt = get_prompt();
         line = readline(prompt);
