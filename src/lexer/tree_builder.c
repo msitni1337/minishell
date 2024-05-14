@@ -1,6 +1,6 @@
 #include "lexer.h"
 
-t_node *create_node(t_node_type type)
+t_node *create_node(int type)
 {
     t_node *res;
 

@@ -42,22 +42,22 @@ void start_shell()
     while (line != NULL)
     {
         add_history(line);
-        cmd_root = parse_line(line);
 
-        /*
-                if (cmd_root)
-                    print_tree(cmd_root);
-                readline("PRESS ENTER TO EXECUTE TREE");
-        */
-
-        if (cmd_root)
+        if (parse_line(line, &cmd_root) != NULL)
+        {
+            /*
+            if (cmd_root)
+                print_tree(cmd_root);
+            readline("PRESS ENTER TO EXECUTE TREE");
+            */
             shell.last_exit_value = interpret_root(cmd_root);
+        }
         else
         {
             close_fds();
             shell.last_exit_value = 2;
         }
-        
+
         free(line);
         prompt = get_prompt();
         line = readline(prompt);

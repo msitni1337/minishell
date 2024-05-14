@@ -43,8 +43,7 @@ void execute_file()
     char *line;
 
     line = read_entire_stdin(0);
-    cmd_root = parse_line(line);
-    if (cmd_root)
+    if (parse_line(line, &cmd_root) != NULL)
     {
         shell.last_exit_value = interpret_root(cmd_root);
     }

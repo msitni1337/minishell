@@ -71,7 +71,6 @@ int open_file_as(char *fname, t_cmd *cmd, t_node_type type)
     return 0;
 }
 
-
 // todo return all fds.
 int open_files(t_node *cmd_node, t_cmd *cmd)
 {
@@ -136,12 +135,13 @@ int is_builtin(const char *s)
 
 char *check_bin_path(t_string path, char *cmd)
 {
+    struct stat fstat;
     char *tmp;
     char *fullpath;
 
     if (path.count == 0)
     {
-        fullpath = cmd;
+        fullpath = ft_strdup(cmd);
     }
     else
     {
@@ -150,13 +150,13 @@ char *check_bin_path(t_string path, char *cmd)
         free(fullpath);
         fullpath = ft_strjoin(tmp, cmd);
         free(tmp);
-        if (access(fullpath, X_OK))
-        {
-            free(fullpath);
-            return NULL;
-        }
     }
-    return fullpath;
+    if (stat(fullpath, &fstat) == 0 && fstat.st_mode & S_IFREG && fstat.st_mode & S_IXUSR)
+    {
+        return fullpath;
+    }
+    free(fullpath);
+    return NULL;
 }
 
 char *get_binary_path(char *cmd)

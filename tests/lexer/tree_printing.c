@@ -4,8 +4,6 @@ char *get_token_type(t_token_type type)
 {
     switch (type)
     {
-    case TOKEN_INVALID:
-        return "TOKEN_INVALID";
     case TOKEN_EOF:
         return "TOKEN_EOF";
     case TOKEN_STRING:
