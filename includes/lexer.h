@@ -1,6 +1,7 @@
 #ifndef LEXER_H
 #define LEXER_H
 #include "shared.h"
+#include "shell.h"
 
 #define SYN_ERR "Millishell: syntax error."
 #define SYN_QUOTE "Millishell: unclosed quote."

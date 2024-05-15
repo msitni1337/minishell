@@ -29,10 +29,10 @@ t_token *parse_subshell(t_node *root, t_lexer *lexer, t_token *token)
     return token;
 }
 
-void get_here_doc(t_node *node)
+int get_here_doc(t_node *node)
 {
     int pip[2];
-    char *line;
+    int line;
     char *delim;
 
     node->here_doc_fd = -1;
@@ -40,25 +40,35 @@ void get_here_doc(t_node *node)
     if (pipe(pip) == -1)
     {
         perror("pipe");
-        return;
+        exit(1);
     }
-    line = readline(">");
+    char buff[1024];
+    int fd = dup(0);
+    line = read(fd, buff, 100);
     node->here_doc_fd = pip[0];
-    while (line)
+    while (line > 0 && shell.interrupt == FALSE)
     {
-        if (ft_strcmp(line, delim) == 0)
+        buff[line] = 0;
+        if (ft_strcmp(buff, delim) == 0)
         {
             close(pip[1]);
-            free(line);
-            return;
+            // free(line);
+            return 0;
         }
-        ft_putendl_fd(line, pip[1]);
-        free(line);
-        line = readline(">");
+        ft_putendl_fd(buff, pip[1]);
+        // free(line);
+        line = read(fd, buff, 100);
+    }
+    close(fd);
+    if (shell.interrupt == TRUE)
+    {
+        shell.interrupt = FALSE;
+        return 1;
     }
     // error -> bash: warning: here-document at line 13 delimited by end-of-file (wanted `hh')
     close(pip[1]);
-    perror(delim);
+    syntax_error("Millishell: expacting delim for here_doc.");
+    return 0;
 }
 
 int add_redirect_node(t_lexer *lexer, t_node *curr_cmd, int type)
@@ -77,10 +87,8 @@ int add_redirect_node(t_lexer *lexer, t_node *curr_cmd, int type)
             syntax_error(SYN_QUOTE);
             return 1;
         }
-        if (type == NODE_HERE_DOC)
-        {
-            get_here_doc(node);
-        }
+        if (type == NODE_HERE_DOC && get_here_doc(node))
+            return 1;
     }
     else
     {

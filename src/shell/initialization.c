@@ -1,7 +1,7 @@
 #include "shell.h"
 #include "env.h"
 
-void init_shell(const char**envp)
+void init_shell(const char **envp)
 {
     setup_signal_handlers();
     shell.last_exit_value = 0;

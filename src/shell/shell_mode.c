@@ -36,11 +36,13 @@ void start_shell()
     char *line;
     char *prompt;
 
+    shell.interrupt = FALSE;
     prompt = get_prompt();
     line = readline(prompt);
     free(prompt);
     while (line != NULL)
     {
+        printf("here\n");
         add_history(line);
 
         if (parse_line(line, &cmd_root) != NULL)
@@ -59,6 +61,7 @@ void start_shell()
         }
 
         free(line);
+        shell.interrupt = FALSE;
         prompt = get_prompt();
         line = readline(prompt);
         free(prompt);

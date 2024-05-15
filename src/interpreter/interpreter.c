@@ -265,12 +265,13 @@ int interpret_root(t_node *root)
     t_node *node;
 
     node = root;
+    shell.interrupt = FALSE;
     shell.childs_pids.count = 0;
     cmd.infile = STDIN_FILENO;
     cmd.outfile = STDOUT_FILENO;
     cmd.read_pipe = -1;
     ret_value = 0;
-    while (node)
+    while (node && shell.interrupt == FALSE)
     {
         ret_value = parse_cmd(node, &cmd);
         assert(cmd.infile != -1 && cmd.outfile != -1);
@@ -331,7 +332,13 @@ int interpret_root(t_node *root)
         close(cmd.infile);
     if (cmd.outfile != STDOUT_FILENO)
         close(cmd.outfile);
-    if (ret_value == 0)
+    if (ret_value == 0 && shell.interrupt == FALSE)
         return wait_all_childs();
+    shell.childs_pids.count = 0;
+    if (shell.interrupt == TRUE)
+    {
+        shell.interrupt = FALSE;
+        return 130;
+    }
     return ret_value;
 }

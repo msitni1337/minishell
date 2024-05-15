@@ -15,6 +15,12 @@ int wait_all_childs()
         WEXITSTATUS(ret_value);
         i++;
     }
+    shell.childs_pids.count = 0;
+    if (shell.interrupt == TRUE)
+    {
+        shell.interrupt = FALSE;
+        return 130;
+    }
     return ret_value;
 }
 
@@ -73,6 +79,7 @@ int exec_builtin(t_cmd cmd)
         assert(!"NOT IMPLEMENTED");
     else if (!ft_strcmp(cmd.argv[0], "exit"))
         assert(!"NOT IMPLEMENTED");
+    wait_all_childs();
     return ret_value;
 }
 
@@ -87,7 +94,15 @@ int exec_builtin_no_wait(t_cmd cmd)
         perror(cmd.argv[0]);
         exit(errno);
     }
-    if (pid == 0)
+    if (pid)
+    {
+        add_to_arr(&(shell.childs_pids), &pid);
+        if (cmd.infile != STDIN_FILENO)
+            close(cmd.infile);
+        if (cmd.outfile != STDOUT_FILENO)
+            close(cmd.outfile);
+    }
+    else
     {
         if (cmd.read_pipe != -1)
             close(cmd.read_pipe);
@@ -130,7 +145,7 @@ int exec_bin(t_cmd cmd, int wait)
             close(cmd.read_pipe);
 
         // todo need to emplement exported envp to pass it to binary..
-        char**envp = get_env_arr();
+        char **envp = get_env_arr();
         // printf("cmd is = %s\n", cmd.bin_path);
         execve(cmd.bin_path, cmd.argv, envp);
         exit(errno);

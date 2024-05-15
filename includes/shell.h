@@ -10,6 +10,7 @@ typedef struct s_shell
 	t_lstenv *env_list;
 	char *working_dir;
 	int last_exit_value;
+	int interrupt;
     t_darr childs_pids;
 } t_shell;
 
