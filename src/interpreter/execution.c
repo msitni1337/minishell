@@ -65,6 +65,7 @@ int exec_builtin(t_cmd cmd)
 {
     int ret_value;
 
+    ret_value = 0;
     if (!ft_strcmp(cmd.argv[0], "cd"))
         ret_value = change_directory(cmd);
     else if (!ft_strcmp(cmd.argv[0], "echo"))

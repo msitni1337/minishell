@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmellal <nmellal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/21 17:59:15 by nmellal           #+#    #+#             */
-/*   Updated: 2024/04/23 16:58:28 by nmellal          ###   ########.fr       */
+/*   Updated: 2024/05/15 20:10:35 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ int change_directory(t_cmd cmd)
 		ret_value = 1;
 	}
 	else if (cmd.argc == 1)
-		ret_value = go_to_home(shell);
+		ret_value = go_to_home();
 	else
 	{
 		if (ft_strcmp(cmd.argv[1], "-") == 0)

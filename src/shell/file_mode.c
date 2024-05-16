@@ -42,7 +42,7 @@ void execute_file()
     t_node *cmd_root;
     char *line;
 
-    line = read_entire_stdin(0);
+    line = read_entire_stdin();
     if (parse_line(line, &cmd_root) != NULL)
     {
         shell.last_exit_value = interpret_root(cmd_root);

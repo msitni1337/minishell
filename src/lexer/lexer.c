@@ -29,45 +29,58 @@ t_token *parse_subshell(t_node *root, t_lexer *lexer, t_token *token)
     return token;
 }
 
+int write_next_line_here_doc(t_node *node, int write)
+{
+    char *line;
+    char *delim;
+
+    shell.collecting_here_doc = TRUE;
+    delim = ft_substr(node->token_str.s, 0, node->token_str.count);
+    line = readline("> ");
+    while (line)
+    {
+        if (ft_strcmp(line, delim) == 0)
+            break;
+        ft_putendl_fd(line, write);
+        free(line);
+        line = readline("> ");
+    }
+    close(write);
+    free(delim);
+    if (line)
+    {
+        free(line);
+        return 0;
+    }
+    return 1;
+}
+
 int get_here_doc(t_node *node)
 {
     int pip[2];
-    int line;
-    char *delim;
+    int stdin_dup;
 
-    node->here_doc_fd = -1;
-    delim = ft_substr(node->token_str.s, 0, node->token_str.count);
+    stdin_dup = dup(0);
     if (pipe(pip) == -1)
     {
         perror("pipe");
         exit(1);
     }
-    char buff[1024];
-    int fd = dup(0);
-    line = read(fd, buff, 100);
     node->here_doc_fd = pip[0];
-    while (line > 0 && shell.interrupt == FALSE)
+    if (write_next_line_here_doc(node, pip[1]))
     {
-        buff[line] = 0;
-        if (ft_strcmp(buff, delim) == 0)
+        if (shell.interrupt == TRUE)
         {
-            close(pip[1]);
-            // free(line);
-            return 0;
+            shell.collecting_here_doc = FALSE;
+            shell.interrupt = FALSE;
+            dup2(stdin_dup, 0);
+            close(stdin_dup);
+            return 1;
         }
-        ft_putendl_fd(buff, pip[1]);
-        // free(line);
-        line = read(fd, buff, 100);
+        syntax_error("Millishell: expacting delim for here_doc.");
     }
-    close(fd);
-    if (shell.interrupt == TRUE)
-    {
-        shell.interrupt = FALSE;
-        return 1;
-    }
-    // error -> bash: warning: here-document at line 13 delimited by end-of-file (wanted `hh')
-    close(pip[1]);
-    syntax_error("Millishell: expacting delim for here_doc.");
+    close(stdin_dup);
+    shell.collecting_here_doc = FALSE;
     return 0;
 }
 
@@ -151,6 +164,7 @@ t_node **parser_loop(t_node **root, t_lexer *lexer, t_token *token)
             return syntax_error(SYN_ERR);
         *token = get_next_token(lexer, TRUE);
     }
+    shell.collecting_here_doc = FALSE;
     return root;
 }
 

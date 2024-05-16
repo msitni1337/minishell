@@ -37,14 +37,14 @@ void start_shell()
     char *prompt;
 
     shell.interrupt = FALSE;
+    shell.collecting_here_doc = FALSE;
     prompt = get_prompt();
     line = readline(prompt);
     free(prompt);
-    while (line != NULL)
+    while (line)
     {
-        printf("here\n");
+        shell.interrupt = FALSE;
         add_history(line);
-
         if (parse_line(line, &cmd_root) != NULL)
         {
             /*
@@ -59,9 +59,7 @@ void start_shell()
             close_fds();
             shell.last_exit_value = 2;
         }
-
         free(line);
-        shell.interrupt = FALSE;
         prompt = get_prompt();
         line = readline(prompt);
         free(prompt);
