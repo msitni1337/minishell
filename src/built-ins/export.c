@@ -11,14 +11,54 @@
 /* ************************************************************************** */
 #include "built-ins.h"
 
-// TODO: Implement export built-in
+size_t get_sorted_env_count()
+{
+    t_lstenv *env_lst;
+    size_t count;
+    
+    count = 0;
+    env_lst = shell.env_list;
+    while (env_lst)
+    {
+        count++;
+        env_lst = env_lst->next;
+    }
+    return count;
+}
+
+t_lstenv**get_sorted_env()
+{
+    t_lstenv *env_lst;
+    t_lstenv**res;
+    size_t count;
+    size_t i;
+
+    count = get_sorted_env_count();
+    res = malloc(sizeof(t_lstenv) * (count + 1));
+    if (res)
+    {
+        i = 0;
+        while (i < count)
+        {
+            res[i] = env_lst;
+            env_lst = env_lst->next;
+            i++;
+        }
+        res[i] = NULL;
+    }
+    return res;    
+}
 
 int print_exported_env(t_cmd cmd)
 {
     char *tmp;
+    char**sorted_env;
     size_t i;
-    assert(!"NOT IMPLEMENTD");
+
+    sorted_env = get_sorted_env();
     i = 0;
+    while ()
+    {
         if (ft_strncmp(tmp, "_=", 2))
         {
             ft_putstr_fd("declare -x ", cmd.outfile);
@@ -29,6 +69,7 @@ int print_exported_env(t_cmd cmd)
             write(cmd.outfile, "\n", 1);
         }
         i++;
+    }
     return 0;
 }
 

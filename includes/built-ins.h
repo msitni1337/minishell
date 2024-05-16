@@ -16,6 +16,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include "env.h"
+#include "shared.h"
 #include "cmd.h"
 
 #define PATH_MAX 4096

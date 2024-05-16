@@ -174,11 +174,11 @@ t_lstenv *add_or_replace_env(char *key, char *value)
 	if (node)
 	{
 		free(node->value);
-		node->value = value;
+		node->value = ft_strdup(value);
 	}
 	else
 	{
-		node = add_env_end(&(shell.env_list), key, value);
+		node = add_env_end(&(shell.env_list), key, ft_strdup(value));
 	}
 	return node;
 	// -> free those when galloc is available

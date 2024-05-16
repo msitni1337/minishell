@@ -66,6 +66,7 @@ int exec_builtin(t_cmd cmd)
     int ret_value;
 
     ret_value = 0;
+    add_or_replace_env("_", cmd.bin_path);
     if (!ft_strcmp(cmd.argv[0], "cd"))
         ret_value = change_directory(cmd);
     else if (!ft_strcmp(cmd.argv[0], "echo"))
@@ -126,6 +127,7 @@ int exec_bin(t_cmd cmd, int wait)
     if (pid)
     {
         add_to_arr(&(shell.childs_pids), &pid);
+        add_or_replace_env("_", cmd.bin_path);
         if (wait == FALSE)
             return 0;
         if (cmd.infile != STDIN_FILENO)

@@ -202,10 +202,15 @@ int get_cmd_path(t_cmd *cmd)
     argv0 = cmd->argv[0];
     if (ft_strchr(argv0, '/'))
     {
+        if (access(argv0, F_OK))
+        {
+            perror("minishell");
+            return 127;
+        }
         if (access(argv0, X_OK))
         {
             perror("minishell");
-            return errno;
+            return 126;
         }
         cmd->bin_path = argv0;
     }
