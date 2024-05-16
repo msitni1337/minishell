@@ -62,7 +62,7 @@ int open_file_as(char *fname, t_cmd *cmd, t_node_type type)
     if (fd < 0)
     {
         perror(fname);
-        return errno;
+        return 1;
     }
     if (type == NODE_REDIRECT_IN)
         cmd->infile = fd;
