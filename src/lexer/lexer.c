@@ -72,7 +72,6 @@ int get_here_doc(t_node *node)
         if (shell.interrupt == TRUE)
         {
             shell.collecting_here_doc = FALSE;
-            shell.interrupt = FALSE;
             dup2(stdin_dup, 0);
             close(stdin_dup);
             return 1;

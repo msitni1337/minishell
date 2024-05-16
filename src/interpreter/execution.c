@@ -12,7 +12,7 @@ int wait_all_childs()
     while (i < shell.childs_pids.count)
     {
         waitpid(pids[i], &ret_value, 0);
-        WEXITSTATUS(ret_value);
+        ret_value = WEXITSTATUS(ret_value);
         i++;
     }
     shell.childs_pids.count = 0;

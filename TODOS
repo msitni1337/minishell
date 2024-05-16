@@ -22,3 +22,7 @@
 ## For error printing we need to check every perror and any write(stderr functions.. 
 
 ## Garbage Collector integration
+
+## ft_exit ft_export ...
+
+## heavely test last exit status $?

@@ -58,6 +58,11 @@ void start_shell()
         {
             close_fds();
             shell.last_exit_value = 2;
+            if (shell.interrupt == TRUE)
+            {
+                shell.interrupt = FALSE;
+                shell.last_exit_value = 130;
+            }
         }
         free(line);
         prompt = get_prompt();
