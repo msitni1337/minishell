@@ -30,3 +30,5 @@
 ## cmd1 | cmd2 | builtin << last builtin should not execute on main proc.
 
 ## builtin | cat << builtin should close write pipe.
+
+## Better history adding

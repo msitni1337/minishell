@@ -56,7 +56,6 @@ void start_shell()
         }
         else
         {
-            close_fds();
             shell.last_exit_value = 2;
             if (shell.interrupt == TRUE)
             {
@@ -64,6 +63,7 @@ void start_shell()
                 shell.last_exit_value = 130;
             }
         }
+        close_fds();
         free(line);
         prompt = get_prompt();
         line = readline(prompt);

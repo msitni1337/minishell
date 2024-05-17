@@ -24,7 +24,7 @@ int wait_all_childs()
     return ret_value;
 }
 
-int exec_subshell(t_cmd cmd, int wait)
+int exec_subshell(t_cmd cmd)
 {
     int ret_value;
     int pid;
@@ -38,12 +38,12 @@ int exec_subshell(t_cmd cmd, int wait)
     if (pid)
     {
         add_to_arr(&(shell.childs_pids), &pid);
-        if (wait == FALSE)
-            return 0;
         if (cmd.infile != STDIN_FILENO)
             close(cmd.infile);
         if (cmd.outfile != STDOUT_FILENO)
             close(cmd.outfile);
+        if (wait == FALSE)
+            return 0;
         return wait_all_childs();
     }
     else
@@ -81,11 +81,14 @@ int exec_builtin(t_cmd cmd)
         assert(!"NOT IMPLEMENTED");
     else if (!ft_strcmp(cmd.argv[0], "exit"))
         assert(!"NOT IMPLEMENTED");
-    wait_all_childs();
+    if (cmd.infile != STDIN_FILENO)
+        close(cmd.infile);
+    if (cmd.outfile != STDOUT_FILENO)
+        close(cmd.outfile);
     return ret_value;
 }
 
-int exec_builtin_no_wait(t_cmd cmd)
+int exec_builtin_fork(t_cmd cmd)
 {
     int ret_value;
     int pid;
@@ -114,7 +117,7 @@ int exec_builtin_no_wait(t_cmd cmd)
     return 0;
 }
 
-int exec_bin(t_cmd cmd, int wait)
+int exec_bin(t_cmd cmd)
 {
     int pid;
 
@@ -128,12 +131,12 @@ int exec_bin(t_cmd cmd, int wait)
     {
         add_to_arr(&(shell.childs_pids), &pid);
         add_or_replace_env("_", cmd.bin_path);
-        if (wait == FALSE)
-            return 0;
         if (cmd.infile != STDIN_FILENO)
             close(cmd.infile);
         if (cmd.outfile != STDOUT_FILENO)
             close(cmd.outfile);
+        if (wait == FALSE)
+            return 0;
         return wait_all_childs();
     }
     else
@@ -158,18 +161,18 @@ int exec_bin(t_cmd cmd, int wait)
     return 0;
 }
 
-int execute_cmd(t_cmd cmd, int wait)
+int execute_cmd(t_cmd cmd, bool is_pipe)
 {
     if (cmd.type == CMD_SUBSHELL)
-        return exec_subshell(cmd, wait);
+        return exec_subshell(cmd);
     else if (cmd.type == CMD_BINARY)
-        return exec_bin(cmd, wait);
+        return exec_bin(cmd);
     else if (cmd.type == CMD_BUILTIN)
     {
-        if (wait == TRUE)
-            return exec_builtin(cmd);
+        if (is_pipe == TRUE)
+            return exec_builtin_fork(cmd);
         else
-            return exec_builtin_no_wait(cmd);
+            return exec_builtin(cmd);
     }
     assert(!"IMPOSSIBLE TO REACH");
     return 0;

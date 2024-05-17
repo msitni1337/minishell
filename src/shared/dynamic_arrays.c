@@ -1,7 +1,5 @@
 #include "dynamic_arrays.h"
 
-
-
 t_darr init_da(size_t elem_size, void*elem)
 {
 	t_darr res;
@@ -25,7 +23,7 @@ t_darr *expand_arr(t_darr *arr)
 	arr->data = malloc(arr->capacity * arr->elem_size); // todo : galloc..
 	if (tmp && arr->count)
 		ft_memcpy(arr->data, tmp, arr->elem_size * arr->count);
-	//free tmp
+	free(tmp);
 	return (arr);
 }
 

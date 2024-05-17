@@ -71,17 +71,14 @@ int open_file_as(char *fname, t_cmd *cmd, t_node_type type)
     return 0;
 }
 
-// todo return all fds.
 int open_files(t_node *cmd_node, t_cmd *cmd)
 {
     int ret_value;
     t_node *node;
 
-    if (cmd->outfile != STDOUT_FILENO)
-        close(cmd->outfile);
-    cmd->outfile = STDOUT_FILENO;
+    // if (cmd->outfile != STDOUT_FILENO)
+    //     close(cmd->outfile);
 
-    // todo Protect cmd->children
     node = get_next_node_by_type(cmd_node->children, NODE_REDIRECT_IN | NODE_REDIRECT_OUT | NODE_APPEND | NODE_HERE_DOC);
     while (node)
     {
@@ -232,12 +229,13 @@ int parse_cmd(t_node *node, t_cmd *cmd)
     int ret_value;
     t_node *subshell;
 
-    if (cmd->read_pipe != -1)
-    {
-        cmd->infile = dup(cmd->read_pipe);
-        close(cmd->read_pipe);
-        cmd->read_pipe = -1;
-    }
+    // if (cmd->read_pipe != -1)
+    // {
+    //     cmd->infile = dup(cmd->read_pipe);
+    //     close(cmd->read_pipe);
+    //     cmd->read_pipe = -1;
+    // }
+    cmd->outfile = STDOUT_FILENO;
     ret_value = open_files(node, cmd);
     if (ret_value)
         return ret_value;
@@ -262,6 +260,62 @@ int parse_cmd(t_node *node, t_cmd *cmd)
     return 0;
 }
 
+int execute_piping(t_node **node, t_cmd *cmd)
+{
+    int pip[2];
+    int ret_value;
+
+    cmd->infile = STDIN_FILENO;
+    cmd->outfile = STDOUT_FILENO;
+    while (TRUE)
+    {
+        ret_value = parse_cmd(*node, cmd);
+        assert(cmd->infile != -1 && cmd->outfile != -1);
+        (*node) = (*node)->next;
+        if (*node == NULL || (*node)->type != NODE_PIPE)
+            break;
+        if (cmd->outfile != STDOUT_FILENO)
+            close(cmd->outfile);
+        if (pipe(pip) == -1)
+        {
+            perror(cmd->argv[0]);
+            exit(errno);
+        }
+        if (ret_value == 0)
+        {
+            cmd->outfile = pip[1];
+            cmd->read_pipe = pip[0];
+            execute_cmd(*cmd, TRUE);
+            cmd->infile = pip[0];
+        }
+        else
+        {
+            close(pip[1]);
+            if (cmd->infile != STDIN_FILENO)
+                close(cmd->infile);
+            cmd->infile = pip[0];
+        }
+        (*node) = (*node)->next;
+        if (*node == NULL || (*node)->type != NODE_PIPE)
+            break;
+        (*node) = (*node)->next;
+    }
+    if (ret_value == 0)
+    {
+        execute_cmd(*cmd, TRUE);
+        ret_value = wait_all_childs();
+    }
+    else
+    {
+        if (cmd->infile != STDIN_FILENO)
+            close(cmd->infile);
+        if (cmd->outfile != STDOUT_FILENO)
+            close(cmd->outfile);
+        wait_all_childs();
+    }
+    return ret_value;
+}
+
 int interpret_root(t_node *root)
 {
     int ret_value;
@@ -270,8 +324,6 @@ int interpret_root(t_node *root)
     t_node *node;
 
     node = root;
-    shell.interrupt = FALSE;
-    shell.childs_pids.count = 0;
     cmd.infile = STDIN_FILENO;
     cmd.outfile = STDOUT_FILENO;
     cmd.read_pipe = -1;
