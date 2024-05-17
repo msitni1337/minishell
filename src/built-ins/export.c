@@ -46,7 +46,7 @@ void sort_env_list(t_lstenv **env_list)
         i = 1;
 		while (env_list[i - 1] && env_list[i])
 		{
-			if (ft_strcmp(env_list[i - 1]->key, env_list[i]->key) < 0)
+			if (ft_strcmp(env_list[i - 1]->key, env_list[i]->key) > 0)
 			{
 				ft_swap(&env_list[i - 1], &env_list[i]);
 				is_swapped = TRUE;
@@ -104,21 +104,85 @@ int print_exported_env(t_cmd cmd)
         }
         i++;
     }
-    if (sort_env_list)
-        free(sort_env_list);
+    if (sorted_env)
+        free(sorted_env);
     return 0;
+}
+
+int key_not_valid(char*key)
+{
+        ft_putstr_fd("Millishell: export: `" , STDERR_FILENO);
+        ft_putstr_fd(key , STDERR_FILENO);
+        ft_putendl_fd("': not a valid identifier" , STDERR_FILENO);
+    return 1;
+}
+
+int check_key_is_valid(char*key)
+{
+    size_t i;
+
+    i = 0;
+    if (!ft_isalpha(key[i]) && key[i] != '_')
+        return 1;
+    i++;
+    while (key[i])
+    {
+        if (!ft_isalnum(key[i]) && key[i] != '_')
+            return 1;
+        i++;
+    }
+    return 0;
+}
+
+int export_env(char*arg)
+{
+    int ret_value;
+    char*key;
+    char*value;
+    
+    key = ft_substr(arg, 0, ft_strchr(arg, '=') - arg);
+    printf("%s\n", key);
+    ret_value = 0;
+    if (ft_strlen(key) && check_key_is_valid(key) == 0)
+    {
+        if(ft_strchr(arg, '='))
+        {
+            value = ft_strdup(ft_strchr(arg, '=') + 1);
+            printf("%s\n", value);
+            add_or_replace_env(key, value);
+        }
+        else
+        {
+            add_or_replace_env(key, NULL);
+        }
+    }
+    else
+        ret_value = key_not_valid(key);
+    free(key);
+    return ret_value;
+}
+
+int parse_export(t_cmd cmd)
+{
+    int tmp;
+    int ret_value;
+    size_t i;
+
+    i = 1;
+    ret_value = 0;
+    while (i < cmd.argc)
+    {
+        tmp = export_env(cmd.argv[i]);
+        if (ret_value == 0)
+            ret_value = tmp;
+        i++;
+    }
+    return ret_value;
 }
 
 int ft_export(t_cmd cmd)
 {
     if (cmd.argc == 1)
-    {
         return print_exported_env(cmd);
-    }
-    else
-    {
-        assert(!"NOT IMPLEMENTED");
-    }
-
-    return 0;
+    return parse_export(cmd);
 }

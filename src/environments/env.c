@@ -129,43 +129,6 @@ t_lstenv *create_nodes(char *key, char *value)
 	return (new_node);
 }
 
-/*
-void ft_swap(char **p1, char **p2)
-{
-	char *tmp;
-
-	tmp = *p1;
-	*p1 = *p2;
-	*p2 = tmp;
-}
-void sort_env_list(t_lstenv **head)
-{
-	bool is_swapped;
-	t_lstenv *current;
-	t_lstenv *prev;
-
-	if (head == NULL || *head == NULL || (*head)->next == NULL)
-		return;
-	is_swapped = TRUE;
-	while (is_swapped == TRUE)
-	{
-		is_swapped = FALSE;
-		prev = *head;
-		current = prev->next;
-		while (current)
-		{
-			if (ft_strcmp(current->data, prev->data) < 0)
-			{
-				ft_swap(&(current->data), &(prev->data));
-				is_swapped = TRUE;
-			}
-			prev = current;
-			current = prev->next;
-		}
-	}
-}
-*/
-
 t_lstenv *add_or_replace_env(char *key, char *value)
 {
 	t_lstenv *node;
@@ -173,17 +136,24 @@ t_lstenv *add_or_replace_env(char *key, char *value)
 	node = get_env_node(key);
 	if (node)
 	{
-		free(node->value);
-		node->value = ft_strdup(value);
+		if (value)
+		{
+			free(node->value);
+			node->value = ft_strdup(value);
+			node->is_set = TRUE;
+		}
 	}
 	else
 	{
-		node = add_env_end(&(shell.env_list), key, ft_strdup(value));
+		if (value)
+			node = add_env_end(&(shell.env_list), ft_strdup(key), ft_strdup(value));
+		else
+		{
+			node = add_env_end(&(shell.env_list), ft_strdup(key), NULL);		
+			node->is_set = FALSE;
+		}
 	}
 	return node;
-	// -> free those when galloc is available
-	// free(key);
-	// free(value);
 }
 
 void increment_shlvl()
