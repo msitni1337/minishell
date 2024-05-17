@@ -22,7 +22,7 @@ typedef enum e_expansion_state
 int interpret_root(t_node *root);
 
 //  execution:
-int execute_cmd(t_cmd cmd, bool is_pipe);
+int execute_cmd(t_cmd cmd, bool is_pipe, bool wait_child);
 int wait_all_childs();
 
 //  utils:

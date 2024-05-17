@@ -18,13 +18,13 @@ int wait_all_childs()
     shell.childs_pids.count = 0;
     if (shell.interrupt == TRUE)
     {
-        shell.interrupt = FALSE;
+        // shell.interrupt = FALSE;
         return 130;
     }
     return ret_value;
 }
 
-int exec_subshell(t_cmd cmd)
+int exec_subshell(t_cmd cmd, bool wait_child)
 {
     int ret_value;
     int pid;
@@ -42,7 +42,7 @@ int exec_subshell(t_cmd cmd)
             close(cmd.infile);
         if (cmd.outfile != STDOUT_FILENO)
             close(cmd.outfile);
-        if (wait == FALSE)
+        if (wait_child == FALSE)
             return 0;
         return wait_all_childs();
     }
@@ -117,7 +117,7 @@ int exec_builtin_fork(t_cmd cmd)
     return 0;
 }
 
-int exec_bin(t_cmd cmd)
+int exec_bin(t_cmd cmd, bool wait_child)
 {
     int pid;
 
@@ -135,7 +135,7 @@ int exec_bin(t_cmd cmd)
             close(cmd.infile);
         if (cmd.outfile != STDOUT_FILENO)
             close(cmd.outfile);
-        if (wait == FALSE)
+        if (wait_child == FALSE)
             return 0;
         return wait_all_childs();
     }
@@ -161,12 +161,12 @@ int exec_bin(t_cmd cmd)
     return 0;
 }
 
-int execute_cmd(t_cmd cmd, bool is_pipe)
+int execute_cmd(t_cmd cmd, bool is_pipe, bool wait_child)
 {
     if (cmd.type == CMD_SUBSHELL)
-        return exec_subshell(cmd);
+        return exec_subshell(cmd, wait_child);
     else if (cmd.type == CMD_BINARY)
-        return exec_bin(cmd);
+        return exec_bin(cmd, wait_child);
     else if (cmd.type == CMD_BUILTIN)
     {
         if (is_pipe == TRUE)

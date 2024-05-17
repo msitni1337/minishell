@@ -76,7 +76,7 @@ int get_here_doc(t_node *node)
             close(stdin_dup);
             return 1;
         }
-        syntax_error("expacting delim for here_doc.");
+        syntax_error("expecting delim for here_doc.");
     }
     close(stdin_dup);
     shell.collecting_here_doc = FALSE;
