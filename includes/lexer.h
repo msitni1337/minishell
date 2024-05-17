@@ -3,9 +3,9 @@
 #include "shared.h"
 #include "shell.h"
 
-#define SYN_ERR "Millishell: syntax error."
-#define SYN_QUOTE "Millishell: unclosed quote."
-#define SYN_BRACE "Millishell: unclosed brace."
+#define SYN_ERR "syntax error."
+#define SYN_QUOTE "unclosed quote."
+#define SYN_BRACE "unclosed brace."
 
 #define DQUOTE '"'
 #define SQUOTE '\''

@@ -109,31 +109,6 @@ int print_exported_env(t_cmd cmd)
     return 0;
 }
 
-int key_not_valid(char*key)
-{
-        ft_putstr_fd("Millishell: export: `" , STDERR_FILENO);
-        ft_putstr_fd(key , STDERR_FILENO);
-        ft_putendl_fd("': not a valid identifier" , STDERR_FILENO);
-    return 1;
-}
-
-int check_key_is_valid(char*key)
-{
-    size_t i;
-
-    i = 0;
-    if (!ft_isalpha(key[i]) && key[i] != '_')
-        return 1;
-    i++;
-    while (key[i])
-    {
-        if (!ft_isalnum(key[i]) && key[i] != '_')
-            return 1;
-        i++;
-    }
-    return 0;
-}
-
 int export_env(char*arg)
 {
     int ret_value;
@@ -141,15 +116,14 @@ int export_env(char*arg)
     char*value;
     
     key = ft_substr(arg, 0, ft_strchr(arg, '=') - arg);
-    printf("%s\n", key);
     ret_value = 0;
     if (ft_strlen(key) && check_key_is_valid(key) == 0)
     {
         if(ft_strchr(arg, '='))
         {
             value = ft_strdup(ft_strchr(arg, '=') + 1);
-            printf("%s\n", value);
             add_or_replace_env(key, value);
+            free(value);
         }
         else
         {
@@ -157,7 +131,7 @@ int export_env(char*arg)
         }
     }
     else
-        ret_value = key_not_valid(key);
+        ret_value = key_not_valid("export", key);
     free(key);
     return ret_value;
 }

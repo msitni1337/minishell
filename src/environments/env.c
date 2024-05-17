@@ -42,6 +42,9 @@ void remove_env(t_lstenv **lstenv, char *key)
 				prev->next = current->next;
 			else
 				*lstenv = current->next;
+			free(current->key);
+			if (current->value)
+				free(current->value);
 			free(current);
 			return;
 		}

@@ -15,7 +15,7 @@ t_token *parse_subshell(t_node *root, t_lexer *lexer, t_token *token)
             return NULL;
         }
         else if (subshell->childs_count == 0)
-            return syntax_error("Millishell: empty subshell.");
+            return syntax_error("empty subshell.");
         else if (IS_LOGIC_OP(*token))
         {
             if (link_logic_oper(&subshell, lexer, token, TRUE))
@@ -76,7 +76,7 @@ int get_here_doc(t_node *node)
             close(stdin_dup);
             return 1;
         }
-        syntax_error("Millishell: expacting delim for here_doc.");
+        syntax_error("expacting delim for here_doc.");
     }
     close(stdin_dup);
     shell.collecting_here_doc = FALSE;
@@ -104,7 +104,7 @@ int add_redirect_node(t_lexer *lexer, t_node *curr_cmd, int type)
     }
     else
     {
-        syntax_error("Millishell: expecting name of file or here_doc delim to redirect I/O.");
+        syntax_error("expecting name of file or here_doc delim to redirect I/O.");
         return 1;
     }
     return 0;
@@ -126,7 +126,7 @@ t_token *fill_cmd(t_node **root, t_token *token, t_lexer *lexer, int as_child)
         else if (token->type == TOKEN_OPEN_PAREN)
         {
             if (can_have_subshell == FALSE)
-                return syntax_error("Millishell: CMD ARGS BEFORE SUBSHELL OR MULTIPLE SUBSHELLS");
+                return syntax_error("CMD ARGS BEFORE SUBSHELL OR MULTIPLE SUBSHELLS");
             if (parse_subshell(curr_cmd, lexer, token) == NULL)
                 return NULL;
             if (token->type != TOKEN_CLOSE_PAREN)

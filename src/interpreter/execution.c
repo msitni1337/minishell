@@ -66,7 +66,7 @@ int exec_builtin(t_cmd cmd)
     int ret_value;
 
     ret_value = 0;
-    add_or_replace_env("_", cmd.bin_path);
+    add_or_replace_env("_", cmd.argv[0]);
     if (!ft_strcmp(cmd.argv[0], "cd"))
         ret_value = change_directory(cmd);
     else if (!ft_strcmp(cmd.argv[0], "echo"))
@@ -76,7 +76,7 @@ int exec_builtin(t_cmd cmd)
     else if (!ft_strcmp(cmd.argv[0], "export"))
         ret_value = ft_export(cmd);
     else if (!ft_strcmp(cmd.argv[0], "unset"))
-        assert(!"NOT IMPLEMENTED");
+        ret_value = ft_unset(cmd);
     else if (!ft_strcmp(cmd.argv[0], "env"))
         assert(!"NOT IMPLEMENTED");
     else if (!ft_strcmp(cmd.argv[0], "exit"))

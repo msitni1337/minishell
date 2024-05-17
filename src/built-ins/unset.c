@@ -12,25 +12,23 @@
 
 #include "built-ins.h"
 
-void	ft_unset(t_cmd cmd)
+int	ft_unset(t_cmd cmd)
 {
-	(void)cmd;
+	int ret_value;
+	size_t i;
+
+	ret_value = 0;
+	i = 1;
+	while (cmd.argv[i])
+	{
+		if (check_key_is_valid(cmd.argv[i]))
+		{
+			key_not_valid("unset", cmd.argv[i]);
+			ret_value = 1;
+		}
+		else
+			remove_env(&shell.env_list, cmd.argv[i]);
+		i++;
+	}
+	return ret_value;
 }
-
-// int main(int ac, char **av, const char **envp)
-// {
-// 	t_shell shell;
-
-// 	USED(ac);
-// 	init_shell(&shell);
-// 	take_env(&shell.env_list, envp);
-// 	printf("before unset\n");
-// 	printf("%s\n", get_env_value(shell.env_list, "HOME"));
-// 	ft_unset(&shell, av);
-// 	char *s = get_env_value(shell.env_list, "HOME");
-// 	if (!s)
-// 		printf("HOME is unset\n");
-// 	else
-// 		printf("HOME is set\n");
-// 	return (0);
-// }

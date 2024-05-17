@@ -49,12 +49,13 @@ t_node *link_argv_node(t_node *curr_cmd, t_lexer *lexer)
     if (add_str_node(curr_cmd, lexer) == NULL)
         return syntax_error(SYN_QUOTE);
     if (get_node_by_type(curr_cmd, NODE_SUBSHELL) != NULL)
-        return syntax_error("Millishell: CMD ARGS AFTER SUBSHELL");
+        return syntax_error("CMD ARGS AFTER SUBSHELL");
     return curr_cmd;
 }
 
 void *syntax_error(char *reason)
 {
+    ft_putstr_fd(PROG_NAME": ", STDERR_FILENO);
     ft_putstr_fd(reason, STDERR_FILENO);
     write(STDERR_FILENO, "\n", 1);
     return NULL;

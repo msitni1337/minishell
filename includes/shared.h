@@ -1,6 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
-#define PROMPTSTART "\001\e[1;32m\002Millishell \001\e[0;37m\002[\001\e[1;34m\002"
+#define PROG_NAME "Millishell"
+#define PROMPTSTART "\001\e[1;32m\002"PROG_NAME" \001\e[0;37m\002[\001\e[1;34m\002"
 #define PROMPTEND "\001\e[0;37m\002]\001\e[0;32m\002~> \001\e[0;37m\002"
 
 #define bool unsigned char
