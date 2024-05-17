@@ -26,3 +26,7 @@
 ## ft_exit ft_export ...
 
 ## heavely test last exit status $?
+
+## cmd1 | cmd2 | builtin << last builtin should not execute on main proc.
+
+## builtin | cat << builtin should close write pipe.

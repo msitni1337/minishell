@@ -39,6 +39,9 @@ int ft_export(t_cmd cmd);
 /* unset */
 int	ft_unset(t_cmd cmd);
 
+/* exit */
+int ft_exit(t_cmd cmd);
+
 /* common */
 int check_key_is_valid(char*key);
 int key_not_valid(char *cmd, char*key);
