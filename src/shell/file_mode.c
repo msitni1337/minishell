@@ -39,6 +39,7 @@ char *read_entire_stdin()
 
 void execute_file()
 {
+    assert(!"DOES NOT ADHERE TO THE NEW LOGIC FLOW");
     t_node *cmd_root;
     char *line;
 
@@ -49,7 +50,7 @@ void execute_file()
     }
     else
     {
-        close_fds();
+        close_here_docs();
         shell.last_exit_value = 2;
     }
 

@@ -32,7 +32,7 @@ char *get_prompt()
 
 void assert_all_files_closed()
 {
-    struct stat s; 
+    struct stat s;
     int fd;
 
     fd = 3;
@@ -66,7 +66,6 @@ void start_shell()
             readline("PRESS ENTER TO EXECUTE TREE");
             */
             shell.last_exit_value = interpret_root(cmd_root);
-            assert_all_files_closed();
         }
         else
         {
@@ -74,10 +73,11 @@ void start_shell()
             if (shell.interrupt == TRUE)
             {
                 shell.interrupt = FALSE;
+                close_here_docs();
                 shell.last_exit_value = 130;
             }
         }
-        close_fds();
+        assert_all_files_closed();
         free(line);
         prompt = get_prompt();
         line = readline(prompt);

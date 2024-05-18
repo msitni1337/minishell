@@ -14,7 +14,7 @@ void free_arr(char**arr)
         free(tmp);
 }
 
-void close_fds()
+void close_here_docs()
 {
     struct stat s; 
     int fd;

@@ -41,6 +41,6 @@ int ft_isspace(char c);
 
 // freeing
 void free_arr(char **arr);
-void close_fds();
+void close_here_docs();
 
 #endif
