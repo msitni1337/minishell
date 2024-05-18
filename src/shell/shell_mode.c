@@ -30,6 +30,19 @@ char *get_prompt()
     return res;
 }
 
+void assert_all_files_closed()
+{
+    struct stat s; 
+    int fd;
+
+    fd = 3;
+    while (fd > 2 && fstat(fd, &s) != -1 && errno != EBADF)
+    {
+        fd++;
+    }
+    assert(fd == 3 && "FILES NOT CLOSED PROPERLY");
+}
+
 void start_shell()
 {
     t_node *cmd_root;
@@ -53,6 +66,7 @@ void start_shell()
             readline("PRESS ENTER TO EXECUTE TREE");
             */
             shell.last_exit_value = interpret_root(cmd_root);
+            assert_all_files_closed();
         }
         else
         {

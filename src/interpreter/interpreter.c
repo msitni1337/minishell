@@ -235,7 +235,11 @@ int parse_cmd(t_node *node, t_cmd *cmd)
     //     close(cmd->read_pipe);
     //     cmd->read_pipe = -1;
     // }
-    cmd->outfile = STDOUT_FILENO;
+    if (cmd->outfile != STDOUT_FILENO)
+    {
+        close(cmd->outfile);
+        cmd->outfile = STDOUT_FILENO;
+    }
     ret_value = open_files(node, cmd);
     if (ret_value)
         return ret_value;
@@ -354,7 +358,7 @@ int interpret_root(t_node *root)
                     break;
                 if (tmp->type == NODE_OR && ret_value == 0)
                     break;
-                node = node->next;
+                node = tmp->next;
             }
         }
         else
@@ -370,9 +374,6 @@ int interpret_root(t_node *root)
         close(cmd.infile);
     if (cmd.outfile != STDOUT_FILENO)
         close(cmd.outfile);
-    // if (ret_value == 0 && shell.interrupt == FALSE)
-    //     return wait_all_childs();
-    // shell.childs_pids.count = 0;
     if (shell.interrupt == TRUE)
     {
         shell.interrupt = FALSE;

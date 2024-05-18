@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmellal <nmellal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 16:56:12 by nmellal           #+#    #+#             */
-/*   Updated: 2024/04/23 17:08:23 by nmellal          ###   ########.fr       */
+/*   Updated: 2024/05/18 01:14:53 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,7 +173,7 @@ void increment_shlvl()
 	}
 	else
 	{
-		add_or_replace_env("SHLVL", ft_itoa(0));
+		add_or_replace_env("SHLVL", ft_itoa(1));
 	}
 }
 
