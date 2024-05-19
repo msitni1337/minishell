@@ -290,7 +290,7 @@ int execute_piping(t_node **node, t_cmd *cmd)
             if (cmd->outfile == STDOUT_FILENO)
                 cmd->outfile = pip[1];
             else
-                close(pip[1]);            
+                close(pip[1]);
             cmd->read_pipe = pip[0];
             execute_cmd(*cmd, TRUE, FALSE);
             cmd->infile = pip[0];
@@ -321,6 +321,25 @@ int execute_piping(t_node **node, t_cmd *cmd)
     return ret_value;
 }
 
+t_node *advance_logical_operator(t_node *operator, int ret_value)
+{
+    t_node *cmd_to_exec;
+
+    cmd_to_exec = NULL;
+    while (operator)
+    {
+        cmd_to_exec = operator->next;
+        if (operator->type == NODE_AND && ret_value == 0)
+            break;
+        if (operator->type == NODE_OR && ret_value)
+            break;
+        operator = cmd_to_exec->next;
+    }
+    if (operator)
+        return cmd_to_exec;
+    return NULL;
+}
+
 int interpret_root(t_node *root)
 {
     int ret_value;
@@ -341,32 +360,21 @@ int interpret_root(t_node *root)
             if (tmp->type == NODE_PIPE)
             {
                 ret_value = execute_piping(&node, &cmd);
-                if (node == NULL)
-                    break;
-                if (node->type == NODE_AND && ret_value)
-                    break;
-                if (node->type == NODE_OR && !ret_value)
-                    break;
-                node = node->next;
+                node = advance_logical_operator(node, ret_value);
             }
             else
             {
                 ret_value = parse_cmd(node, &cmd);
                 if (ret_value == 0)
                     ret_value = execute_cmd(cmd, FALSE, TRUE);
-                if (tmp->type == NODE_AND && ret_value)
-                    break;
-                if (tmp->type == NODE_OR && ret_value == 0)
-                    break;
-                node = tmp->next;
+                node = advance_logical_operator(tmp, ret_value);
             }
         }
         else
         {
             ret_value = parse_cmd(node, &cmd);
-            if (ret_value)
-                break;
-            ret_value = execute_cmd(cmd, FALSE, TRUE);
+            if (ret_value == 0)
+                ret_value = execute_cmd(cmd, FALSE, TRUE);
             break;
         }
     }

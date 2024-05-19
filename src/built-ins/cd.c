@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/21 17:59:15 by nmellal           #+#    #+#             */
-/*   Updated: 2024/05/15 20:10:35 by msitni           ###   ########.fr       */
+/*   Updated: 2024/05/18 19:31:42 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ int change_directory(t_cmd cmd)
 {
 	int ret_value;
 
+	ret_value = 0;
 	if (cmd.argc > 2)
 	{
 		write(STDERR_FILENO, "cd: too many args\n", 19);
@@ -92,31 +93,8 @@ int change_directory(t_cmd cmd)
 	{
 		if (ft_strcmp(cmd.argv[1], "-") == 0)
 			ret_value = return_to_oldpwd(&cmd);
-		else
+		else if (ft_strlen(cmd.argv[1]))
 			ret_value = go_to_path(cmd.argv[1]);
 	}
 	return ret_value;
 }
-
-// int main(int ac, char **av, const char **envp)
-// {
-// 	t_shell shell;
-
-// 	init_shell(&shell);
-// 	take_env(&shell.env_list, envp);
-// 	printf("before\n");
-// 	printf("%s\n", get_env_lst(shell.env_list, "PWD"));
-// 	if (ac == 2)
-// 		change_directory(av[1], &shell);
-// 	else if (ac == 1)
-// 		change_directory(NULL, &shell);
-// 	else
-// 	{
-// 		write(2, "cd: too many arguments\n", 24);
-// 		return (1);
-// 	}
-// 	printf("after\n");
-// 	printf("%s\n", get_env_lst(shell.env_list, "PWD"));
-// 	printf("%s\n", get_env_lst(shell.env_list, "OLDPWD"));
-// 	return (0);
-// }

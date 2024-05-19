@@ -3,6 +3,7 @@
 void handle_sigint()
 {
     shell.interrupt = TRUE;
+    shell.last_exit_value = 130;
     if (shell.childs_pids.count > 0)
     {
         write(1, "\n", 1);

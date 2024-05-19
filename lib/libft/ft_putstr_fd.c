@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_putstr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: msitni <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 00:44:39 by msitni            #+#    #+#             */
-/*   Updated: 2023/11/22 00:44:41 by msitni           ###   ########.fr       */
+/*   Updated: 2024/05/18 19:37:38 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,11 @@
 
 void	ft_putstr_fd(char *s, int fd)
 {
-	while (fd >= 0 && s && *s)
-	{
-		ft_putchar_fd(*s, fd);
-		s++;
-	}
+	unsigned int count;
+
+	count = 0;
+	while (fd >= 0 && s && s[count])
+		count++;
+	if (fd >= 0 && s)
+		write(fd, s, count);
 }

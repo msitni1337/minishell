@@ -3,30 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmellal <nmellal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/24 17:48:42 by nmellal           #+#    #+#             */
-/*   Updated: 2024/04/24 17:50:53 by nmellal          ###   ########.fr       */
+/*   Updated: 2024/05/19 01:58:54 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "built-ins.h"
-/*
-void	ft_env(t_shell *shell, char **av, const char **envp)
+
+int	ft_env(t_cmd cmd)
 {
-	USED(av);
-	init_shell(shell);
-	take_env(&shell->env_list, envp);
-	print_list(shell->env_list);
+	t_lstenv*head;
+
+	head = shell.env_list;
+	while (head)
+	{
+		if (head->is_set)
+		{
+			ft_putstr_fd(head->key, cmd.outfile);
+			write(cmd.outfile, "=", 1);
+			ft_putendl_fd(head->value, cmd.outfile);
+		}
+		head = head->next;
+	}
+	return 0;
 }
-*/
-
-// int main(int ac, char **av, const char **envp)
-// {
-// 	t_shell shell;
-
-
-// 	USED(ac);
-// 	ft_env(&shell, av, envp);
-// 	return (0);
-// }

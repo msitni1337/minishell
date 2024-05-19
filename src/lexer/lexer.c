@@ -167,11 +167,34 @@ t_node **parser_loop(t_node **root, t_lexer *lexer, t_token *token)
     return root;
 }
 
+char * expand_asterices(char*line)
+{
+    if (ft_strchr(line, '*'))
+    {
+        char *word;
+        char *res;
+        size_t i;
+        size_t offset;
+
+        res = NULL;
+        i = 0;
+        while (line && line[i])
+        {
+            word = get_next_word(line + i);
+            offset += word - line;
+            res = ft_strjoin(res, i);
+            i++;
+        }
+    }
+    return line;
+}
+
 t_node **parse_line(char *line, t_node **root)
 {
     t_lexer lexer;
     t_token token;
 
+    line = expand_asterices(line);
     lexer = new_lexer(line);
     token = get_next_token(&lexer, TRUE);
     if (token.type == TOKEN_EOF)

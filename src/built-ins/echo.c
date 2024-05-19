@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmellal <nmellal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/21 16:22:43 by nmellal           #+#    #+#             */
-/*   Updated: 2024/04/21 16:54:14 by nmellal          ###   ########.fr       */
+/*   Updated: 2024/05/19 02:57:52 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int	check_echo_options(t_cmd cmd)
 	}
 	if (print_nl == TRUE)
 		write(cmd.outfile, "\n", 1);
-	return errno;
+	return 0;
 }
 
 int ft_echo(t_cmd cmd)

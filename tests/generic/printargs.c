@@ -5,7 +5,8 @@
 int main(int c, char **v, char **envp)
 {
     int i;
-    printf("envp:\n");
+/*
+		printf("envp:\n");
     i = 0;
     while (envp && envp[i])
     {
@@ -13,7 +14,8 @@ int main(int c, char **v, char **envp)
         printf("%s\n", envp[i]);
         i++;
     }
-    printf("Args:\n");
+*/
+		printf("Args:\n");
     for (int i = 0; i < c; i++)
         printf("%d => %s\n", i, v[i]);
 

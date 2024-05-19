@@ -230,7 +230,7 @@ char *perform_string_expansion(t_string string, int expand_vars)
 
 char *expand_string(t_string string, int expand_vars)
 {
-    if (contains_chars(string, "'\"$") == TRUE)
+    if (contains_chars(string, "*'\"$") == TRUE)
         return perform_string_expansion(string, expand_vars);
     else
         return ft_substr(string.s, 0, string.count);

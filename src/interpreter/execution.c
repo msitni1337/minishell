@@ -78,9 +78,9 @@ int exec_builtin(t_cmd cmd)
     else if (!ft_strcmp(cmd.argv[0], "unset"))
         ret_value = ft_unset(cmd);
     else if (!ft_strcmp(cmd.argv[0], "env"))
-        assert(!"NOT IMPLEMENTED");
+        ret_value = ft_env(cmd);
     else if (!ft_strcmp(cmd.argv[0], "exit"))
-        assert(!"NOT IMPLEMENTED");
+        ret_value = ft_exit(cmd);
     if (cmd.infile != STDIN_FILENO)
         close(cmd.infile);
     if (cmd.outfile != STDOUT_FILENO)

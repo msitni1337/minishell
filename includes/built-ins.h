@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   built-ins.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmellal <nmellal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 19:08:32 by nmellal           #+#    #+#             */
-/*   Updated: 2024/04/23 16:06:28 by nmellal          ###   ########.fr       */
+/*   Updated: 2024/05/18 19:42:26 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,9 @@ int ft_export(t_cmd cmd);
 
 /* unset */
 int	ft_unset(t_cmd cmd);
+
+/* env */
+int	ft_env(t_cmd cmd);
 
 /* exit */
 int ft_exit(t_cmd cmd);

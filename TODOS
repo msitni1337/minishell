@@ -23,12 +23,12 @@
 
 ## Garbage Collector integration
 
-## ft_exit ft_export ...
-
 ## heavely test last exit status $?
 
 ## cmd1 | cmd2 | builtin << last builtin should not execute on main proc. [DONE]
 
 ## builtin | cat << builtin should close write pipe. [DONE]
 
-## Better history adding
+## Better history adding.
+
+## asterix expansion *.
