@@ -167,24 +167,65 @@ t_node **parser_loop(t_node **root, t_lexer *lexer, t_token *token)
     return root;
 }
 
-char * expand_asterices(char*line)
+char *get_next_asterix(char *line)
+{
+}
+
+char *expand_asterices(char *line)
 {
     if (ft_strchr(line, '*'))
     {
-        char *word;
+        t_lexer lexer;
+        t_token token;
+        char *asterix;
+        char *tmp;
         char *res;
         size_t i;
-        size_t offset;
+        size_t copied;
 
         res = NULL;
-        i = 0;
-        while (line && line[i])
+        lexer = new_lexer(line);
+        token = get_next_token(&lexer, TRUE);
+        if (lexer.pos)
         {
-            word = get_next_word(line + i);
-            offset += word - line;
-            res = ft_strjoin(res, i);
-            i++;
+            tmp = ft_substr(lexer.line, 0, lexer.pos);
+            res = ft_strjoin(res, tmp);
+            free(tmp);
+            lexer = new_lexer(line + lexer.pos);
         }
+        while (token.type != TOKEN_EOF)
+        {
+            if (token.type == TOKEN_STRING)
+            {
+                t_string string;
+                get_string(&lexer, &string);
+                lexer = new_lexer(line + lexer.pos);
+                i = 0;
+                tmp = NULL;
+                while (i < string.count)
+                {
+                    if (*(string.s + i) == '*')
+                    {
+                        tmp = expand_asterice(string);
+                        break;
+                    }
+                    i++;
+                }
+                if (tmp == NULL)
+                    tmp = ft_substr(node.token_str.s, 0, node.token_str.count);
+                ft_strjoin(res, tmp);
+                free(tmp);
+            }
+            token = get_next_token(&lexer, TRUE);
+            if (lexer.pos)
+            {
+                tmp = ft_substr(lexer.line, 0, lexer.pos);
+                res = ft_strjoin(res, tmp);
+                free(tmp);
+                lexer = new_lexer(line + lexer.pos);
+            }
+        }
+        return res;
     }
     return line;
 }
@@ -194,7 +235,7 @@ t_node **parse_line(char *line, t_node **root)
     t_lexer lexer;
     t_token token;
 
-    line = expand_asterices(line);
+    //  line = expand_asterices(line);
     lexer = new_lexer(line);
     token = get_next_token(&lexer, TRUE);
     if (token.type == TOKEN_EOF)
