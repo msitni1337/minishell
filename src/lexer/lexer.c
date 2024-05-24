@@ -166,7 +166,7 @@ t_node **parser_loop(t_node **root, t_lexer *lexer, t_token *token)
     shell.collecting_here_doc = FALSE;
     return root;
 }
-
+/*
 char *get_next_asterix(char *line)
 {
 }
@@ -229,6 +229,7 @@ char *expand_asterices(char *line)
     }
     return line;
 }
+*/
 
 t_node **parse_line(char *line, t_node **root)
 {

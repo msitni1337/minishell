@@ -12,13 +12,14 @@ FLAGS = -Wall -Werror -Wextra
 %.o : %.c
 	$(CC) $(FLAGS) $< -c -o $@
 
+all : $(NAME) bonus
+
 $(NAME): $(OBJ)
 	ar crs $(NAME) $(OBJ)
 
 bonus : $(BOBJ)
 	ar crs $(NAME) $(BOBJ)
 
-all : $(NAME)
 
 clean :
 	rm -f $(OBJ) $(BOBJ)

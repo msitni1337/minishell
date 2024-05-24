@@ -10,6 +10,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <dirent.h>
 
 typedef enum e_expansion_state
 {
@@ -29,5 +31,6 @@ int wait_all_childs();
 t_node *get_next_node_by_type(t_node *root, t_node_type type);
 
 char *expand_string(t_string string, int expand_vars);
+bool contains_chars(t_string string, char *charset);
 
 #endif

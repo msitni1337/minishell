@@ -82,6 +82,8 @@ int open_files(t_node *cmd_node, t_cmd *cmd)
     node = get_next_node_by_type(cmd_node->children, NODE_REDIRECT_IN | NODE_REDIRECT_OUT | NODE_APPEND | NODE_HERE_DOC);
     while (node)
     {
+        if (contains_chars(node->children->token_str, "*") == TRUE) NEED FIXING
+            return 1;
         char *name = expand_string(node->children->token_str, TRUE);
         ret_value = open_file_as(name, cmd, node->type);
         if (ret_value)
@@ -107,22 +109,43 @@ size_t get_argc(t_node *cmd_node)
     return argc;
 }
 
+char *expand_argv(t_string str, bool *has_asterix)
+{
+    char *res;
+
+    if (contains_chars(str, "*") == FALSE)
+    {
+        res = expand_string(str, TRUE);
+    }
+    else
+    {
+        res = expand_string(str, FALSE);
+        *has_asterix = TRUE;
+    }
+    return res;
+}
+
 void get_argv(t_node *cmd_node, t_cmd *cmd)
 {
     t_node *tmp;
+    bool has_asterix;
     size_t i;
     cmd->argc = get_argc(cmd_node);
     cmd->argv = malloc(sizeof(char *) * (cmd->argc + 1));
     cmd->argv[cmd->argc] = NULL;
 
     i = 0;
+    has_asterix = FALSE;
     tmp = get_next_node_by_type(cmd_node->children, NODE_STRING);
     while (tmp)
     {
-        cmd->argv[i] = expand_string(tmp->token_str, TRUE);
+        cmd->argv[i] = expand_argv(tmp->token_str);
+        printf("arg = %s\n", cmd->argv[i]);
         i++;
         tmp = get_next_node_by_type(tmp->next, NODE_STRING);
     }
+    if (has_asterix == TRUE)
+        cmd->argv = expand_asterices_argv(cmd->argv, &cmd->argc);
 }
 
 int is_builtin(const char *s)
@@ -333,7 +356,7 @@ t_node *advance_logical_operator(t_node *operator, int ret_value)
             break;
         if (operator->type == NODE_OR && ret_value)
             break;
-        operator = cmd_to_exec->next;
+        operator= cmd_to_exec->next;
     }
     if (operator)
         return cmd_to_exec;
