@@ -82,8 +82,11 @@ int open_files(t_node *cmd_node, t_cmd *cmd)
     node = get_next_node_by_type(cmd_node->children, NODE_REDIRECT_IN | NODE_REDIRECT_OUT | NODE_APPEND | NODE_HERE_DOC);
     while (node)
     {
-        if (contains_chars(node->children->token_str, "*") == TRUE) NEED FIXING
+        if (contains_chars(node->children->token_str, "*") == TRUE) 
+        {
+            assert(!"NOT IMPLEMENTD");
             return 1;
+        }
         char *name = expand_string(node->children->token_str, TRUE);
         ret_value = open_file_as(name, cmd, node->type);
         if (ret_value)
@@ -139,8 +142,7 @@ void get_argv(t_node *cmd_node, t_cmd *cmd)
     tmp = get_next_node_by_type(cmd_node->children, NODE_STRING);
     while (tmp)
     {
-        cmd->argv[i] = expand_argv(tmp->token_str);
-        printf("arg = %s\n", cmd->argv[i]);
+        cmd->argv[i] = expand_argv(tmp->token_str, &has_asterix);
         i++;
         tmp = get_next_node_by_type(tmp->next, NODE_STRING);
     }

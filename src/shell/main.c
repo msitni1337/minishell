@@ -8,10 +8,6 @@ int main(int c, const char **v, const char **env)
 {
     (void)c;
     (void)v;
-/*
-    expand_asterices_argv(v, c);
-    exit(0);
-*/
 
     init_shell(env);
     if (isatty(0) == 1)
