@@ -1,123 +1,71 @@
 #include "interpreter.h"
 
-bool contains_chars(t_string string, char *charset)
+t_expansion_state expand_normal_mode(char *res, t_string *string, size_t *i, int expand_vars)
 {
-    size_t i;
-    size_t j;
-    size_t charset_len;
-
-    charset_len = ft_strlen(charset);
-    i = 0;
-    while (i < string.count)
+    if (*(string->s) == '\'')
     {
-        j = 0;
-        while (j < charset_len)
-        {
-            if (string.s[i] == charset[j])
-                return TRUE;
-            j++;
-        }
-        i++;
+        (string->count)--;
+        (string->s)++;
+        return SQUOTE_STATE;
     }
-    return FALSE;
+    else if (*(string->s) == '"')
+    {
+        (string->count)--;
+        (string->s)++;
+        return DQUOTE_STATE;
+    }
+    else if (expand_vars && *(string->s) == '$')
+    {
+        copy_var_value(res, string, i);
+    }
+    else
+    {
+        res[*i] = *(string->s);
+        (string->count)--;
+        (string->s)++;
+        (*i)++;
+    }
+    return NORMAL;
 }
 
-#define eq(c1, c2) ((c1) == (c2))
-
-size_t parse_key_count(const char *s)
+t_expansion_state expand_dquote_mode(char *res, t_string *string, size_t *i, int expand_vars)
 {
-    size_t count;
-
-    count = 0;
-    if (ft_isdigit(s[count]))
-        return ++count;
-    else if (eq(s[count], '$') || eq(s[count], '?') || eq(s[count], '*'))
-        return ++count;
-    while (s[count])
+    if (*(string->s) == '"')
     {
-        if (!ft_isalnum(s[count]) && !eq(s[count], '_'))
-            break;
-        count++;
+        (string->count)--;
+        (string->s)++;
+        return NORMAL;
     }
-    return count;
+    else if (expand_vars && *(string->s) == '$')
+    {
+        copy_var_value(res, string, i);
+    }
+    else
+    {
+        res[*i] = *(string->s);
+        (string->count)--;
+        (string->s)++;
+        (*i)++;
+    }
+    return DQUOTE_STATE;
 }
 
-size_t get_len(t_string string, int expand_vars)
+t_expansion_state expand_squote_mode(char *res, t_string *string, size_t *i)
 {
-    t_expansion_state state;
-    size_t len;
-    size_t i;
-
-    len = 0;
-    i = 0;
-    state = NORMAL;
-    while (i < string.count)
+    if (*(string->s) == '\'')
     {
-        if (state == NORMAL)
-        {
-            if (string.s[i] == '\'')
-            {
-                state = SQUOTE_STATE;
-                i++;
-                continue;
-            }
-            else if (string.s[i] == '"')
-            {
-                state = DQUOTE_STATE;
-                i++;
-                continue;
-            }
-            else if (expand_vars && string.s[i] == '$')
-            {
-                i++;
-                int count = parse_key_count(string.s + i);
-                if (count)
-                {
-                    len += ft_strlen(get_env_value(ft_substr(string.s + i, 0, count)));
-                    i += count;
-                }
-                continue;
-            }
-            i++;
-            len++;
-        }
-        else if (state == DQUOTE_STATE)
-        {
-            if (string.s[i] == '"')
-            {
-                state = NORMAL;
-                i++;
-                continue;
-            }
-            else if (expand_vars && string.s[i] == '$')
-            {
-                i++;
-                int count = parse_key_count(string.s + i);
-                if (count)
-                {
-                    len += ft_strlen(get_env_value(ft_substr(string.s + i, 0, count)));
-                    i += count;
-                }
-                continue;
-            }
-            i++;
-            len++;
-        }
-        else if (state == SQUOTE_STATE)
-        {
-            if (string.s[i] == '\'')
-            {
-                state = NORMAL;
-                i++;
-                continue;
-            }
-            i++;
-            len++;
-        }
-        else
-            assert(!"IMPOSSIBLE");
+        (string->count)--;
+        (string->s)++;
+        return NORMAL;
     }
-    return len;
+    else
+    {
+        res[*i] = *(string->s);
+        (string->count)--;
+        (string->s)++;
+        (*i)++;
+    }
+    return SQUOTE_STATE;
 }
 
 char *perform_string_expansion(t_string string, int expand_vars)
@@ -126,105 +74,23 @@ char *perform_string_expansion(t_string string, int expand_vars)
     char *res;
     size_t len;
     size_t i;
-    size_t j;
 
-    len = get_len(string, expand_vars);
+    len = get_expanded_str_len(string, expand_vars);
     res = malloc(len + 1);
-    state = NORMAL;
+    if (res == NULL)
+        return NULL;
     i = 0;
-    j = 0;
-
-    while (i < string.count)
+    state = NORMAL;
+    while (string.count > 0)
     {
         if (state == NORMAL)
-        {
-            if (string.s[i] == '\'')
-            {
-                state = SQUOTE_STATE;
-                i++;
-                continue;
-            }
-            else if (string.s[i] == '"')
-            {
-                state = DQUOTE_STATE;
-                i++;
-                continue;
-            }
-            else if (expand_vars && string.s[i] == '$')
-            {
-                i++;
-                int count = parse_key_count(string.s + i);
-                if (count)
-                {
-                    if (get_env_value(ft_substr(string.s + i, 0, count)))
-                        j += ft_strlcpy(res + j, get_env_value(ft_substr(string.s + i, 0, count)), len - j + 1);
-                    i += count;
-                }
-                else
-                {
-                    res[j] = '$';
-                    j++;
-                }
-                continue;
-            }
-            else
-            {
-                res[j] = string.s[i];
-                i++;
-                j++;
-            }
-        }
+            state = expand_normal_mode(res, &string, &i, expand_vars);
         else if (state == DQUOTE_STATE)
-        {
-            if (string.s[i] == '"')
-            {
-                state = NORMAL;
-                i++;
-                continue;
-            }
-            else if (expand_vars && string.s[i] == '$')
-            {
-                i++;
-                int count = parse_key_count(string.s + i);
-                if (count)
-                {
-                    if (get_env_value(ft_substr(string.s + i, 0, count)))
-                        j += ft_strlcpy(res + j, get_env_value(ft_substr(string.s + i, 0, count)), len - j + 1);
-                    i += count;
-                }
-                else
-                {
-                    res[j] = '$';
-                    j++;
-                }
-                continue;
-            }
-            else
-            {
-                res[j] = string.s[i];
-                i++;
-                j++;
-            }
-        }
+            state = expand_dquote_mode(res, &string, &i, expand_vars);
         else if (state == SQUOTE_STATE)
-        {
-            if (string.s[i] == '\'')
-            {
-                state = NORMAL;
-                i++;
-                continue;
-            }
-            else
-            {
-                res[j] = string.s[i];
-                i++;
-                j++;
-            }
-        }
-        else
-            assert(!"IMPOSSIBLE");
+            state = expand_squote_mode(res, &string, &i);
     }
-    res[j] = 0;
+    res[i] = 0;
     return res;
 }
 

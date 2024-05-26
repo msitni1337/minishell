@@ -107,6 +107,7 @@ size_t get_expanded_args_count(char **argv, char **cwdfiles)
     bool has_match;
 
     i = 0;
+    res = 0;
     while (argv && argv[i])
     {
         if (ft_strchr(argv[i], '*'))

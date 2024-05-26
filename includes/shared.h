@@ -21,6 +21,7 @@
 #include "libft.h"
 
 #define USED(x) ((void)(x))
+#define eq(c1, c2) ((c1) == (c2))
 
 typedef struct s_string
 {
