@@ -19,6 +19,7 @@ typedef struct s_cmd
     char **argv;
     char *bin_path;
     t_node *subshell;
+    t_node **tree_root;
 } t_cmd;
 
 #endif

@@ -365,14 +365,15 @@ t_node *advance_logical_operator(t_node *operator, int ret_value)
     return NULL;
 }
 
-int interpret_root(t_node *root)
+int interpret_root(t_node *exec_root, t_node**tree_root)
 {
     int ret_value;
     t_cmd cmd;
     t_node *tmp;
     t_node *node;
 
-    node = root;
+    cmd.tree_root = tree_root;
+    node = exec_root;
     cmd.read_pipe = -1;
     ret_value = 0;
     while (node && shell.interrupt == FALSE)

@@ -12,30 +12,29 @@
 
 #include "built-ins.h"
 
-// todo return correct values..
-
 int go_to_path(char *path)
 {
-	char *old_pwd;
-	char cwd[PATH_MAX];
+	char *cwd;
 
-	getcwd(cwd, sizeof(cwd));
-	old_pwd = ft_strdup(cwd);
-	if (access(path, X_OK) == 0)
+	cwd = getcwd(NULL, 0);
+	if (cwd && access(path, X_OK) == 0)
 	{
 		if (chdir(path) == -1)
 		{
-			perror("minishell: cd");
-			exit(EXIT_FAILURE);
+			perror(PROG_NAME": cd");
+			return 1;
 		}
-		add_or_replace_env("OLDPWD", old_pwd);
-		getcwd(cwd, sizeof(cwd));
-		add_or_replace_env("PWD", ft_strdup(cwd));
+		add_or_replace_env("OLDPWD", cwd);
+		cwd = getcwd(NULL, 0);
+		if (cwd)
+			add_or_replace_env("PWD", cwd);
+		else
+			perror(PROG_NAME": cd");
 		return 0;
 	}
 	else
 	{
-		perror("minishell: cd");
+		perror(PROG_NAME": cd");
 		return 1;
 	}
 }
@@ -53,13 +52,10 @@ int go_to_home()
 	return go_to_path(home_path);
 }
 
-// todo return correct values..
-
 int return_to_oldpwd(t_cmd *cmd)
 {
 	int ret_value;
 	char *old_pwd;
-	char*tmp;
 
 	old_pwd = get_env_value("OLDPWD");
 	if (old_pwd == NULL)
@@ -67,15 +63,11 @@ int return_to_oldpwd(t_cmd *cmd)
 		write(STDERR_FILENO, "cd: OLDPWD not set\n", 19);
 		return 1;
 	}
-	tmp = ft_strdup(old_pwd);
-	ret_value = go_to_path(tmp);
+	ret_value = go_to_path(old_pwd);
 	if (ret_value == 0)
 		ft_pwd(*cmd);
-	free(tmp);
 	return ret_value;
 }
-
-// TODO: make cd print exact error message + return correct value..
 
 int change_directory(t_cmd cmd)
 {

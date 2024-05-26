@@ -65,7 +65,8 @@ void start_shell()
                 print_tree(cmd_root);
             readline("PRESS ENTER TO EXECUTE TREE");
             */
-            shell.last_exit_value = interpret_root(cmd_root);
+            shell.last_exit_value = interpret_root(cmd_root, &cmd_root);
+            free_tree(&cmd_root);
         }
         else
         {

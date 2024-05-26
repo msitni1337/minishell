@@ -46,7 +46,8 @@ void execute_file()
     line = read_entire_stdin();
     if (parse_line(line, &cmd_root) != NULL)
     {
-        shell.last_exit_value = interpret_root(cmd_root);
+        shell.last_exit_value = interpret_root(cmd_root ,&cmd_root);
+        free_tree(&cmd_root);
     }
     else
     {

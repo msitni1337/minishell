@@ -55,7 +55,8 @@ int exec_subshell(t_cmd cmd, bool wait_child)
             dup2(cmd.outfile, STDOUT_FILENO);
         if (cmd.read_pipe != -1)
             close(cmd.read_pipe);
-        ret_value = interpret_root(cmd.subshell->children);
+        ret_value = interpret_root(&(cmd.subshell->children), cmd.tree_root);
+        free_tree(cmd.tree_root);
         exit(ret_value);
     }
     return 0;
