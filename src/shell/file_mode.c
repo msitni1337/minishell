@@ -43,17 +43,16 @@ void execute_file()
     t_node *cmd_root;
     char *line;
 
-    line = read_entire_stdin();
-    if (parse_line(line, &cmd_root) != NULL)
+    shell.line = read_entire_stdin();
+    if (parse_line(shell.line, &cmd_root) != NULL)
     {
-        shell.last_exit_value = interpret_root(cmd_root ,&cmd_root);
-        free_tree(&cmd_root);
+        shell.last_exit_value = interpret_root(cmd_root, &cmd_root);
     }
     else
     {
         close_here_docs();
         shell.last_exit_value = 2;
     }
-
-    free(line);
+    free_tree(&shell.tree_root);
+    free(shell.line);
 }

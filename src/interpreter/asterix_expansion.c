@@ -133,7 +133,7 @@ size_t get_expanded_args_count(char **argv, char **cwdfiles)
     return res;
 }
 
-char **expand_asterices_argv(char **argv, size_t *argc)
+char **expand_asterices(char **argv, size_t *argc)
 {
     size_t i;
     size_t j;
@@ -172,6 +172,10 @@ char **expand_asterices_argv(char **argv, size_t *argc)
                 // printf("not match: %s\n", argv[i]);
                 res[j] = argv[i];
                 j++;
+            }
+            else
+            {
+                free(argv[i]);
             }
         }
         else

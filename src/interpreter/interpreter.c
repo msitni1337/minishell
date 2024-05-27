@@ -35,12 +35,6 @@ int open_file_as(char *fname, t_cmd *cmd, t_node_type type)
         p_flags = O_RDONLY;
         m_flags = 0;
     }
-    if (type == NODE_HERE_DOC)
-    {
-        if (cmd->infile != STDIN_FILENO)
-            close(cmd->infile);
-        return 0;
-    }
 
     if (type == NODE_REDIRECT_OUT)
     {
@@ -71,6 +65,55 @@ int open_file_as(char *fname, t_cmd *cmd, t_node_type type)
     return 0;
 }
 
+int expand_filename_asterice(char *name, t_cmd* cmd)
+{
+    char **expanded_name;
+    size_t count;
+    int ret_value;
+
+    expanded_name = malloc(sizeof(char*));
+    count = 1;
+    if (expand_argv == NULL)
+        malloc_error(name, NULL, NULL, NULL);
+    expanded_name = expand_asterices(expand_argv, &count)
+    if (count > 1)
+    {
+        print_error(name, "ambiguous redirect");
+        free(name);
+        return 1;
+    }
+    name = *expand_argv;
+    free(expand_argv);
+    ret_value = open_file_as(name, cmd, node->type);
+    free(name);
+    return ret_value;
+}
+
+int open_file_from_node(t_node *node, t_cmd *cmd)
+{
+    char *name;
+    int ret_value;
+
+    if (node->type == NODE_HERE_DOC)
+    {
+        if (cmd->infile != STDIN_FILENO)
+            close(cmd->infile);
+        cmd->infile = node->children->here_doc_fd;
+        return 0;
+    }
+    name = expand_string(node->children->token_str, TRUE);
+    if (name == NULL)
+        malloc_error();    
+    if (contains_chars(node->children->token_str, "*") == FALSE)
+    {
+        ret_value = open_file_as(name, cmd, node->type);
+        free(name);
+    }
+    else
+        ret_value = expand_filename_asterice(name, cmd);
+    return ret_value;
+}
+
 int open_files(t_node *cmd_node, t_cmd *cmd)
 {
     int ret_value;
@@ -82,17 +125,9 @@ int open_files(t_node *cmd_node, t_cmd *cmd)
     node = get_next_node_by_type(cmd_node->children, NODE_REDIRECT_IN | NODE_REDIRECT_OUT | NODE_APPEND | NODE_HERE_DOC);
     while (node)
     {
-        if (contains_chars(node->children->token_str, "*") == TRUE) 
-        {
-            assert(!"NOT IMPLEMENTD");
-            return 1;
-        }
-        char *name = expand_string(node->children->token_str, TRUE);
-        ret_value = open_file_as(name, cmd, node->type);
+        ret_value = open_file_from_node(node, cmd);
         if (ret_value)
             return ret_value;
-        if (node->type == NODE_HERE_DOC)
-            cmd->infile = node->children->here_doc_fd;
         node = get_next_node_by_type(node->next, NODE_REDIRECT_IN | NODE_REDIRECT_OUT | NODE_APPEND | NODE_HERE_DOC);
     }
     return 0;
@@ -116,15 +151,9 @@ char *expand_argv(t_string str, bool *has_asterix)
 {
     char *res;
 
-    if (contains_chars(str, "*") == FALSE)
-    {
-        res = expand_string(str, TRUE);
-    }
-    else
-    {
-        res = expand_string(str, FALSE);
+    if (contains_chars(str, "*") == TRUE)
         *has_asterix = TRUE;
-    }
+    res = expand_string(str, TRUE);
     return res;
 }
 
@@ -365,15 +394,14 @@ t_node *advance_logical_operator(t_node *operator, int ret_value)
     return NULL;
 }
 
-int interpret_root(t_node *exec_root, t_node**tree_root)
+int interpret_root(t_node *root)
 {
     int ret_value;
     t_cmd cmd;
     t_node *tmp;
     t_node *node;
 
-    cmd.tree_root = tree_root;
-    node = exec_root;
+    node = root;
     cmd.read_pipe = -1;
     ret_value = 0;
     while (node && shell.interrupt == FALSE)

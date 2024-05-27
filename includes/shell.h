@@ -13,6 +13,8 @@ typedef struct s_shell
 	int interrupt;
 	int collecting_here_doc;
     t_darr childs_pids;
+	t_node*tree_root;
+	char*line;
 } t_shell;
 
 // global variable:

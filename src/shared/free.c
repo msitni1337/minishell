@@ -1,5 +1,18 @@
 #include "free.h"
 
+void free_p(void*p1, void*p2, void*p3, char**p4)
+{
+    if (p1)
+        free(p1);
+    if (p2)
+        free(p2);
+    if (p3)
+        free(p3);
+    if (p4)
+        free_arr(p4);
+    
+}
+
 void free_childs(t_node *parent)
 {
     t_node *tmp;
@@ -53,9 +66,13 @@ void free_env_list(t_lstenv *head)
 
 void free_global_vars()
 {
-    if (shell.childs_pids.data)
-        free(shell.childs_pids.data);
+    free_p(shell.line, shell.childs_pids.data, NULL, NULL);
+    shell.line = NULL;
+    shell.childs_pids.data = NULL;
+    shell.childs_pids.capacity = 0;
     free_env_list(shell.env_list);
+    free_tree(&shell.tree_root);
+    close_here_docs();
 }
 
 void free_arr(char **arr)
@@ -83,4 +100,14 @@ void close_here_docs()
         close(fd);
         fd++;
     }
+}
+
+void free_cmd(t_cmd*cmd)
+{
+    char *argv0;
+
+    argv0 = cmd->argv[0];
+    free_arr(cmd->argv);
+    if (argv0 != cmd->bin_path)
+        free(cmd->bin_path);
 }

@@ -45,28 +45,25 @@ void assert_all_files_closed()
 
 void start_shell()
 {
-    t_node *cmd_root;
-    char *line;
     char *prompt;
 
     shell.interrupt = FALSE;
     shell.collecting_here_doc = FALSE;
     prompt = get_prompt();
-    line = readline(prompt);
+    shel.line = readline(prompt);
     free(prompt);
-    while (line)
+    while (shell.line)
     {
         shell.interrupt = FALSE;
-        add_history(line);
-        if (parse_line(line, &cmd_root) != NULL)
+        add_history(shell.line);
+        if (parse_line(shell.line, &shell.tree_root) != NULL)
         {
             /*
             if (cmd_root)
                 print_tree(cmd_root);
             readline("PRESS ENTER TO EXECUTE TREE");
             */
-            shell.last_exit_value = interpret_root(cmd_root, &cmd_root);
-            free_tree(&cmd_root);
+            shell.last_exit_value = interpret_root(shell.tree_root);
         }
         else
         {
@@ -78,10 +75,12 @@ void start_shell()
                 shell.last_exit_value = 130;
             }
         }
+        free_tree(&shell.tree_root);
         assert_all_files_closed();
-        free(line);
+        free(shell.line);
+        shell.line = NULL;
         prompt = get_prompt();
-        line = readline(prompt);
+        shell.line = readline(prompt);
         free(prompt);
     }
 }
