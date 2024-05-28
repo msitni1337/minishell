@@ -43,7 +43,7 @@ int ft_isspace(char c);
 // freeing
 void free_arr(char **arr);
 void close_here_docs();
-void malloc_error(void*p1, void*p2, void*p3, char**p4);
+void malloc_error(void*p1, void*p2, char**p3, t_cmd*cmd);
 void exit_with_code(t_cmd*cmd, int exit_value);
 
 #endif

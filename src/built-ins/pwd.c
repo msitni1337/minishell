@@ -14,17 +14,13 @@
 
 int		ft_pwd(t_cmd cmd)
 {
-	char path[PATH_MAX];
+	char *path;
 
-	if (getcwd(path, sizeof(path)) != NULL)
-	{
-		ft_putendl_fd(path, cmd.outfile);
-	}
-	else
-	{
-		perror("minishell: pwd");
-		return errno;
-	}
+	path = getcwd(NULL, 0);
+	if (path == NULL)
+		malloc_error(NULL, NULL, NULL, &cmd);
+	ft_putendl_fd(path, cmd.outfile);
+	free(path);
 	return 0;
 }
 

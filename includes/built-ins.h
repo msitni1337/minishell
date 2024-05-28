@@ -49,4 +49,7 @@ int ft_exit(t_cmd cmd);
 int check_key_is_valid(char*key);
 int key_not_valid(char *cmd, char*key);
 
+/* freeing */
+void *free_p(void*p1, void*p2, void*p3, char**p4);
+
 #endif

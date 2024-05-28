@@ -11,8 +11,6 @@
 /* ************************************************************************** */
 #include "built-ins.h"
 
-/* START OF NORMED FUNCTIONS */
-
 size_t get_exported_env_count()
 {
     t_lstenv *env_lst;
@@ -104,7 +102,7 @@ int print_exported_env(t_cmd cmd)
 
     sorted_env = get_sorted_env();
     if (sorted_env == NULL)
-        malloc_error(&cmd);
+        malloc_error(NULL, NULL, NULL, &cmd);
     i = 0;
     while (sorted_env && sorted_env[i])
     {
@@ -114,6 +112,35 @@ int print_exported_env(t_cmd cmd)
     }
     free(sorted_env);
     return 0;
+}
+
+t_node *add_env(char *key, char *arg, bool append)
+{
+    char *value;
+    char *tmp;
+    t_lstenv *node;
+
+    value = ft_strdup(ft_strchr(arg, '=') + 1);
+    if (value == NULL)
+        return NULL;
+    if (append == TRUE)
+    {
+        node = add_or_replace_env(key, NULL);
+        if (node == NULL)
+            return free_p(value, NULL, NULL, NULL);
+        node->is_set = TRUE;
+        tmp = ft_strjoin(node->value, value);
+        free_p(node->value, NULL, NULL, NULL);
+        if (tmp == NULL)
+            return free_p(value, NULL, NULL, NULL);
+        node->value = tmp;
+    }
+    else
+    {
+        node = add_or_replace_env(key, value);
+    }
+    free(value);
+    return node;
 }
 
 char *get_key_and_mode(char *arg, bool *append)
@@ -130,45 +157,30 @@ char *get_key_and_mode(char *arg, bool *append)
     return ft_substr(arg, 0, tmp - arg);
 }
 
-/* END OF NORMED FUNCTIONS */
-
-void add_env(char *key, char *arg, bool append)
+void export_env_to_list(t_cmd *cmd, char* arg, char *key, bool append)
 {
-    char *value;
-    char *tmp;
-    t_lstenv *node;
+    t_node *node;
 
-    value = ft_strdup(ft_strchr(arg, '=') + 1);
-    if (append == TRUE)
-    {
-        node = add_or_replace_env(key, NULL);
-        node->is_set = TRUE;
-        tmp = ft_strjoin(node->value, value);
-        free(node->value);
-        node->value = tmp;
-    }
+    if (ft_strchr(arg, '='))
+        node = add_env(key, arg, append);
     else
-    {
-        add_or_replace_env(key, value);
-    }
-    free(value);
+        node = add_or_replace_env(key, NULL);
+    if (node == NULL)
+        malloc_error(key, NULL, NULL, cmd);
 }
 
-int export_env(char *arg)
+int export_env(t_cmd *cmd, size_t i)
 {
     int ret_value;
     bool append;
     char *key;
 
-    key = get_key_and_mode(arg, &append);
+    key = get_key_and_mode(cmd->argv[i], &append);
+    if (key == NULL)
+        malloc_error(NULL, NULL, NULL, cmd);
     ret_value = 0;
     if (ft_strlen(key) && check_key_is_valid(key) == 0)
-    {
-        if (ft_strchr(arg, '='))
-            add_env(key, arg, append);
-        else
-            add_or_replace_env(key, NULL);
-    }
+        export_env_to_list(cmd, cmd->argv[i], key, append);
     else
         ret_value = key_not_valid("export", key);
     free(key);
@@ -185,7 +197,7 @@ int parse_export(t_cmd cmd)
     ret_value = 0;
     while (i < cmd.argc)
     {
-        tmp = export_env(cmd.argv[i]);
+        tmp = export_env(&cmd, i);
         if (ret_value == 0)
             ret_value = tmp;
         i++;

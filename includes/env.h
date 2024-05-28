@@ -21,6 +21,6 @@ void remove_env(t_lstenv **lstenv, char *key);
 char	*get_env_value(char *key);
 t_lstenv *get_env_node(char *data);
 t_lstenv* add_or_replace_env(char *key, char *value);
-char **get_env_arr();
+char **get_exported_env_arr();
 
 #endif

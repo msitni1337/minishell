@@ -1,6 +1,6 @@
 #include "free.h"
 
-void free_p(void*p1, void*p2, void*p3, char**p4)
+void *free_p(void*p1, void*p2, void*p3, char**p4)
 {
     if (p1)
         free(p1);
@@ -10,7 +10,7 @@ void free_p(void*p1, void*p2, void*p3, char**p4)
         free(p3);
     if (p4)
         free_arr(p4);
-    
+    return NULL;
 }
 
 void free_childs(t_node *parent)
