@@ -2,32 +2,53 @@
 
 void print_tree(t_node *root);
 
+char* get_chopped_prompt(char*cwd, int home_len)
+{
+    char *res;
+    char *tmp;
+
+    tmp = ft_strjoin(PROMPTSTART"~", cwd + home_len);
+    free(cwd);
+    if  (tmp == NULL)
+        malloc_error(NULL, NULL, NULL, NULL);
+    res = ft_strjoin(tmp, PROMPTEND);
+    free(tmp);
+    if (res == NULL)
+        malloc_error(cwd, NULL, NULL, NULL);
+    return res;
+}
+
+char* get_full_prompt(char*cwd)
+{
+    char *res;
+    char *tmp;
+
+    tmp = ft_strjoin(PROMPTSTART, cwd);
+    free(cwd);
+    if (tmp == NULL)
+        malloc_error(NULL, NULL, NULL, NULL);
+    res = ft_strjoin(tmp, PROMPTEND);
+    free(tmp);
+    if (res == NULL)
+        malloc_error(NULL, NULL, NULL, NULL);
+    return res;
+}
+
 char *get_prompt()
 {
     char *home;
-    char *tmp;
-    char *res;
+    char *cwd;
+    int home_len;
 
-    tmp = getcwd(NULL, 0);
+    cwd = getcwd(NULL, 0);
+    if (cwd == NULL)
+        malloc_error(NULL, NULL, NULL, NULL);
     home = get_env_value("HOME");
-    if (ft_strncmp(tmp, home, ft_strlen(home)) == 0)
-    {
-        res = ft_strjoin(PROMPTSTART, "~");
-        home = ft_strjoin(res, tmp + ft_strlen(home));
-        free(tmp);
-        tmp = ft_strjoin(home, PROMPTEND);
-        free(home);
-        res = tmp;
-    }
+    home_len = ft_strlen(home);
+    if (home && ft_strncmp(cwd, home, home_len) == 0)
+        return get_chopped_prompt(cwd, home_len);
     else
-    {
-        res = ft_strjoin(PROMPTSTART, tmp);
-        free(tmp);
-        tmp = ft_strjoin(res, PROMPTEND);
-        free(res);
-        res = tmp;
-    }
-    return res;
+        return get_full_prompt(cwd);
 }
 
 void assert_all_files_closed()
@@ -43,6 +64,17 @@ void assert_all_files_closed()
     assert(fd == 3 && "FILES NOT CLOSED PROPERLY");
 }
 
+void add_line_to_hist(char*line)
+{
+    t_lexer lexer;
+    t_token token;
+
+    lexer = new_lexer(line);
+    token = get_next_token(&lexer, TRUE);
+    if (token.type != TOKEN_EOF)
+        add_history(line);
+}
+
 void start_shell()
 {
     char *prompt;
@@ -50,19 +82,15 @@ void start_shell()
     shell.interrupt = FALSE;
     shell.collecting_here_doc = FALSE;
     prompt = get_prompt();
-    shel.line = readline(prompt);
+    shell.line = readline(prompt);
     free(prompt);
     while (shell.line)
     {
         shell.interrupt = FALSE;
-        add_history(shell.line);
+        add_line_to_hist(shell.line);
         if (parse_line(shell.line, &shell.tree_root) != NULL)
         {
-            /*
-            if (cmd_root)
-                print_tree(cmd_root);
-            readline("PRESS ENTER TO EXECUTE TREE");
-            */
+
             shell.last_exit_value = interpret_root(shell.tree_root);
         }
         else

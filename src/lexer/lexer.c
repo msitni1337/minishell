@@ -36,6 +36,8 @@ int write_next_line_here_doc(t_node *node, int write)
 
     shell.collecting_here_doc = TRUE;
     delim = ft_substr(node->token_str.s, 0, node->token_str.count);
+    if (delim == NULL)
+        malloc_error(NULL, NULL, NULL, NULL);
     line = readline("> ");
     while (line)
     {
@@ -55,24 +57,38 @@ int write_next_line_here_doc(t_node *node, int write)
     return 1;
 }
 
+void init_here_doc(int *pip, int *stdin_dup)
+{
+    *stdin_dup = dup(0);
+    if (*stdin_dup == -1)
+    {
+        perror("dup");
+        exit_with_code(NULL, errno);
+    }
+    if (pipe(pip) == -1)
+    {
+        perror("pipe");
+        exit_with_code(NULL, errno);
+    }
+}
+
 int get_here_doc(t_node *node)
 {
     int pip[2];
     int stdin_dup;
 
-    stdin_dup = dup(0);
-    if (pipe(pip) == -1)
-    {
-        perror("pipe");
-        exit(1);
-    }
+    init_here_doc(pip, &stdin_dup);
     node->here_doc_fd = pip[0];
     if (write_next_line_here_doc(node, pip[1]))
     {
         if (shell.interrupt == TRUE)
         {
             shell.collecting_here_doc = FALSE;
-            dup2(stdin_dup, 0);
+            if (dup2(stdin_dup, 0) == -1)
+            {
+                perror("dup2");
+                exit_with_code(NULL, errno);
+            }
             close(stdin_dup);
             return 1;
         }
@@ -86,20 +102,22 @@ int get_here_doc(t_node *node)
 int add_redirect_node(t_lexer *lexer, t_node *curr_cmd, int type)
 {
     t_token token;
-    t_node *red_node;
+    t_node *tmp;
 
-    red_node = create_node(type);
-    append_child(curr_cmd, red_node);
+    tmp = create_node(type);
+    if (tmp == NULL)
+        malloc_error(NULL, NULL, NULL, NULL);
+    append_child(curr_cmd, tmp);
     token = get_next_token(lexer, TRUE);
     if (token.type == TOKEN_STRING)
     {
-        t_node *node = add_str_node(red_node, lexer);
-        if (node == NULL)
+        tmp = add_str_node(tmp, lexer);
+        if (tmp == NULL)
         {
             syntax_error(SYN_QUOTE);
             return 1;
         }
-        if (type == NODE_HERE_DOC && get_here_doc(node))
+        if (type == NODE_HERE_DOC && get_here_doc(tmp))
             return 1;
     }
     else
@@ -163,7 +181,6 @@ t_node **parser_loop(t_node **root, t_lexer *lexer, t_token *token)
             return syntax_error(SYN_ERR);
         *token = get_next_token(lexer, TRUE);
     }
-    shell.collecting_here_doc = FALSE;
     return root;
 }
 
@@ -172,7 +189,6 @@ t_node **parse_line(char *line, t_node **root)
     t_lexer lexer;
     t_token token;
 
-    //  line = expand_asterices(line);
     lexer = new_lexer(line);
     token = get_next_token(&lexer, TRUE);
     if (token.type == TOKEN_EOF)

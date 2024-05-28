@@ -57,6 +57,8 @@ t_node *add_str_node(t_node *root, t_lexer *lexer)
 
     lexer->pos--;
     node = create_node(NODE_STRING);
+    if (node == NULL)
+        malloc_error(NULL, NULL, NULL, NULL);    
     node->token_str.count = 0;
     node->token_str.s = lexer->line + lexer->pos;
     if (get_string(lexer, &(node->token_str)) == FALSE)

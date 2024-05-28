@@ -18,6 +18,8 @@ t_node *link_new_node(t_node **root, int type, int as_child)
     t_node *node;
 
     node = create_node(type);
+    if (node == NULL)
+        malloc_error(NULL, NULL, NULL, NULL);    
     if (as_child)
         append_child(*root, node);
     else
@@ -37,6 +39,8 @@ t_node **link_logic_oper(t_node **root, t_lexer *lexer, t_token *token, int as_c
 t_node **init_subshell_node(t_node *root, t_lexer *lexer, t_token *token, t_node **subshell)
 {
     *subshell = create_node(NODE_SUBSHELL);
+    if (*subshell == NULL)
+        malloc_error(NULL, NULL, NULL, NULL);
     append_child(root, *subshell);
     *token = get_next_token(lexer, TRUE);
     if (token->type == TOKEN_EOF)
