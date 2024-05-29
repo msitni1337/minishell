@@ -51,7 +51,7 @@ char **get_exported_env_arr()
 	res = malloc(sizeof(char **) * (exp_env_size() + 1));
 	if (res == NULL)
 		return NULL;
-		ft_memset(res, 0, sizeof(char **) * (exp_env_size() + 1));
+	ft_memset(res, 0, sizeof(char **) * (exp_env_size() + 1));
 	current = shell.env_list;
 	i = 0;
 	while (current)

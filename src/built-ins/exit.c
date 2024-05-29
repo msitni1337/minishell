@@ -1,6 +1,6 @@
 #include "built-ins.h"
 
-void print_error(char *arg, char *reason)
+void print_exit_error(char *arg, char *reason)
 {
     ft_putstr_fd(PROG_NAME ": exit: ", STDERR_FILENO);
     if (arg)
@@ -36,7 +36,7 @@ int ft_exit(t_cmd cmd)
         {
             if (cmd.argc > 2)
             {
-                print_error(NULL, "too many arguments");
+                print_exit_error(NULL, "too many arguments");
                 return 1;
             }
             shell.last_exit_value = ft_atoi(cmd.argv[1]);
@@ -44,9 +44,9 @@ int ft_exit(t_cmd cmd)
         else
         {
             shell.last_exit_value = 2;
-            print_error(cmd.argv[1], "numeric argument required");
+            print_exit_error(cmd.argv[1], "numeric argument required");
         }
     }
-    exit_with_code(cmd, shell.last_exit_value);
+    exit_with_code(&cmd, shell.last_exit_value);
     return 0;
 }

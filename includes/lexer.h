@@ -13,59 +13,6 @@
 #define IS_REDIRECT_TOKEN(token) ((token).type == TOKEN_REDIRECT_IN || (token).type == TOKEN_REDIRECT_OUT || (token).type == TOKEN_HERE_DOC || (token).type == TOKEN_APPEND)
 #define IS_LOGIC_OP(token) ((token).type == TOKEN_PIPE || (token).type == TOKEN_AND || (token).type == TOKEN_OR)
 
-typedef enum e_token_type
-{
-    TOKEN_EOF = 0,
-    TOKEN_STRING = (1 << 1),
-    TOKEN_PIPE = (1 << 2),
-    TOKEN_REDIRECT_IN = (1 << 3),
-    TOKEN_REDIRECT_OUT = (1 << 4),
-    TOKEN_APPEND = (1 << 5),
-    TOKEN_HERE_DOC = (1 << 6),
-    TOKEN_AND  = (1 << 7),
-    TOKEN_OR  = (1 << 8),
-    TOKEN_OPEN_PAREN = (1 << 9),
-    TOKEN_CLOSE_PAREN  = (1 << 10),
-} t_token_type;
-
-typedef enum e_node_type
-{
-    NODE_CMD = (1 << 0),
-    NODE_STRING = (1 << 1),
-    NODE_PIPE = (1 << 2),
-    NODE_REDIRECT_IN = (1 << 3),
-    NODE_REDIRECT_OUT = (1 << 4),
-    NODE_APPEND = (1 << 5),
-    NODE_HERE_DOC = (1 << 6),
-    NODE_AND = (1 << 7),
-    NODE_OR = (1 << 8),
-    NODE_SUBSHELL = (1 << 9),
-} t_node_type;
-
-typedef struct s_token
-{
-    t_token_type type;
-    char c;
-} t_token;
-
-typedef struct s_node
-{
-    t_node_type type;
-
-    t_string token_str;
-    struct s_node *next;
-    size_t list_count;
-    struct s_node *children;
-    size_t childs_count;
-    int here_doc_fd;
-} t_node;
-
-typedef struct s_lexer
-{
-    const char *line;
-    size_t count;
-    size_t pos;
-} t_lexer;
 
 // Tree Builder:
 t_node *create_node(int type);

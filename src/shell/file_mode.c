@@ -41,12 +41,11 @@ void execute_file()
 {
     assert(!"DOES NOT ADHERE TO THE NEW LOGIC FLOW");
     t_node *cmd_root;
-    char *line;
 
     shell.line = read_entire_stdin();
     if (parse_line(shell.line, &cmd_root) != NULL)
     {
-        shell.last_exit_value = interpret_root(cmd_root, &cmd_root);
+        shell.last_exit_value = interpret_root(shell.tree_root);
     }
     else
     {

@@ -114,7 +114,7 @@ int print_exported_env(t_cmd cmd)
     return 0;
 }
 
-t_node *add_env(char *key, char *arg, bool append)
+t_lstenv *add_env(char *key, char *arg, bool append)
 {
     char *value;
     char *tmp;
@@ -159,7 +159,7 @@ char *get_key_and_mode(char *arg, bool *append)
 
 void export_env_to_list(t_cmd *cmd, char* arg, char *key, bool append)
 {
-    t_node *node;
+    t_lstenv *node;
 
     if (ft_strchr(arg, '='))
         node = add_env(key, arg, append);

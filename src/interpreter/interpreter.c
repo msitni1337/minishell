@@ -65,7 +65,7 @@ int open_file_as(char *fname, t_cmd *cmd, t_node_type type)
     return 0;
 }
 
-int expand_filename_asterice(char *name, t_cmd* cmd)
+int expand_filename_asterice(char *name, t_cmd* cmd, t_node*node)
 {
     char **expanded_name;
     size_t count;
@@ -73,17 +73,19 @@ int expand_filename_asterice(char *name, t_cmd* cmd)
 
     expanded_name = malloc(sizeof(char*));
     count = 1;
-    if (expand_argv == NULL)
-        malloc_error(name, NULL, NULL, NULL);
-    expanded_name = expand_asterices(expand_argv, &count)
+    if (expanded_name == NULL)
+        malloc_error(name, NULL, NULL, cmd);
+    expanded_name = expand_asterices(expanded_name, &count);
     if (count > 1)
     {
         print_error(name, "ambiguous redirect");
         free(name);
         return 1;
     }
-    name = *expand_argv;
-    free(expand_argv);
+    if (name != *expanded_name)
+        free(name);
+    name = *expanded_name;
+    free(expanded_name);
     ret_value = open_file_as(name, cmd, node->type);
     free(name);
     return ret_value;
@@ -103,14 +105,11 @@ int open_file_from_node(t_node *node, t_cmd *cmd)
     }
     name = expand_string(node->children->token_str, TRUE);
     if (name == NULL)
-        malloc_error();    
+        malloc_error(NULL, NULL, NULL, NULL);
     if (contains_chars(node->children->token_str, "*") == FALSE)
-    {
         ret_value = open_file_as(name, cmd, node->type);
-        free(name);
-    }
     else
-        ret_value = expand_filename_asterice(name, cmd);
+        ret_value = expand_filename_asterice(name, cmd, node);
     return ret_value;
 }
 
@@ -176,7 +175,7 @@ void get_argv(t_node *cmd_node, t_cmd *cmd)
         tmp = get_next_node_by_type(tmp->next, NODE_STRING);
     }
     if (has_asterix == TRUE)
-        cmd->argv = expand_asterices_argv(cmd->argv, &cmd->argc);
+        cmd->argv = expand_asterices(cmd->argv, &cmd->argc);
 }
 
 int is_builtin(const char *s)

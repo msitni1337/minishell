@@ -7,7 +7,6 @@ void print_error(char*name, char *reason)
     ft_putstr_fd(": ", STDERR_FILENO);
     ft_putstr_fd(reason, STDERR_FILENO);
     write(STDERR_FILENO, "\n", 1);
-    return NULL;
 }
 
 void *syntax_error(char *reason)
@@ -30,7 +29,7 @@ void malloc_error(void*p1, void*p2, char**p3, t_cmd*cmd)
 void exit_with_code(t_cmd*cmd, int exit_value)
 {
     free_cmd(cmd);
-    free_tree(&(shell.tree_root));
+    free_tree(&shell.tree_root);
     free_global_vars();
     exit(exit_value);
 }

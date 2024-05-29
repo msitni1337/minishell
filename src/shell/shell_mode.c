@@ -90,7 +90,6 @@ void start_shell()
         add_line_to_hist(shell.line);
         if (parse_line(shell.line, &shell.tree_root) != NULL)
         {
-
             shell.last_exit_value = interpret_root(shell.tree_root);
         }
         else
@@ -104,8 +103,8 @@ void start_shell()
             }
         }
         free_tree(&shell.tree_root);
-        assert_all_files_closed();
         free(shell.line);
+        assert_all_files_closed();
         shell.line = NULL;
         prompt = get_prompt();
         shell.line = readline(prompt);
