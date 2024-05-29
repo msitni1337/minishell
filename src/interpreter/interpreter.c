@@ -65,29 +65,29 @@ int open_file_as(char *fname, t_cmd *cmd, t_node_type type)
     return 0;
 }
 
-int expand_filename_asterice(char *name, t_cmd* cmd, t_node*node)
+int expand_filename_asterice(char *name, t_cmd *cmd, t_node *node)
 {
     char **expanded_name;
     size_t count;
     int ret_value;
 
-    expanded_name = malloc(sizeof(char*));
-    count = 1;
+    expanded_name = malloc(2 * sizeof(char *));
     if (expanded_name == NULL)
-        malloc_error(name, NULL, NULL, cmd);
+        malloc_error(name, NULL, NULL, NULL);
+    count = 1;
+    expanded_name[0] = ft_strdup(name);
+    expanded_name[1] = NULL;
+    if (expanded_name[0] == NULL)
+        malloc_error(name, NULL, NULL, NULL);
     expanded_name = expand_asterices(expanded_name, &count);
     if (count > 1)
     {
-        print_error(name, "ambiguous redirect");
-        free(name);
+        print_error(name, "ambiguous redirection");
+        free_arr(expanded_name);
         return 1;
     }
-    if (name != *expanded_name)
-        free(name);
-    name = *expanded_name;
-    free(expanded_name);
-    ret_value = open_file_as(name, cmd, node->type);
-    free(name);
+    ret_value = open_file_as(*expanded_name, cmd, node->type);
+    free_arr(expanded_name);
     return ret_value;
 }
 
@@ -110,6 +110,7 @@ int open_file_from_node(t_node *node, t_cmd *cmd)
         ret_value = open_file_as(name, cmd, node->type);
     else
         ret_value = expand_filename_asterice(name, cmd, node);
+    free(name);
     return ret_value;
 }
 
