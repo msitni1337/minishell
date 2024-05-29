@@ -15,7 +15,7 @@ typedef struct s_darr
     size_t capacity;
 } t_darr;
 
-t_darr init_da(size_t elem_size, void*elem);
+t_darr init_da(size_t elem_size);
 t_darr* add_to_arr(t_darr*arr, void*data);
 t_darr* expand_arr(t_darr*arr);
 

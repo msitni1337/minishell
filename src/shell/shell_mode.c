@@ -14,7 +14,7 @@ char* get_chopped_prompt(char*cwd, int home_len)
     res = ft_strjoin(tmp, PROMPTEND);
     free(tmp);
     if (res == NULL)
-        malloc_error(cwd, NULL, NULL, NULL);
+        malloc_error(NULL, NULL, NULL, NULL);
     return res;
 }
 

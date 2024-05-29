@@ -38,7 +38,7 @@ t_darr get_all_cwd_filenames()
     struct dirent *dir;
     t_darr res;
 
-    res = init_da(sizeof(char *), NULL);
+    res = init_da(sizeof(char *));
     tmp = getcwd(NULL, 0);
     cwdir = opendir(tmp);
     free(tmp);

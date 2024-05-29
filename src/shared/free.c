@@ -1,6 +1,6 @@
 #include "free.h"
 
-void *free_p(void*p1, void*p2, void*p3, char**p4)
+void *free_p(void *p1, void *p2, void *p3, char **p4)
 {
     if (p1)
         free(p1);
@@ -48,8 +48,8 @@ void free_tree(t_node **root)
 
 void free_env_list(t_lstenv *head)
 {
-    t_lstenv*node;
-    t_lstenv*tmp;
+    t_lstenv *node;
+    t_lstenv *tmp;
 
     node = head;
     while (node)
@@ -102,12 +102,18 @@ void close_here_docs()
     }
 }
 
-void free_cmd(t_cmd*cmd)
+void free_cmd(t_cmd *cmd)
 {
     char *argv0;
 
-    argv0 = cmd->argv[0];
-    free_arr(cmd->argv);
-    if (argv0 != cmd->bin_path)
+    argv0 = NULL;
+    if (cmd->argv)
+    {
+        argv0 = cmd->argv[0];
+        free_arr(cmd->argv);
+    }
+    if (cmd->bin_path && argv0 != cmd->bin_path)
         free(cmd->bin_path);
+    cmd->argv = NULL;
+    cmd->bin_path = NULL;
 }

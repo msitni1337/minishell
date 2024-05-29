@@ -27,6 +27,7 @@ t_lstenv *increment_shlvl()
 		if (value == NULL)
 			return NULL;
 		node = add_or_replace_env("SHLVL", value);
+		free(value);
 	}
 	else
 		node = add_or_replace_env("SHLVL", "1");

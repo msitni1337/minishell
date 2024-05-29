@@ -161,6 +161,7 @@ void get_argv(t_node *cmd_node, t_cmd *cmd)
     t_node *tmp;
     bool has_asterix;
     size_t i;
+    cmd->bin_path = NULL;
     cmd->argc = get_argc(cmd_node);
     cmd->argv = malloc(sizeof(char *) * (cmd->argc + 1));
     cmd->argv[cmd->argc] = NULL;

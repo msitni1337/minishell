@@ -23,6 +23,7 @@ char *construct_env(char *key, char *value)
 		value++;
 		i++;
 	}
+	tmp[i] = 0;
 	return tmp;
 }
 
@@ -48,10 +49,10 @@ char **get_exported_env_arr()
 	size_t i;
 	t_lstenv *current;
 
-	res = malloc(sizeof(char **) * (exp_env_size() + 1));
+	res = malloc(sizeof(char *) * (exp_env_size() + 1));
 	if (res == NULL)
 		return NULL;
-	ft_memset(res, 0, sizeof(char **) * (exp_env_size() + 1));
+	ft_memset(res, 0, sizeof(char *) * (exp_env_size() + 1));
 	current = shell.env_list;
 	i = 0;
 	while (current)
