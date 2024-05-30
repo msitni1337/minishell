@@ -25,7 +25,7 @@ typedef enum e_expansion_state
 int interpret_root(t_node *root);
 
 //  execution:
-int execute_cmd(t_cmd cmd, bool is_pipe, bool wait_child);
+int execute_cmd(t_cmd *cmd, bool is_pipe, bool wait_child);
 int wait_all_childs();
 
 //  utils:
@@ -40,6 +40,7 @@ char *expand_string(t_string string, int expand_vars);
 size_t get_expanded_str_len(t_string string, int expand_vars);
 size_t parse_key_count(const char *s);
 void copy_var_value(char *res, t_string *string, size_t *i);
+int count_num_chars(long n);
 
 /* errors */
 void print_error(char* name,char *reason);

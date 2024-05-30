@@ -9,7 +9,7 @@ void ft_swap_lst(char **p1, char **p2)
     *p2 = tmp;
 }
 
-void sort_list(char **list)
+void sort_arr(char **list)
 {
     size_t i;
     bool is_swapped;
@@ -57,7 +57,7 @@ char **get_all_cwd_filenames()
         dir = readdir(cwdir);
     }
     closedir(cwdir);
-    sort_list(res.data);
+    sort_arr(res.data);
     return res.data;
 }
 
@@ -146,9 +146,14 @@ char **expand_asterices(char **argv, size_t *argc)
 
     cwdfiles = get_all_cwd_filenames();
     if (cwdfiles == NULL)
-        return NULL;
+        return free_arr(argv);
     count = get_expanded_args_count(argv, cwdfiles);
     res = malloc(sizeof(char *) * (count + 1));
+    if (res == NULL)
+    {
+        free_arr(cwdfiles);
+        return free_arr(argv);
+    }
     res[count] = NULL;
     i = 0;
     j = 0;

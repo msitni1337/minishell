@@ -75,7 +75,7 @@ void free_global_vars()
     close_here_docs();
 }
 
-void free_arr(char **arr)
+void *free_arr(char **arr)
 {
     char **tmp;
 
@@ -87,6 +87,7 @@ void free_arr(char **arr)
     }
     if (arr)
         free(tmp);
+    return NULL;
 }
 
 void close_here_docs()
@@ -106,6 +107,8 @@ void free_cmd(t_cmd *cmd)
 {
     char *argv0;
 
+    if (cmd == NULL)
+        return;
     argv0 = NULL;
     if (cmd->argv)
     {

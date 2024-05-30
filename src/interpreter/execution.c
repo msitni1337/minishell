@@ -24,7 +24,7 @@ int wait_all_childs()
     return ret_value;
 }
 
-int exec_subshell(t_cmd cmd, bool wait_child)
+int exec_subshell(t_cmd *cmd, bool wait_child)
 {
     int ret_value;
     int pid;
@@ -32,33 +32,32 @@ int exec_subshell(t_cmd cmd, bool wait_child)
     pid = fork();
     if (pid == -1)
     {
-        perror(cmd.argv[0]);
-        exit(errno);
+        perror(cmd->argv[0]);
+        exit_with_code(cmd, errno);
     }
     if (pid)
     {
         if (add_to_arr(&(shell.childs_pids), &pid) == NULL)
-            malloc_error(NULL, NULL, NULL, &cmd);
-        if (cmd.infile != STDIN_FILENO)
-            close(cmd.infile);
-        if (cmd.outfile != STDOUT_FILENO)
-            close(cmd.outfile);
-        free_cmd(&cmd);
+            malloc_error(NULL, NULL, NULL, cmd);
+        if (cmd->infile != STDIN_FILENO)
+            close(cmd->infile);
+        if (cmd->outfile != STDOUT_FILENO)
+            close(cmd->outfile);
+        free_cmd(cmd);
         if (wait_child == FALSE)
             return 0;
         return wait_all_childs();
     }
     else
     {
-        // todo increment subshell level
-        if (cmd.infile != STDIN_FILENO)
-            dup2(cmd.infile, STDIN_FILENO);
-        if (cmd.outfile != STDOUT_FILENO)
-            dup2(cmd.outfile, STDOUT_FILENO);
-        if (cmd.read_pipe != -1)
-            close(cmd.read_pipe);
-        ret_value = interpret_root(cmd.subshell->children);
-        exit_with_code(&cmd, ret_value);
+        if (cmd->infile != STDIN_FILENO)
+            dup2(cmd->infile, STDIN_FILENO);
+        if (cmd->outfile != STDOUT_FILENO)
+            dup2(cmd->outfile, STDOUT_FILENO);
+        if (cmd->read_pipe != -1)
+            close(cmd->read_pipe);
+        ret_value = interpret_root(cmd->subshell->children);
+        exit_with_code(cmd, ret_value);
     }
     return 0;
 }
@@ -101,7 +100,7 @@ int exec_builtin_fork(t_cmd *cmd)
     if (pid == -1)
     {
         perror(cmd->argv[0]);
-        exit(errno);
+        exit_with_code(cmd, errno);
     }
     if (pid)
     {
@@ -125,27 +124,27 @@ int exec_builtin_fork(t_cmd *cmd)
     return 0;
 }
 
-int exec_bin(t_cmd cmd, bool wait_child)
+int exec_bin(t_cmd *cmd, bool wait_child)
 {
     int pid;
 
     pid = fork();
     if (pid == -1)
     {
-        perror(cmd.argv[0]);
-        exit(errno);
+        perror(cmd->argv[0]);
+        exit_with_code(cmd, errno);
     }
     if (pid)
     {
         if (add_to_arr(&(shell.childs_pids), &pid) == NULL)
-            malloc_error(NULL, NULL, NULL, &cmd);
-        if (add_or_replace_env("_", cmd.bin_path) == NULL)
-            malloc_error(NULL, NULL, NULL, &cmd);
-        if (cmd.infile != STDIN_FILENO)
-            close(cmd.infile);
-        if (cmd.outfile != STDOUT_FILENO)
-            close(cmd.outfile);
-        free_cmd(&cmd);
+            malloc_error(NULL, NULL, NULL, cmd);
+        if (add_or_replace_env("_", cmd->bin_path) == NULL)
+            malloc_error(NULL, NULL, NULL, cmd);
+        if (cmd->infile != STDIN_FILENO)
+            close(cmd->infile);
+        if (cmd->outfile != STDOUT_FILENO)
+            close(cmd->outfile);
+        free_cmd(cmd);
         if (wait_child == FALSE)
             return 0;
         return wait_all_childs();
@@ -153,41 +152,41 @@ int exec_bin(t_cmd cmd, bool wait_child)
     else
     {
         // todo increment subshell level
-        if (cmd.infile != STDIN_FILENO)
-            dup2(cmd.infile, STDIN_FILENO);
-        if (cmd.outfile != STDOUT_FILENO)
-            dup2(cmd.outfile, STDOUT_FILENO);
+        if (cmd->infile != STDIN_FILENO)
+            dup2(cmd->infile, STDIN_FILENO);
+        if (cmd->outfile != STDOUT_FILENO)
+            dup2(cmd->outfile, STDOUT_FILENO);
 
-        if (cmd.read_pipe != -1)
-            close(cmd.read_pipe);
+        if (cmd->read_pipe != -1)
+            close(cmd->read_pipe);
 
         // todo need to emplement exported envp to pass it to binary..
         char **envp = get_exported_env_arr();
         if (envp == NULL)
-            malloc_error(NULL, NULL, NULL, &cmd);
-        // printf("cmd is = %s\n", cmd.bin_path);
-        execve(cmd.bin_path, cmd.argv, envp);
+            malloc_error(NULL, NULL, NULL, cmd);
+        // printf("cmd is = %s\n", cmd->bin_path);
+        execve(cmd->bin_path, cmd->argv, envp);
         perror("Execve failed.");
         free_arr(envp);
-        exit_with_code(&cmd, errno);
-        // printf("%s : execve failed\n", cmd.bin_path);
-        // perror(cmd.argv[0]);
+        exit_with_code(cmd, errno);
+        // printf("%s : execve failed\n", cmd->bin_path);
+        // perror(cmd->argv[0]);
     }
     return 0;
 }
 
-int execute_cmd(t_cmd cmd, bool is_pipe, bool wait_child)
+int execute_cmd(t_cmd *cmd, bool is_pipe, bool wait_child)
 {
-    if (cmd.type == CMD_SUBSHELL)
+    if (cmd->type == CMD_SUBSHELL)
         return exec_subshell(cmd, wait_child);
-    else if (cmd.type == CMD_BINARY)
+    else if (cmd->type == CMD_BINARY)
         return exec_bin(cmd, wait_child);
-    else if (cmd.type == CMD_BUILTIN)
+    else if (cmd->type == CMD_BUILTIN)
     {
         if (is_pipe == TRUE)
-            return exec_builtin_fork(&cmd);
+            return exec_builtin_fork(cmd);
         else
-            return exec_builtin(&cmd);
+            return exec_builtin(cmd);
     }
     return 0;
 }

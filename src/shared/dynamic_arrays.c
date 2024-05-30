@@ -15,7 +15,7 @@ t_darr *expand_arr(t_darr *arr)
 {
 	void *tmp;
 
-	if (!arr || arr->count < arr->capacity)
+	if (arr == NULL)
 		return NULL;
 	arr->capacity += DA_DEFAULT_CAPACITY;
 	tmp = malloc(arr->capacity * arr->elem_size);
@@ -31,7 +31,7 @@ t_darr *expand_arr(t_darr *arr)
 
 t_darr *add_to_arr(t_darr *arr, void *data)
 {
-	if (arr->count >= arr->capacity)
+	if (arr->capacity == 0 || arr->count >= arr->capacity - 1)
 	{
 		if (expand_arr(arr) == NULL)
 			return NULL;

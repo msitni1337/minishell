@@ -116,7 +116,7 @@ typedef struct s_cmd
 int ft_isspace(char c);
 
 // freeing
-void free_arr(char **arr);
+void *free_arr(char **arr);
 void free_global_vars();
 void free_tree(t_node **root);
 void close_here_docs();

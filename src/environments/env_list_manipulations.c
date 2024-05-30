@@ -70,11 +70,7 @@ t_lstenv *get_env_node(char *key)
 char *get_env_value(char *key)
 {
 	t_lstenv *current;
-
-	if (ft_strcmp(key, "?") == 0)
-		return ft_itoa(shell.last_exit_value);
-	if (ft_strcmp(key, "$") == 0)
-		return ft_itoa(getpid());
+	
 	current = shell.env_list;
 	while (current)
 	{

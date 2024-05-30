@@ -10,7 +10,12 @@ void count_var_len(t_string string, size_t *i, size_t *len)
     if (count && count < BUFSIZ - 1)
     {
         ft_strlcpy(buff, string.s + *i, count + 1);
-        *len += ft_strlen(get_env_value(buff));
+        if (ft_strcmp(buff, "$") == 0)
+            *len += count_num_chars(getpid());
+        else if (ft_strcmp(buff, "?") == 0)
+            *len += count_num_chars(shell.last_exit_value);
+        else
+            *len += ft_strlen(get_env_value(buff));
         *i += count;
     }
 }

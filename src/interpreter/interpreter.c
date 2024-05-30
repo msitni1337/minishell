@@ -80,6 +80,8 @@ int expand_filename_asterice(char *name, t_cmd *cmd, t_node *node)
     if (expanded_name[0] == NULL)
         malloc_error(name, NULL, NULL, NULL);
     expanded_name = expand_asterices(expanded_name, &count);
+    if (expanded_name == NULL)
+        malloc_error(name, NULL, NULL, NULL);
     if (count > 1)
     {
         print_error(name, "ambiguous redirection");
@@ -177,7 +179,11 @@ void get_argv(t_node *cmd_node, t_cmd *cmd)
         tmp = get_next_node_by_type(tmp->next, NODE_STRING);
     }
     if (has_asterix == TRUE)
+    {
         cmd->argv = expand_asterices(cmd->argv, &cmd->argc);
+        if (cmd->argv == NULL)
+            malloc_error(NULL, NULL, NULL, NULL);
+    }
 }
 
 int is_builtin(const char *s)
@@ -284,12 +290,6 @@ int parse_cmd(t_node *node, t_cmd *cmd)
     int ret_value;
     t_node *subshell;
 
-    // if (cmd->read_pipe != -1)
-    // {
-    //     cmd->infile = dup(cmd->read_pipe);
-    //     close(cmd->read_pipe);
-    //     cmd->read_pipe = -1;
-    // }
     if (cmd->outfile != STDOUT_FILENO)
     {
         close(cmd->outfile);
@@ -338,7 +338,7 @@ int execute_piping(t_node **node, t_cmd *cmd)
         if (pipe(pip) == -1)
         {
             perror(cmd->argv[0]);
-            exit(errno);
+            exit_with_code(cmd, errno);
         }
         if (ret_value == 0)
         {
@@ -347,7 +347,7 @@ int execute_piping(t_node **node, t_cmd *cmd)
             else
                 close(pip[1]);
             cmd->read_pipe = pip[0];
-            execute_cmd(*cmd, TRUE, FALSE);
+            execute_cmd(cmd, TRUE, FALSE);
             cmd->infile = pip[0];
         }
         else
@@ -356,13 +356,14 @@ int execute_piping(t_node **node, t_cmd *cmd)
             if (cmd->infile != STDIN_FILENO)
                 close(cmd->infile);
             cmd->infile = pip[0];
+            free_cmd(cmd);
         }
         (*node) = (*node)->next;
         assert(*node != NULL);
     }
     if (ret_value == 0)
     {
-        execute_cmd(*cmd, TRUE, FALSE);
+        execute_cmd(cmd, TRUE, FALSE);
         ret_value = wait_all_childs();
     }
     else
@@ -371,6 +372,7 @@ int execute_piping(t_node **node, t_cmd *cmd)
             close(cmd->infile);
         if (cmd->outfile != STDOUT_FILENO)
             close(cmd->outfile);
+        free_cmd(cmd);
         wait_all_childs();
     }
     return ret_value;
@@ -405,6 +407,8 @@ int interpret_root(t_node *root)
     node = root;
     cmd.read_pipe = -1;
     ret_value = 0;
+    cmd.argv = NULL;
+    cmd.bin_path = NULL;
     while (node && shell.interrupt == FALSE)
     {
         cmd.infile = STDIN_FILENO;
@@ -421,7 +425,9 @@ int interpret_root(t_node *root)
             {
                 ret_value = parse_cmd(node, &cmd);
                 if (ret_value == 0)
-                    ret_value = execute_cmd(cmd, FALSE, TRUE);
+                    ret_value = execute_cmd(&cmd, FALSE, TRUE);
+                else
+                    free_cmd(&cmd);
                 node = advance_logical_operator(tmp, ret_value);
             }
         }
@@ -429,7 +435,9 @@ int interpret_root(t_node *root)
         {
             ret_value = parse_cmd(node, &cmd);
             if (ret_value == 0)
-                ret_value = execute_cmd(cmd, FALSE, TRUE);
+                ret_value = execute_cmd(&cmd, FALSE, TRUE);
+            else
+                free_cmd(&cmd);
             break;
         }
     }
