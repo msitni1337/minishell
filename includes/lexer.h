@@ -13,6 +13,7 @@
 #define IS_REDIRECT_TOKEN(token) ((token).type == TOKEN_REDIRECT_IN || (token).type == TOKEN_REDIRECT_OUT || (token).type == TOKEN_HERE_DOC || (token).type == TOKEN_APPEND)
 #define IS_LOGIC_OP(token) ((token).type == TOKEN_PIPE || (token).type == TOKEN_AND || (token).type == TOKEN_OR)
 
+#define HERE_DOC_FILENAME_ERROR "Can't get a valid here_doc file name after 100 tries, maybe it's time to clean up your /tmp folder manually."
 
 // Tree Builder:
 t_node *create_node(int type);

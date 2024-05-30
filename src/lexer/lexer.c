@@ -57,29 +57,84 @@ int write_next_line_here_doc(t_node *node, int write)
     return 1;
 }
 
-void init_here_doc(int *pip, int *stdin_dup)
+int randomize_str(char *str, int rand_fd)
 {
+    unsigned char c;
+    size_t len;
+
+    len = ft_strlen(str);
+    if (read(rand_fd, str, len) == -1)
+    {
+        perror("read");
+        exit_with_code(NULL, errno);
+    }
+    while (str && *str)
+    {
+        c = *str;
+        c = (c % 10) + '0';
+        *str = c;
+        str++;
+    }
+    return 1;
+}
+
+void get_here_doc_filename(char *filename)
+{
+    int rand_fd;
+    int tries;
+
+    rand_fd = open("/dev/random", O_RDONLY);
+    if (rand_fd == -1)
+    {
+        perror("open");
+        free(filename);
+        exit_with_code(NULL, errno);
+    }
+    tries = randomize_str(filename + 25, rand_fd);
+    while (tries < 100 && access(filename, F_OK) == 0)
+        tries += randomize_str(filename + 25, rand_fd);
+    if (access(filename, F_OK) == 0)
+    {
+        ft_putstr_fd(HERE_DOC_FILENAME_ERROR, STDERR_FILENO);
+        free(filename);
+        exit_with_code(NULL, EXIT_FAILURE);
+    }
+    close(rand_fd);
+}
+
+void init_here_doc(int *fd, int *stdin_dup)
+{
+    char *filename;
+
+    filename = ft_strdup("/tmp/" PROG_NAME "_here_doc_XXXXXXXX");
+    if (filename == NULL)
+        malloc_error(NULL, NULL, NULL, NULL);
+    get_here_doc_filename(filename);
     *stdin_dup = dup(0);
     if (*stdin_dup == -1)
     {
         perror("dup");
+        free(filename);
         exit_with_code(NULL, errno);
     }
-    if (pipe(pip) == -1)
+    *fd = open(filename, O_RDWR | O_CREAT);
+    if (*fd == -1)
     {
-        perror("pipe");
+        perror("open");
+        free(filename);
         exit_with_code(NULL, errno);
     }
+    free(filename);
 }
 
 int get_here_doc(t_node *node)
 {
-    int pip[2];
+    int fd;
     int stdin_dup;
 
-    init_here_doc(pip, &stdin_dup);
-    node->here_doc_fd = pip[0];
-    if (write_next_line_here_doc(node, pip[1]))
+    init_here_doc(&fd, &stdin_dup);
+    node->here_doc_fd = fd;
+    if (write_next_line_here_doc(node, fd))
     {
         if (shell.interrupt == TRUE)
         {
@@ -90,6 +145,7 @@ int get_here_doc(t_node *node)
                 exit_with_code(NULL, errno);
             }
             close(stdin_dup);
+            close(fd);
             return 1;
         }
         syntax_error("expecting delim for here_doc.");
