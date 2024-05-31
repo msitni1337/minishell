@@ -165,10 +165,13 @@ int exec_bin(t_cmd *cmd, bool wait_child)
         if (envp == NULL)
             malloc_error(NULL, NULL, NULL, cmd);
         // printf("cmd is = %s\n", cmd->bin_path);
-        execve(cmd->bin_path, cmd->argv, envp);
-        perror("Execve failed.");
+        if (cmd->argc > 0)
+        {
+            execve(cmd->bin_path, cmd->argv, envp);
+            perror("Execve failed.");
+        }
         free_arr(envp);
-        exit_with_code(cmd, errno);
+        exit_with_code(cmd, EXIT_SUCCESS);
         // printf("%s : execve failed\n", cmd->bin_path);
         // perror(cmd->argv[0]);
     }

@@ -42,7 +42,10 @@ char *get_prompt()
 
     cwd = getcwd(NULL, 0);
     if (cwd == NULL)
-        malloc_error(NULL, NULL, NULL, NULL);
+    {
+        perror("get_cwd");
+        exit_with_code(NULL, EXIT_FAILURE);
+    }
     home = get_env_value("HOME");
     home_len = ft_strlen(home);
     if (home && ft_strncmp(cwd, home, home_len) == 0)

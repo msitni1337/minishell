@@ -18,7 +18,10 @@ int		ft_pwd(t_cmd cmd)
 
 	path = getcwd(NULL, 0);
 	if (path == NULL)
-		malloc_error(NULL, NULL, NULL, &cmd);
+	{
+		perror("get_cwd");
+		exit_with_code(&cmd, EXIT_FAILURE);
+	}
 	ft_putendl_fd(path, cmd.outfile);
 	free(path);
 	return 0;

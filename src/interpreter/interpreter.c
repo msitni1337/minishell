@@ -217,68 +217,58 @@ char *check_bin_path(t_string path, char *cmd)
     return NULL;
 }
 
-char *get_binary_path(char *cmd)
+char *get_binary_path(char *bin_name)
 {
-    t_string tmp;
-    char *full_path;
+    t_string paths;
     char *raw_path;
-    int i;
+    char *full_path;
+    size_t i;
 
     raw_path = get_env_value("PATH");
+    paths.s = raw_path;
+    paths.count = 0;
+    if (raw_path == NULL)
+        return check_bin_path(paths, bin_name);
     i = 0;
-    tmp.s = raw_path;
-    tmp.count = 0;
-    while (raw_path)
+    while (raw_path && raw_path[i])
     {
         if (raw_path[i] == ':')
         {
-            full_path = check_bin_path(tmp, cmd);
+            full_path = check_bin_path(paths, bin_name);
             if (full_path)
                 return full_path;
-            i++;
-            tmp.s = raw_path + i;
-            tmp.count = 0;
-            continue;
+            paths.s = raw_path + i + 1;
+            paths.count = 0;
         }
-        if (raw_path[i] == 0)
-        {
-            full_path = check_bin_path(tmp, cmd);
-            if (full_path)
-                return full_path;
-            break;
-        }
-        tmp.count++;
+        else
+            paths.count++;
         i++;
     }
-    return NULL;
+    return check_bin_path(paths, bin_name);
 }
 
 int get_cmd_path(t_cmd *cmd)
 {
-    char *argv0;
-
-    argv0 = cmd->argv[0];
-    if (ft_strchr(argv0, '/'))
+    if (ft_strchr(cmd->argv[0], '/'))
     {
-        if (access(argv0, F_OK))
+        if (access(cmd->argv[0], F_OK))
         {
-            perror("minishell");
+            perror(cmd->argv[0]);
             return 127;
         }
-        if (access(argv0, X_OK))
+        if (access(cmd->argv[0], X_OK))
         {
-            perror("minishell");
+            perror(cmd->argv[0]);
             return 126;
         }
-        cmd->bin_path = argv0;
+        cmd->bin_path = cmd->argv[0];
     }
     else
     {
-        cmd->bin_path = get_binary_path(argv0);
-        if (!cmd->bin_path)
+        cmd->bin_path = get_binary_path(cmd->argv[0]);
+        if (cmd->bin_path == NULL)
         {
-            /*TODO LOG ERROR  "command not found" */
-            perror("command not found");
+            print_error(cmd->argv[0], "command not found");
             return 127;
         }
     }
@@ -288,7 +278,6 @@ int get_cmd_path(t_cmd *cmd)
 int parse_cmd(t_node *node, t_cmd *cmd)
 {
     int ret_value;
-    t_node *subshell;
 
     if (cmd->outfile != STDOUT_FILENO)
     {
@@ -298,69 +287,52 @@ int parse_cmd(t_node *node, t_cmd *cmd)
     ret_value = open_files(node, cmd);
     if (ret_value)
         return ret_value;
-    subshell = get_next_node_by_type(node->children, NODE_SUBSHELL);
-    if (subshell)
-    {
-        cmd->type = CMD_SUBSHELL;
-        cmd->subshell = subshell;
-    }
-    else
+    cmd->type = CMD_SUBSHELL;
+    cmd->subshell = get_next_node_by_type(node->children, NODE_SUBSHELL);
+    if (cmd->subshell == NULL)
     {
         cmd->type = CMD_BINARY;
         get_argv(node, cmd);
-        if (cmd->argc > 0)
-        {
-            if (is_builtin(cmd->argv[0]))
-                cmd->type = CMD_BUILTIN;
-            else
-                return get_cmd_path(cmd);
-        }
+        if (cmd->argc == 0)
+            return 0;
+        if (is_builtin(cmd->argv[0]) == FALSE)
+            return get_cmd_path(cmd);
+        cmd->type = CMD_BUILTIN;
     }
     return 0;
 }
 
-int execute_piping(t_node **node, t_cmd *cmd)
+void queue_cmd(t_cmd *cmd, int ret_value)
 {
     int pip[2];
-    int ret_value;
 
-    cmd->infile = STDIN_FILENO;
-    cmd->outfile = STDOUT_FILENO;
-    while (TRUE)
+    if (pipe(pip) == -1)
     {
-        ret_value = parse_cmd(*node, cmd);
-        assert(cmd->infile != -1 && cmd->outfile != -1);
-        (*node) = (*node)->next;
-        if (*node == NULL || (*node)->type != NODE_PIPE)
-            break;
-        // if (cmd->outfile != STDOUT_FILENO)
-        //     close(cmd->outfile);
-        if (pipe(pip) == -1)
-        {
-            perror(cmd->argv[0]);
-            exit_with_code(cmd, errno);
-        }
-        if (ret_value == 0)
-        {
-            if (cmd->outfile == STDOUT_FILENO)
-                cmd->outfile = pip[1];
-            else
-                close(pip[1]);
-            cmd->read_pipe = pip[0];
-            execute_cmd(cmd, TRUE, FALSE);
-            cmd->infile = pip[0];
-        }
-        else
-        {
-            close(pip[1]);
-            if (cmd->infile != STDIN_FILENO)
-                close(cmd->infile);
-            cmd->infile = pip[0];
-            free_cmd(cmd);
-        }
-        (*node) = (*node)->next;
-        assert(*node != NULL);
+        perror(cmd->argv[0]);
+        exit_with_code(cmd, EXIT_FAILURE);
     }
+    if (ret_value == 0)
+    {
+        if (cmd->outfile == STDOUT_FILENO)
+            cmd->outfile = pip[1];
+        else
+            close(pip[1]);
+        cmd->read_pipe = pip[0];
+        execute_cmd(cmd, TRUE, FALSE);
+        cmd->infile = pip[0];
+    }
+    else
+    {
+        close(pip[1]);
+        if (cmd->infile != STDIN_FILENO)
+            close(cmd->infile);
+        cmd->infile = pip[0];
+        free_cmd(cmd);
+    }
+}
+
+int wait_on_last_piped_cmd(t_cmd *cmd, int ret_value)
+{
     if (ret_value == 0)
     {
         execute_cmd(cmd, TRUE, FALSE);
@@ -378,62 +350,93 @@ int execute_piping(t_node **node, t_cmd *cmd)
     return ret_value;
 }
 
+int execute_piping(t_node **node, t_cmd *cmd)
+{
+    int ret_value;
+
+    cmd->infile = STDIN_FILENO;
+    cmd->outfile = STDOUT_FILENO;
+    while (TRUE)
+    {
+        ret_value = parse_cmd(*node, cmd);
+        (*node) = (*node)->next;
+        if (*node == NULL || (*node)->type != NODE_PIPE)
+            break;
+        queue_cmd(cmd, ret_value);
+        *node = (*node)->next;
+    }
+    return wait_on_last_piped_cmd(cmd, ret_value);
+}
+
 t_node *advance_logical_operator(t_node *operator, int ret_value)
 {
-    t_node *cmd_to_exec;
+    t_node *cmd_to_exec_next;
 
-    cmd_to_exec = NULL;
+    cmd_to_exec_next = NULL;
     while (operator)
     {
-        cmd_to_exec = operator->next;
+        cmd_to_exec_next = operator->next;
         if (operator->type == NODE_AND && ret_value == 0)
             break;
         if (operator->type == NODE_OR && ret_value)
             break;
-        operator= cmd_to_exec->next;
+        operator= cmd_to_exec_next->next;
     }
     if (operator)
-        return cmd_to_exec;
+        return cmd_to_exec_next;
     return NULL;
+}
+
+int interpret_logical_operator(t_node **curr_node, t_node *next_operator, t_cmd *cmd)
+{
+    int ret_value;
+
+    if (next_operator->type == NODE_PIPE)
+    {
+        ret_value = execute_piping(curr_node, cmd);
+        *curr_node = advance_logical_operator(*curr_node, ret_value);
+    }
+    else
+    {
+        ret_value = parse_cmd(*curr_node, cmd);
+        if (ret_value == 0)
+            ret_value = execute_cmd(cmd, FALSE, TRUE);
+        else
+            free_cmd(cmd);
+        *curr_node = advance_logical_operator(next_operator, ret_value);
+    }
+
+    return ret_value;
+}
+
+t_cmd init_cmd()
+{
+    t_cmd cmd;
+
+    cmd.read_pipe = -1;
+    cmd.argv = NULL;
+    cmd.bin_path = NULL;
+    cmd.infile = STDIN_FILENO;
+    cmd.outfile = STDOUT_FILENO;
+    return cmd;
 }
 
 int interpret_root(t_node *root)
 {
-    int ret_value;
+    t_node *next_operator;
     t_cmd cmd;
-    t_node *tmp;
-    t_node *node;
+    int ret_value;
 
-    node = root;
-    cmd.read_pipe = -1;
+    cmd = init_cmd();
     ret_value = 0;
-    cmd.argv = NULL;
-    cmd.bin_path = NULL;
-    while (node && shell.interrupt == FALSE)
+    while (root && shell.interrupt == FALSE)
     {
-        cmd.infile = STDIN_FILENO;
-        cmd.outfile = STDOUT_FILENO;
-        tmp = node->next;
-        if (tmp)
-        {
-            if (tmp->type == NODE_PIPE)
-            {
-                ret_value = execute_piping(&node, &cmd);
-                node = advance_logical_operator(node, ret_value);
-            }
-            else
-            {
-                ret_value = parse_cmd(node, &cmd);
-                if (ret_value == 0)
-                    ret_value = execute_cmd(&cmd, FALSE, TRUE);
-                else
-                    free_cmd(&cmd);
-                node = advance_logical_operator(tmp, ret_value);
-            }
-        }
+        next_operator = root->next;
+        if (next_operator)
+            ret_value = interpret_logical_operator(&root, next_operator, &cmd);
         else
         {
-            ret_value = parse_cmd(node, &cmd);
+            ret_value = parse_cmd(root, &cmd);
             if (ret_value == 0)
                 ret_value = execute_cmd(&cmd, FALSE, TRUE);
             else
@@ -441,15 +444,7 @@ int interpret_root(t_node *root)
             break;
         }
     }
-    if (cmd.infile != STDIN_FILENO)
-        close(cmd.infile);
-    if (cmd.outfile != STDOUT_FILENO)
-        close(cmd.outfile);
-    if (shell.interrupt == TRUE)
-    {
-        shell.interrupt = FALSE;
-        assert(ret_value == 130);
-        return ret_value; // 130 ??
-    }
+    close_here_docs();
+    shell.interrupt = FALSE;
     return ret_value;
 }
