@@ -7,7 +7,7 @@ void count_var_len(t_string string, size_t *i, size_t *len)
 
     (*i)++;
     count = parse_key_count(string.s + *i);
-    if (count && count < BUFSIZ - 1)
+    if (count > 0 && count < BUFSIZ - 1)
     {
         ft_strlcpy(buff, string.s + *i, count + 1);
         if (ft_strcmp(buff, "$") == 0)
@@ -17,6 +17,10 @@ void count_var_len(t_string string, size_t *i, size_t *len)
         else
             *len += ft_strlen(get_env_value(buff));
         *i += count;
+    }
+    else if (count == -1)
+    {
+        (*len)++;
     }
 }
 

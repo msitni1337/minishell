@@ -22,36 +22,47 @@ t_node *get_next_node_by_type(t_node *root, t_node_type type)
     return tmp;
 }
 
+void get_perm_flags(int *p_flags, int *m_flags, t_node_type type)
+{
+    if (type == NODE_REDIRECT_IN)
+    {
+        *p_flags = O_RDONLY;
+        *m_flags = 0;
+    }
+    else if (type == NODE_REDIRECT_OUT)
+    {
+        *p_flags = O_WRONLY | O_CREAT | O_TRUNC;
+        *m_flags = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+    }
+    else if (type == NODE_APPEND)
+    {
+        *p_flags = O_WRONLY | O_APPEND | O_CREAT;
+        *m_flags = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+    }
+}
+
+void close_previous_files(t_cmd *cmd, t_node_type type)
+{
+    if (cmd->infile != STDIN_FILENO && type == NODE_REDIRECT_IN)
+    {
+        close(cmd->infile);
+        cmd->infile = STDIN_FILENO;
+    }
+    else if (cmd->outfile != STDOUT_FILENO && (type == NODE_REDIRECT_OUT || type == NODE_APPEND))
+    {
+        close(cmd->outfile);
+        cmd->outfile = STDOUT_FILENO;
+    }
+}
+
 int open_file_as(char *fname, t_cmd *cmd, t_node_type type)
 {
     int fd;
     int p_flags;
     int m_flags;
 
-    if (type == NODE_REDIRECT_IN)
-    {
-        if (cmd->infile != STDIN_FILENO)
-            close(cmd->infile);
-        p_flags = O_RDONLY;
-        m_flags = 0;
-    }
-
-    if (type == NODE_REDIRECT_OUT)
-    {
-        if (cmd->outfile != STDOUT_FILENO)
-            close(cmd->outfile);
-        p_flags = O_WRONLY | O_CREAT | O_TRUNC;
-        m_flags = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
-    }
-
-    if (type == NODE_APPEND)
-    {
-        if (cmd->outfile != STDOUT_FILENO)
-            close(cmd->outfile);
-        p_flags = O_WRONLY | O_APPEND | O_CREAT;
-        m_flags = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
-    }
-
+    close_previous_files(cmd, type);
+    get_perm_flags(&p_flags, &m_flags, type);
     fd = open(fname, p_flags, m_flags);
     if (fd < 0)
     {

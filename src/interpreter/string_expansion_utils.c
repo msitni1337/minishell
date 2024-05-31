@@ -5,6 +5,8 @@ size_t parse_key_count(const char *s)
     size_t count;
 
     count = 0;
+    if (s[count] == 0 || ft_isspace(s[count]))
+        return -1;
     if (ft_isdigit(s[count]))
         return ++count;
     else if (eq(s[count], '$') || eq(s[count], '?') || eq(s[count], '*'))
@@ -70,32 +72,38 @@ size_t sitoa(char *buff, long nbr)
     return i;
 }
 
+void perform_var_value_copy(char* res, t_string *string, size_t *i, int key_count)
+{
+    char key[BUFSIZ];
+    char *value;
+
+    ft_strlcpy(key, string->s, key_count + 1);
+    if (ft_strcmp(key, "$") == 0)
+        *i += sitoa(res + *i, getpid());
+    else if (ft_strcmp(key, "?") == 0)
+        *i += sitoa(res + *i, shell.last_exit_value);
+    else
+    {
+        value = get_env_value(key);
+        if (value)
+            *i += ft_strlcpy(res + *i, value, INT32_MAX);
+    }
+    (string->count) -= key_count;
+    (string->s) += key_count;
+}
+
 void copy_var_value(char *res, t_string *string, size_t *i)
 {
-    int count;
-    char *tmp;
-    char buff[BUFSIZ];
+    int key_count;
 
     (string->count)--;
     (string->s)++;
-    count = parse_key_count(string->s);
-    if (count && count < BUFSIZ - 1)
+    key_count = parse_key_count(string->s);
+    if (key_count > 0 && key_count < BUFSIZ - 1)
     {
-        ft_strlcpy(buff, string->s, count + 1);
-        if (ft_strcmp(buff, "$") == 0)
-            *i += sitoa(res + *i, getpid());
-        else if (ft_strcmp(buff, "?") == 0)
-            *i += sitoa(res + *i, shell.last_exit_value);
-        else
-        {
-            tmp = get_env_value(buff);
-            if (tmp)
-                *i += ft_strlcpy(res + *i, tmp, INT32_MAX);
-        }
-        (string->count) -= count;
-        (string->s) += count;
+         perform_var_value_copy(res, string, i, key_count);
     }
-    else
+    else if (key_count == -1)
     {
         res[*i] = '$';
         (*i)++;

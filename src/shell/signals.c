@@ -11,6 +11,7 @@ void handle_sigint()
     }
     if (shell.collecting_here_doc == TRUE)
     {
+        write(1, "\n", 1);
         close(0);
         return;
     }
