@@ -102,7 +102,7 @@ void get_here_doc_filename(char *filename)
     close(rand_fd);
 }
 
-void init_here_doc(int *fd, int *stdin_dup)
+void init_here_doc(t_node *node, int *fd, int *stdin_dup)
 {
     char *filename;
 
@@ -117,8 +117,9 @@ void init_here_doc(int *fd, int *stdin_dup)
         free(filename);
         exit_with_code(NULL, errno);
     }
-    *fd = open(filename, O_RDWR | O_CREAT);
-    if (*fd == -1)
+    *fd = open(filename, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    node->here_doc_fd = open(filename, O_RDWR);
+    if (*fd == -1 || node->here_doc_fd == -1)
     {
         perror("open");
         free(filename);
@@ -127,27 +128,28 @@ void init_here_doc(int *fd, int *stdin_dup)
     free(filename);
 }
 
+int handle_here_doc_interrupt(int stdin_dup)
+{
+    shell.collecting_here_doc = FALSE;
+    if (dup2(stdin_dup, STDIN_FILENO) == -1)
+    {
+        perror("dup2");
+        exit_with_code(NULL, errno);
+    }
+    close(stdin_dup);
+    return 1;
+}
+
 int get_here_doc(t_node *node)
 {
-    int fd;
+    int here_doc_fd;
     int stdin_dup;
 
-    init_here_doc(&fd, &stdin_dup);
-    node->here_doc_fd = fd;
-    if (write_next_line_here_doc(node, fd))
+    init_here_doc(node, &here_doc_fd, &stdin_dup);
+    if (write_next_line_here_doc(node, here_doc_fd))
     {
         if (shell.interrupt == TRUE)
-        {
-            shell.collecting_here_doc = FALSE;
-            if (dup2(stdin_dup, 0) == -1)
-            {
-                perror("dup2");
-                exit_with_code(NULL, errno);
-            }
-            close(stdin_dup);
-            close(fd);
-            return 1;
-        }
+            return handle_here_doc_interrupt(stdin_dup);
         syntax_error("expecting delim for here_doc.");
     }
     close(stdin_dup);

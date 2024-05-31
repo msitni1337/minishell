@@ -8,7 +8,6 @@
 typedef struct s_shell
 {
 	t_lstenv *env_list;
-	char *working_dir;
 	int last_exit_value;
 	int interrupt;
 	int collecting_here_doc;
