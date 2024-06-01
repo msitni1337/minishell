@@ -160,7 +160,7 @@ size_t get_argc(t_node *cmd_node)
     return argc;
 }
 
-char *expand_argv(t_string str, bool *has_asterix)
+char *expand_argv(t_string str, int *has_asterix)
 {
     char *res;
 
@@ -173,7 +173,7 @@ char *expand_argv(t_string str, bool *has_asterix)
 void get_argv(t_node *cmd_node, t_cmd *cmd)
 {
     t_node *tmp;
-    bool has_asterix;
+    int has_asterix;
     size_t i;
     cmd->bin_path = NULL;
     cmd->argc = get_argc(cmd_node);
@@ -438,7 +438,7 @@ int interpret_root(t_node *root)
 
     cmd = init_cmd();
     ret_value = 0;
-    while (root && shell.interrupt == FALSE)
+    while (root && g_shell.interrupt == FALSE)
     {
         next_operator = root->next;
         if (next_operator)
@@ -454,6 +454,6 @@ int interpret_root(t_node *root)
         }
     }
     close_here_docs();
-    shell.interrupt = FALSE;
+    g_shell.interrupt = FALSE;
     return ret_value;
 }

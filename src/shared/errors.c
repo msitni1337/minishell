@@ -30,7 +30,7 @@ void malloc_error(void*p1, void*p2, char**p3, t_cmd*cmd)
 void exit_with_code(t_cmd*cmd, int exit_value)
 {
     free_cmd(cmd);
-    free_tree(&shell.tree_root);
+    free_tree(&g_shell.tree_root);
     free_global_vars();
     exit(exit_value);
 }

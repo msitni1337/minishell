@@ -69,38 +69,38 @@ void listen_for_cmd_line()
 {
     char *prompt;
 
-    if (shell.line)
+    if (g_shell.line)
     {
-        free(shell.line);
-        shell.line = NULL;
+        free(g_shell.line);
+        g_shell.line = NULL;
     }
     prompt = get_prompt();
-    shell.line = readline(prompt);
+    g_shell.line = readline(prompt);
     free(prompt);
 }
 
 void start_shell()
 {
     listen_for_cmd_line();
-    while (shell.line)
+    while (g_shell.line)
     {
-        shell.interrupt = FALSE;
-        add_line_to_hist(shell.line);
-        if (parse_line(shell.line, &shell.tree_root) != NULL)
+        g_shell.interrupt = FALSE;
+        add_line_to_hist(g_shell.line);
+        if (parse_line(g_shell.line, &g_shell.tree_root) != NULL)
         {
-            shell.last_exit_value = interpret_root(shell.tree_root);
+            g_shell.last_exit_value = interpret_root(g_shell.tree_root);
         }
         else
         {
-            shell.last_exit_value = 2;
-            if (shell.interrupt == TRUE)
+            g_shell.last_exit_value = 2;
+            if (g_shell.interrupt == TRUE)
             {
-                shell.interrupt = FALSE;
+                g_shell.interrupt = FALSE;
                 close_here_docs();
-                shell.last_exit_value = 130;
+                g_shell.last_exit_value = 130;
             }
         }
-        free_tree(&shell.tree_root);
+        free_tree(&g_shell.tree_root);
         listen_for_cmd_line();
     }
     ft_putendl_fd("exit", STDERR_FILENO);

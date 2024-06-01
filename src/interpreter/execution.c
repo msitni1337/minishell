@@ -6,17 +6,17 @@ int wait_all_childs()
     int *pids;
     size_t i;
 
-    pids = shell.childs_pids.data;
+    pids = g_shell.childs_pids.data;
     ret_value = 0;
     i = 0;
-    while (i < shell.childs_pids.count)
+    while (i < g_shell.childs_pids.count)
     {
         waitpid(pids[i], &ret_value, 0);
         ret_value = WEXITSTATUS(ret_value);
         i++;
     }
-    shell.childs_pids.count = 0;
-    if (shell.interrupt == TRUE)
+    g_shell.childs_pids.count = 0;
+    if (g_shell.interrupt == TRUE)
         return 130;
     return ret_value;
 }
@@ -49,7 +49,7 @@ void exec_subshell_child(t_cmd *cmd)
     exit_with_code(cmd, ret_value);
 }
 
-int exec_subshell(t_cmd *cmd, bool wait_child)
+int exec_subshell(t_cmd *cmd, int wait_child)
 {
     int pid;
 
@@ -61,7 +61,7 @@ int exec_subshell(t_cmd *cmd, bool wait_child)
     }
     if (pid == 0)
         exec_subshell_child(cmd);
-    if (add_to_arr(&(shell.childs_pids), &pid) == NULL)
+    if (add_to_arr(&(g_shell.childs_pids), &pid) == NULL)
         malloc_error(NULL, NULL, NULL, cmd);
     if (cmd->infile != STDIN_FILENO)
         close(cmd->infile);
@@ -124,7 +124,7 @@ int exec_builtin_fork(t_cmd *cmd)
     }
     if (pid == 0)
         exec_builtin_fork_child(cmd);
-    if (add_to_arr(&(shell.childs_pids), &pid) == NULL)
+    if (add_to_arr(&(g_shell.childs_pids), &pid) == NULL)
         malloc_error(NULL, NULL, NULL, cmd);
     if (add_or_replace_env("_", cmd->argv[0]) == NULL)
         malloc_error(NULL, NULL, NULL, cmd);
@@ -177,7 +177,7 @@ void exec_bin_child(t_cmd *cmd)
     run_bin(cmd);
 }
 
-int exec_bin(t_cmd *cmd, bool wait_child)
+int exec_bin(t_cmd *cmd, int wait_child)
 {
     int pid;
 
@@ -189,7 +189,7 @@ int exec_bin(t_cmd *cmd, bool wait_child)
     }
     if (pid == 0)
         exec_bin_child(cmd);
-    if (add_to_arr(&(shell.childs_pids), &pid) == NULL)
+    if (add_to_arr(&(g_shell.childs_pids), &pid) == NULL)
         malloc_error(NULL, NULL, NULL, cmd);
     if (add_or_replace_env("_", cmd->bin_path) == NULL)
         malloc_error(NULL, NULL, NULL, cmd);
@@ -203,7 +203,7 @@ int exec_bin(t_cmd *cmd, bool wait_child)
     return wait_all_childs();
 }
 
-int execute_cmd(t_cmd *cmd, bool is_pipe, bool wait_child)
+int execute_cmd(t_cmd *cmd, int is_pipe, int wait_child)
 {
     if (cmd->type == CMD_SUBSHELL)
         return exec_subshell(cmd, wait_child);

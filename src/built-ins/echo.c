@@ -12,10 +12,10 @@
 
 #include "built_ins.h"
 
-bool check_flags(char** argv, int*i)
+int	check_flags(char **argv, int *i)
 {
-	bool print_nl;
-	int j;
+	int	print_nl;
+	int	j;
 
 	print_nl = TRUE;
 	while (argv[*i] && argv[*i][0] == '-')
@@ -31,12 +31,12 @@ bool check_flags(char** argv, int*i)
 		else
 			break ;
 	}
-	return print_nl;
+	return (print_nl);
 }
 
 int	check_echo_options(t_cmd cmd)
 {
-	bool print_nl;
+	int	print_nl;
 	int	i;
 
 	i = 1;
@@ -50,21 +50,15 @@ int	check_echo_options(t_cmd cmd)
 	}
 	if (print_nl == TRUE)
 		write(cmd.outfile, "\n", 1);
-	return 0;
+	return (0);
 }
 
-int ft_echo(t_cmd cmd)
+int	ft_echo(t_cmd cmd)
 {
 	if (cmd.argc == 1)
 	{
 		write(cmd.outfile, "\n", 1);
-		return errno;
+		return (errno);
 	}
-	return check_echo_options(cmd);
+	return (check_echo_options(cmd));
 }
-
-// int main(int ac, char **av)
-// {
-// 	ft_echo(ac, av);
-// 	return (0);
-// }

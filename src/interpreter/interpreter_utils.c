@@ -1,6 +1,6 @@
 #include "interpreter.h"
 
-bool contains_chars(t_string string, char *charset)
+int contains_chars(t_string string, char *charset)
 {
     size_t i;
     size_t j;

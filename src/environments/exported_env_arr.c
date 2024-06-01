@@ -33,7 +33,7 @@ size_t exp_env_size()
 	size_t size;
 
 	size = 0;
-	lst = shell.env_list;
+	lst = g_shell.env_list;
 	while (lst)
 	{
 		if (lst->is_set == TRUE)
@@ -53,7 +53,7 @@ char **get_exported_env_arr()
 	if (res == NULL)
 		return NULL;
 	ft_memset(res, 0, sizeof(char *) * (exp_env_size() + 1));
-	current = shell.env_list;
+	current = g_shell.env_list;
 	i = 0;
 	while (current)
 	{

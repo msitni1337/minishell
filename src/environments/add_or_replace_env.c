@@ -14,11 +14,11 @@ t_lstenv *add_new_env(char *key, char *value)
 		value_cpy = ft_strdup(value);
 		if (value_cpy == NULL)
 			return free_p(key_cpy, NULL, NULL, NULL);
-		node = add_env_end(&(shell.env_list), key_cpy, value_cpy);
+		node = add_env_end(&(g_shell.env_list), key_cpy, value_cpy);
 	}
 	else
 	{
-		node = add_env_end(&(shell.env_list), key_cpy, NULL);
+		node = add_env_end(&(g_shell.env_list), key_cpy, NULL);
 		if (node)
 			node->is_set = FALSE;
 	}

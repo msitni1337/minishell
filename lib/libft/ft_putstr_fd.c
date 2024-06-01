@@ -14,7 +14,7 @@
 
 void	ft_putstr_fd(char *s, int fd)
 {
-	unsigned int count;
+	unsigned int	count;
 
 	count = 0;
 	while (fd >= 0 && s && s[count])

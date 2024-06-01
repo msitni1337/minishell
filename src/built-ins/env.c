@@ -14,9 +14,9 @@
 
 int	ft_env(t_cmd cmd)
 {
-	t_lstenv*head;
+	t_lstenv	*head;
 
-	head = shell.env_list;
+	head = g_shell.env_list;
 	while (head)
 	{
 		if (head->is_set)
@@ -27,5 +27,5 @@ int	ft_env(t_cmd cmd)
 		}
 		head = head->next;
 	}
-	return 0;
+	return (0);
 }

@@ -12,10 +12,10 @@
 
 #include "built_ins.h"
 
-int ft_unset(t_cmd cmd)
+int	ft_unset(t_cmd cmd)
 {
-	int ret_value;
-	size_t i;
+	int		ret_value;
+	size_t	i;
 
 	ret_value = 0;
 	i = 1;
@@ -29,9 +29,9 @@ int ft_unset(t_cmd cmd)
 				ret_value = 1;
 			}
 			else
-				remove_env(&shell.env_list, cmd.argv[i]);
+				remove_env(&g_shell.env_list, cmd.argv[i]);
 		}
 		i++;
 	}
-	return ret_value;
+	return (ret_value);
 }

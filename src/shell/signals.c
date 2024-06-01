@@ -2,14 +2,14 @@
 
 void handle_sigint()
 {
-    shell.interrupt = TRUE;
-    shell.last_exit_value = 130;
-    if (shell.childs_pids.count > 0)
+    g_shell.interrupt = TRUE;
+    g_shell.last_exit_value = 130;
+    if (g_shell.childs_pids.count > 0)
     {
         write(1, "\n", 1);
         return;
     }
-    if (shell.collecting_here_doc == TRUE)
+    if (g_shell.collecting_here_doc == TRUE)
     {
         write(1, "\n", 1);
         close(0);

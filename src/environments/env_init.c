@@ -41,7 +41,7 @@ void take_env(const char **envp)
 	t_lstenv *node;
 	int i;
 
-	shell.env_list = NULL;
+	g_shell.env_list = NULL;
 	i = 0;
 	while (envp && envp[i])
 	{
@@ -49,7 +49,7 @@ void take_env(const char **envp)
 		value = ft_strdup(ft_strchr(envp[i], '=') + 1);
 		if (key == NULL || value == NULL)
 			malloc_error(key, value, NULL, NULL);
-		node = add_env_end(&(shell.env_list), key, value);
+		node = add_env_end(&(g_shell.env_list), key, value);
 		if (node == NULL)
 			malloc_error(key, value, NULL, NULL);
 		i++;

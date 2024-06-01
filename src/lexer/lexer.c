@@ -8,7 +8,7 @@ t_token *parse_subshell(t_node *root, t_lexer *lexer, t_token *token)
         return NULL;
     while (token->type != TOKEN_EOF)
     {
-        if (IS_CMD_TOKEN(*token))
+        if (is_cmd_token(*token))
         {
             if (fill_cmd(&subshell, token, lexer, TRUE) != NULL)
                 continue;
@@ -16,7 +16,7 @@ t_token *parse_subshell(t_node *root, t_lexer *lexer, t_token *token)
         }
         else if (subshell->childs_count == 0)
             return syntax_error("empty subshell.");
-        else if (IS_LOGIC_OP(*token))
+        else if (is_logic_op(*token))
         {
             if (link_logic_oper(&subshell, lexer, token, TRUE))
                 continue;
@@ -34,7 +34,7 @@ int write_next_line_here_doc(t_node *node, int write)
     char *line;
     char *delim;
 
-    shell.collecting_here_doc = TRUE;
+    g_shell.collecting_here_doc = TRUE;
     delim = ft_substr(node->token_str.s, 0, node->token_str.count);
     if (delim == NULL)
         malloc_error(NULL, NULL, NULL, NULL);
@@ -130,7 +130,7 @@ void init_here_doc(t_node *node, int *fd, int *stdin_dup)
 
 int handle_here_doc_interrupt(int stdin_dup)
 {
-    shell.collecting_here_doc = FALSE;
+    g_shell.collecting_here_doc = FALSE;
     if (dup2(stdin_dup, STDIN_FILENO) == -1)
     {
         perror("dup2");
@@ -148,12 +148,12 @@ int get_here_doc(t_node *node)
     init_here_doc(node, &here_doc_fd, &stdin_dup);
     if (write_next_line_here_doc(node, here_doc_fd))
     {
-        if (shell.interrupt == TRUE)
+        if (g_shell.interrupt == TRUE)
             return handle_here_doc_interrupt(stdin_dup);
         syntax_error("expecting delim for here_doc.");
     }
     close(stdin_dup);
-    shell.collecting_here_doc = FALSE;
+    g_shell.collecting_here_doc = FALSE;
     return 0;
 }
 
@@ -193,11 +193,11 @@ t_token *fill_cmd(t_node **root, t_token *token, t_lexer *lexer, int as_child)
 
     can_have_subshell = TRUE;
     curr_cmd = link_new_node(root, NODE_CMD, as_child);
-    while (IS_CMD_TOKEN(*token))
+    while (is_cmd_token(*token))
     {
         if (token->type == TOKEN_STRING && link_argv_node(curr_cmd, lexer) == NULL)
             return NULL;
-        else if (IS_REDIRECT_TOKEN(*token) && add_redirect_node(lexer, curr_cmd, token->type))
+        else if (is_redirect_token(*token) && add_redirect_node(lexer, curr_cmd, token->type))
             return NULL;
         else if (token->type == TOKEN_OPEN_PAREN)
         {
@@ -219,7 +219,7 @@ t_node **parser_loop(t_node **root, t_lexer *lexer, t_token *token)
     *root = NULL;
     while (token->type != TOKEN_EOF)
     {
-        if (IS_CMD_TOKEN(*token))
+        if (is_cmd_token(*token))
         {
             token = fill_cmd(root, token, lexer, FALSE);
             if (token)
@@ -228,7 +228,7 @@ t_node **parser_loop(t_node **root, t_lexer *lexer, t_token *token)
         }
         if ((*root)->list_count > 0)
         {
-            if (IS_LOGIC_OP(*token))
+            if (is_logic_op(*token))
             {
                 if (link_logic_oper(root, lexer, token, FALSE))
                     continue;
@@ -251,7 +251,7 @@ t_node **parse_line(char *line, t_node **root)
     token = get_next_token(&lexer, TRUE);
     if (token.type == TOKEN_EOF)
         return NULL;
-    if (!IS_CMD_TOKEN(token))
+    if (!is_cmd_token(token))
         return syntax_error(SYN_ERR);
     return parser_loop(root, &lexer, &token);
 }

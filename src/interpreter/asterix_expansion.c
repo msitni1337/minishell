@@ -12,7 +12,7 @@ void ft_swap_lst(char **p1, char **p2)
 void sort_arr(char **list)
 {
     size_t i;
-    bool is_swapped;
+    int is_swapped;
 
     is_swapped = TRUE;
     while (is_swapped == TRUE)
@@ -102,7 +102,7 @@ int is_pattern_matching(char *pattern, char *name)
 
 void count_matching(char *argv, char **cwdfiles, size_t *res)
 {
-    bool has_match;
+    int has_match;
     int i;
 
     has_match = FALSE;
@@ -153,7 +153,7 @@ char **copy_same_argument(char **res, size_t *index, char *argv, char **cwdfiles
 
 char **add_matching_filenames(char **res, size_t *index, char *argv, char **cwdfiles)
 {
-    bool has_match;
+    int has_match;
     size_t i;
 
     i = 0;

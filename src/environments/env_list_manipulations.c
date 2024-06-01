@@ -57,7 +57,7 @@ t_lstenv *get_env_node(char *key)
 {
 	t_lstenv *current;
 
-	current = shell.env_list;
+	current = g_shell.env_list;
 	while (current)
 	{
 		if (ft_strcmp(current->key, key) == 0)
@@ -71,7 +71,7 @@ char *get_env_value(char *key)
 {
 	t_lstenv *current;
 	
-	current = shell.env_list;
+	current = g_shell.env_list;
 	while (current)
 	{
 		if (ft_strcmp(current->key, key) == 0)

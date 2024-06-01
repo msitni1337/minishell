@@ -66,12 +66,12 @@ void free_env_list(t_lstenv *head)
 
 void free_global_vars()
 {
-    free_p(shell.line, shell.childs_pids.data, NULL, NULL);
-    shell.line = NULL;
-    shell.childs_pids.data = NULL;
-    shell.childs_pids.capacity = 0;
-    free_env_list(shell.env_list);
-    free_tree(&shell.tree_root);
+    free_p(g_shell.line, g_shell.childs_pids.data, NULL, NULL);
+    g_shell.line = NULL;
+    g_shell.childs_pids.data = NULL;
+    g_shell.childs_pids.capacity = 0;
+    free_env_list(g_shell.env_list);
+    free_tree(&g_shell.tree_root);
     close_here_docs();
 }
 

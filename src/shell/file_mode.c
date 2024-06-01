@@ -24,20 +24,20 @@ char *read_entire_stdin()
 
 void execute_file()
 {
-    shell.line = read_entire_stdin();
-    if (parse_line(shell.line, &shell.tree_root) != NULL)
+    g_shell.line = read_entire_stdin();
+    if (parse_line(g_shell.line, &g_shell.tree_root) != NULL)
     {
-        shell.last_exit_value = interpret_root(shell.tree_root);
+        g_shell.last_exit_value = interpret_root(g_shell.tree_root);
     }
     else
     {
-        shell.last_exit_value = 2;
-        if (shell.interrupt == TRUE)
+        g_shell.last_exit_value = 2;
+        if (g_shell.interrupt == TRUE)
         {
-            shell.interrupt = FALSE;
+            g_shell.interrupt = FALSE;
             close_here_docs();
-            shell.last_exit_value = 130;
+            g_shell.last_exit_value = 130;
         }
     }
-    exit_with_code(NULL, shell.last_exit_value);
+    exit_with_code(NULL, g_shell.last_exit_value);
 }

@@ -12,9 +12,9 @@
 
 #include "built_ins.h"
 
-int		ft_pwd(t_cmd cmd)
+int	ft_pwd(t_cmd cmd)
 {
-	char *path;
+	char	*path;
 
 	path = getcwd(NULL, 0);
 	if (path == NULL)
@@ -24,11 +24,5 @@ int		ft_pwd(t_cmd cmd)
 	}
 	ft_putendl_fd(path, cmd.outfile);
 	free(path);
-	return 0;
+	return (0);
 }
-
-// int main(int ac, char **av, const char **envp)
-// {
-// 	ft_pwd(ac, av);
-// 	return (0);
-// }

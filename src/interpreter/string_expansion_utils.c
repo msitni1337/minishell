@@ -9,11 +9,11 @@ size_t parse_key_count(const char *s)
         return -1;
     if (ft_isdigit(s[count]))
         return ++count;
-    else if (eq(s[count], '$') || eq(s[count], '?') || eq(s[count], '*'))
+    else if (s[count] == '$' || s[count] == '?' || s[count] == '*')
         return ++count;
     while (s[count])
     {
-        if (!ft_isalnum(s[count]) && !eq(s[count], '_'))
+        if (!ft_isalnum(s[count]) && s[count] != '_')
             break;
         count++;
     }
@@ -81,7 +81,7 @@ void perform_var_value_copy(char* res, t_string *string, size_t *i, int key_coun
     if (ft_strcmp(key, "$") == 0)
         *i += sitoa(res + *i, getpid());
     else if (ft_strcmp(key, "?") == 0)
-        *i += sitoa(res + *i, shell.last_exit_value);
+        *i += sitoa(res + *i, g_shell.last_exit_value);
     else
     {
         value = get_env_value(key);
