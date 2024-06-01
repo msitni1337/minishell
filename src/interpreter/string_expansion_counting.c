@@ -3,11 +3,11 @@
 void count_var_len(t_string string, size_t *i, size_t *len)
 {
     int count;
-    char buff[BUFSIZ];
+    char buff[BUFF_SZ];
 
     (*i)++;
     count = parse_key_count(string.s + *i);
-    if (count > 0 && count < BUFSIZ - 1)
+    if (count > 0 && count < BUFF_SZ - 1)
     {
         ft_strlcpy(buff, string.s + *i, count + 1);
         if (ft_strcmp(buff, "$") == 0)

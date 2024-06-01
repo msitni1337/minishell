@@ -7,6 +7,7 @@
 #define bool unsigned char
 #define TRUE 1
 #define FALSE 0
+#define BUFF_SZ 1024
 
 #include <stddef.h>
 #include <stdio.h>

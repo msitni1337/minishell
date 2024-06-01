@@ -1,57 +1,43 @@
 #include "interpreter.h"
 
-#define BUFF_SZ 1024
-
 char *read_entire_stdin()
 {
-    t_darr arr;
+    char buff[BUFF_SZ];
+    char *res;
+    char *tmp;
     int bytes;
 
-    arr.data = malloc(BUFF_SZ);
-    arr.capacity = BUFF_SZ;
-    arr.count = 0;
-    while (1)
+    res = NULL;
+    bytes = read(STDIN_FILENO, buff, BUFF_SZ - 1);
+    while (bytes > 0)
     {
-        if (arr.count >= arr.capacity)
-        {
-            arr.capacity += BUFF_SZ;
-            char *tmp = malloc(arr.capacity);
-            ft_memcpy(tmp, arr.data, arr.count);
-            free(arr.data);
-            arr.data = tmp;
-        }
-        bytes = read(0, arr.data + arr.count, BUFF_SZ - 1);
-        if (bytes < 0)
-        {
-            ((char *)arr.data)[arr.count] = 0;
-            break;
-        }
-        else
-        {
-            arr.count += bytes;
-            ((char *)arr.data)[arr.count] = 0;
-            if (bytes == 0)
-                break;
-        }
+        buff[bytes] = 0;
+        tmp = ft_strjoin(res, buff);
+        if (tmp == NULL)
+            malloc_error(res, NULL, NULL, NULL);
+        free(res);
+        res = tmp;
+        bytes = read(STDIN_FILENO, buff, BUFF_SZ - 1);
     }
-    return arr.data;
+    return res;
 }
 
 void execute_file()
 {
-    assert(!"DOES NOT ADHERE TO THE NEW LOGIC FLOW");
-    t_node *cmd_root;
-
     shell.line = read_entire_stdin();
-    if (parse_line(shell.line, &cmd_root) != NULL)
+    if (parse_line(shell.line, &shell.tree_root) != NULL)
     {
         shell.last_exit_value = interpret_root(shell.tree_root);
     }
     else
     {
-        close_here_docs();
         shell.last_exit_value = 2;
+        if (shell.interrupt == TRUE)
+        {
+            shell.interrupt = FALSE;
+            close_here_docs();
+            shell.last_exit_value = 130;
+        }
     }
-    free_tree(&shell.tree_root);
-    free(shell.line);
+    exit_with_code(NULL, shell.last_exit_value);
 }

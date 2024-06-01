@@ -228,14 +228,12 @@ char *check_bin_path(t_string path, char *cmd)
     return NULL;
 }
 
-char *get_binary_path(char *bin_name)
+char *get_binary_path(char *bin_name, char*raw_path)
 {
     t_string paths;
-    char *raw_path;
     char *full_path;
     size_t i;
 
-    raw_path = get_env_value("PATH");
     paths.s = raw_path;
     paths.count = 0;
     if (raw_path == NULL)
@@ -276,7 +274,7 @@ int get_cmd_path(t_cmd *cmd)
     }
     else
     {
-        cmd->bin_path = get_binary_path(cmd->argv[0]);
+        cmd->bin_path = get_binary_path(cmd->argv[0], get_env_value("PATH"));
         if (cmd->bin_path == NULL)
         {
             print_error(cmd->argv[0], "command not found");

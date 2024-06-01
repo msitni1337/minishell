@@ -29,7 +29,8 @@ int ft_exit(t_cmd cmd)
 {
     if (cmd.outfile != STDOUT_FILENO)
         close(cmd.outfile);
-    ft_putendl_fd("exit", STDERR_FILENO);
+    if (isatty(STDIN_FILENO) == 1)
+        ft_putendl_fd("exit", STDERR_FILENO);
     if (cmd.argc > 1)
     {
         if (ft_strlen(cmd.argv[1]) > 0 && is_str_all_digits(cmd.argv[1]))

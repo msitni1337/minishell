@@ -74,7 +74,7 @@ size_t sitoa(char *buff, long nbr)
 
 void perform_var_value_copy(char* res, t_string *string, size_t *i, int key_count)
 {
-    char key[BUFSIZ];
+    char key[BUFF_SZ];
     char *value;
 
     ft_strlcpy(key, string->s, key_count + 1);
@@ -99,7 +99,7 @@ void copy_var_value(char *res, t_string *string, size_t *i)
     (string->count)--;
     (string->s)++;
     key_count = parse_key_count(string->s);
-    if (key_count > 0 && key_count < BUFSIZ - 1)
+    if (key_count > 0 && key_count < BUFF_SZ - 1)
     {
          perform_var_value_copy(res, string, i, key_count);
     }
