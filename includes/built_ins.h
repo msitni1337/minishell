@@ -1,32 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   built-ins.h                                        :+:      :+:    :+:   */
+/*   built_ins.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 19:08:32 by nmellal           #+#    #+#             */
-/*   Updated: 2024/05/18 19:42:26 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/01 12:02:54 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef BUILT_INS_H
-#define BUILT_INS_H
-
-#include <fcntl.h>
-#include <errno.h>
-#include "env.h"
-#include "shared.h"
-#include "cmd.h"
-
-#define PATH_MAX 4096
+# define BUILT_INS_H
+# include <fcntl.h>
+# include <errno.h>
+# include "env.h"
+# include "shared.h"
+# include "cmd.h"
 
 /* echo */
 int ft_echo(t_cmd cmd);
 
 /* cd */
 int change_directory(t_cmd cmd);
-int	go_to_path(char *path);
+int go_to_path(char *path);
 int return_to_oldpwd();
 int go_to_home();
 

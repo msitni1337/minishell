@@ -6,11 +6,11 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/21 17:59:15 by nmellal           #+#    #+#             */
-/*   Updated: 2024/05/18 19:31:42 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/01 11:50:13 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "built-ins.h"
+#include "built_ins.h"
 
 int go_to_path(char *path)
 {
@@ -25,11 +25,13 @@ int go_to_path(char *path)
 			return 1;
 		}
 		add_or_replace_env("OLDPWD", cwd);
+		free(cwd);
 		cwd = getcwd(NULL, 0);
 		if (cwd)
 			add_or_replace_env("PWD", cwd);
 		else
 			perror(PROG_NAME": cd");
+		free(cwd);
 		return 0;
 	}
 	else

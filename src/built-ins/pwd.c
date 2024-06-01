@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmellal <nmellal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 17:10:38 by nmellal           #+#    #+#             */
-/*   Updated: 2024/04/23 16:58:19 by nmellal          ###   ########.fr       */
+/*   Updated: 2024/06/01 11:50:51 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "built-ins.h"
+#include "built_ins.h"
 
 int		ft_pwd(t_cmd cmd)
 {

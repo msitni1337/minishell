@@ -3,13 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmellal <nmellal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 16:06:01 by nmellal           #+#    #+#             */
-/*   Updated: 2024/04/23 16:06:13 by nmellal          ###   ########.fr       */
+/*   Updated: 2024/06/01 11:57:57 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "built-ins.h"
+
+#include "built_ins.h"
 
 size_t get_exported_env_count()
 {

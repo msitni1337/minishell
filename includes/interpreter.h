@@ -4,7 +4,7 @@
 #include "shared.h"
 #include "lexer.h"
 #include "cmd.h"
-#include "built-ins.h"
+#include "built_ins.h"
 #include "env.h"
 #include "error_handler.h"
 #include <sys/wait.h>

@@ -6,11 +6,11 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/24 17:48:42 by nmellal           #+#    #+#             */
-/*   Updated: 2024/05/19 01:58:54 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/01 11:50:51 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "built-ins.h"
+#include "built_ins.h"
 
 int	ft_env(t_cmd cmd)
 {

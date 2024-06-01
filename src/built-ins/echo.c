@@ -6,11 +6,11 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/21 16:22:43 by nmellal           #+#    #+#             */
-/*   Updated: 2024/05/19 02:57:52 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/01 11:50:51 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "built-ins.h"
+#include "built_ins.h"
 
 bool check_flags(char** argv, int*i)
 {
