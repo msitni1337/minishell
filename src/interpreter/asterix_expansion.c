@@ -57,7 +57,6 @@ char **get_all_cwd_filenames()
         dir = readdir(cwdir);
     }
     closedir(cwdir);
-    sort_arr(res.data);
     return res.data;
 }
 
@@ -101,35 +100,123 @@ int is_pattern_matching(char *pattern, char *name)
     return *pattern == 0;
 }
 
+void count_matching(char *argv, char **cwdfiles, size_t *res)
+{
+    bool has_match;
+    int i;
+
+    has_match = FALSE;
+    i = 0;
+    while (cwdfiles[i])
+    {
+        if (is_pattern_matching(argv, cwdfiles[i]))
+        {
+            (*res)++;
+            has_match = TRUE;
+        }
+        i++;
+    }
+    if (has_match == FALSE)
+        (*res)++;
+}
+
 size_t get_expanded_args_count(char **argv, char **cwdfiles)
 {
-    size_t res;
+    size_t count;
     size_t i;
-    size_t j;
-    bool has_match;
 
     i = 0;
-    res = 0;
+    count = 0;
     while (argv && argv[i])
     {
         if (ft_strchr(argv[i], '*'))
+            count_matching(argv[i], cwdfiles, &count);
+        else
+            count++;
+        i++;
+    }
+    return count;
+}
+
+char **copy_same_argument(char **res, size_t *index, char *argv, char **cwdfiles)
+{
+    res[*index] = ft_strdup(argv);
+    if (res[*index] == NULL)
+    {
+        free_arr(cwdfiles);
+        free_arr(res);
+        return NULL;
+    }
+    (*index)++;
+    return res;
+}
+
+char **add_matching_filenames(char **res, size_t *index, char *argv, char **cwdfiles)
+{
+    bool has_match;
+    size_t i;
+
+    i = 0;
+    has_match = FALSE;
+    while (cwdfiles[i])
+    {
+        if (is_pattern_matching(argv, cwdfiles[i]))
         {
-            has_match = FALSE;
-            j = 0;
-            while (cwdfiles[j])
+            res[*index] = ft_strdup(cwdfiles[i]);
+            if (res[*index] == NULL)
             {
-                if (is_pattern_matching(argv[i], cwdfiles[j]))
-                {
-                    res++;
-                    has_match = TRUE;
-                }
-                j++;
+                free_arr(cwdfiles);
+                free_arr(res);
+                return NULL;
             }
-            if (has_match == FALSE)
-                res++;
+            has_match = TRUE;
+            (*index)++;
+        }
+        i++;
+    }
+    if (has_match == FALSE)
+        return copy_same_argument(res, index, argv, cwdfiles);
+    return res;
+}
+
+char **init_asterices_expansion_arr(char ***cwdfiles_p, char **argv, size_t *count)
+{
+    char **res;
+
+    *cwdfiles_p = get_all_cwd_filenames();
+    if (*cwdfiles_p == NULL)
+        return free_arr(argv);
+    sort_arr(*cwdfiles_p);
+    *count = get_expanded_args_count(argv, *cwdfiles_p);
+    res = malloc(sizeof(char *) * (*count + 1));
+    if (res == NULL)
+    {
+        free_arr(*cwdfiles_p);
+        return free_arr(argv);
+    }
+    res[*count] = NULL;
+    return res;
+}
+
+char **asterice_expansion_loop(char **res, char **argv, size_t argc, char **cwdfiles)
+{
+    size_t i;
+    size_t j;
+
+    i = 0;
+    j = 0;
+    while (i < argc)
+    {
+        if (ft_strchr(argv[i], '*'))
+        {
+            if (add_matching_filenames(res, &j, argv[i], cwdfiles) == NULL)
+                return free_arr(argv);
         }
         else
-            res++;
+        {
+            if (copy_same_argument(res, &j, argv[i], cwdfiles) == NULL)
+                return free_arr(argv);
+        }
         i++;
     }
     return res;
@@ -137,80 +224,15 @@ size_t get_expanded_args_count(char **argv, char **cwdfiles)
 
 char **expand_asterices(char **argv, size_t *argc)
 {
-    size_t i;
-    size_t j;
-    size_t y;
     char **cwdfiles;
     char **res;
     size_t count;
 
-    cwdfiles = get_all_cwd_filenames();
-    if (cwdfiles == NULL)
-        return free_arr(argv);
-    count = get_expanded_args_count(argv, cwdfiles);
-    res = malloc(sizeof(char *) * (count + 1));
+    res = init_asterices_expansion_arr(&cwdfiles, argv, &count);
     if (res == NULL)
-    {
-        free_arr(cwdfiles);
-        return free_arr(argv);
-    }
-    res[count] = NULL;
-    i = 0;
-    j = 0;
-    while (i < *argc)
-    {
-        if (ft_strchr(argv[i], '*'))
-        {
-            bool has_match;
-
-            y = 0;
-            has_match = FALSE;
-            while (cwdfiles[y])
-            {
-                if (is_pattern_matching(argv[i], cwdfiles[y]))
-                {
-                    // printf("match: %s\n", file->content);
-                    res[j] = ft_strdup(cwdfiles[y]);
-                    if (res[j] == NULL)
-                    {
-                        free_arr(cwdfiles);
-                        free_arr(res);
-                        free_arr(argv);
-                        return NULL;
-                    }
-                    has_match = TRUE;
-                    j++;
-                }
-                y++;
-            }
-            if (has_match == FALSE)
-            {
-                // printf("not match: %s\n", argv[i]);
-                res[j] = ft_strdup(argv[i]);
-                if (res[j] == NULL)
-                {
-                    free_arr(cwdfiles);
-                    free_arr(res);
-                    free_arr(argv);
-                    return NULL;
-                }
-                j++;
-            }
-        }
-        else
-        {
-            res[j] = ft_strdup(argv[i]);
-            if (res[j] == NULL)
-            {
-                free_arr(cwdfiles);
-                free_arr(res);
-                free_arr(argv);
-                return NULL;
-            }
-            j++;
-        }
-        i++;
-    }
+        return NULL;
+    if (asterice_expansion_loop(res, argv, *argc, cwdfiles) == NULL)
+        return NULL;
     free_arr(argv);
     free_arr(cwdfiles);
     *argc = count;
