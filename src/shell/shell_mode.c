@@ -2,14 +2,14 @@
 
 void print_tree(t_node *root);
 
-char* get_chopped_prompt(char*cwd, int home_len)
+char *get_chopped_prompt(char *cwd, int home_len)
 {
     char *res;
     char *tmp;
 
-    tmp = ft_strjoin(PROMPTSTART"~", cwd + home_len);
+    tmp = ft_strjoin(PROMPTSTART "~", cwd + home_len);
     free(cwd);
-    if  (tmp == NULL)
+    if (tmp == NULL)
         malloc_error(NULL, NULL, NULL, NULL);
     res = ft_strjoin(tmp, PROMPTEND);
     free(tmp);
@@ -18,7 +18,7 @@ char* get_chopped_prompt(char*cwd, int home_len)
     return res;
 }
 
-char* get_full_prompt(char*cwd)
+char *get_full_prompt(char *cwd)
 {
     char *res;
     char *tmp;
@@ -54,20 +54,7 @@ char *get_prompt()
         return get_full_prompt(cwd);
 }
 
-void assert_all_files_closed()
-{
-    struct stat s;
-    int fd;
-
-    fd = 3;
-    while (fd > 2 && fstat(fd, &s) != -1 && errno != EBADF)
-    {
-        fd++;
-    }
-    assert(fd == 3 && "FILES NOT CLOSED PROPERLY");
-}
-
-void add_line_to_hist(char*line)
+void add_line_to_hist(char *line)
 {
     t_lexer lexer;
     t_token token;
@@ -78,15 +65,23 @@ void add_line_to_hist(char*line)
         add_history(line);
 }
 
-void start_shell()
+void listen_for_cmd_line()
 {
     char *prompt;
 
-    shell.interrupt = FALSE;
-    shell.collecting_here_doc = FALSE;
+    if (shell.line)
+    {
+        free(shell.line);
+        shell.line = NULL;
+    }
     prompt = get_prompt();
     shell.line = readline(prompt);
     free(prompt);
+}
+
+void start_shell()
+{
+    listen_for_cmd_line();
     while (shell.line)
     {
         shell.interrupt = FALSE;
@@ -106,11 +101,7 @@ void start_shell()
             }
         }
         free_tree(&shell.tree_root);
-        free(shell.line);
-        assert_all_files_closed();
-        shell.line = NULL;
-        prompt = get_prompt();
-        shell.line = readline(prompt);
-        free(prompt);
+        listen_for_cmd_line();
     }
+    ft_putendl_fd("exit", STDERR_FILENO);
 }
