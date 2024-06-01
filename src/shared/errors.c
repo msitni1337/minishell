@@ -1,4 +1,5 @@
-#include "error_handler.h"
+#include "shared.h"
+#include "free.h"
 
 void print_error(char*name, char *reason)
 {

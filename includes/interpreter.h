@@ -2,11 +2,10 @@
 #define INTERPRETER_H
 
 #include "shared.h"
+#include "free.h"
 #include "lexer.h"
-#include "cmd.h"
 #include "built_ins.h"
 #include "env.h"
-#include "error_handler.h"
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <fcntl.h>
