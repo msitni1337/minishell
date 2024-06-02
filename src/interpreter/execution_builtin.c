@@ -1,8 +1,8 @@
 #include "interpreter.h"
 
-int run_builtin(t_cmd *cmd)
+int	run_builtin(t_cmd *cmd)
 {
-	int ret_value;
+	int	ret_value;
 
 	ret_value = 0;
 	if (!ft_strcmp(cmd->argv[0], "cd"))
@@ -19,12 +19,12 @@ int run_builtin(t_cmd *cmd)
 		ret_value = ft_env(*cmd);
 	else if (!ft_strcmp(cmd->argv[0], "exit"))
 		ret_value = ft_exit(*cmd);
-	return ret_value;
+	return (ret_value);
 }
 
-int exec_builtin(t_cmd *cmd)
+int	exec_builtin(t_cmd *cmd)
 {
-	int ret_value;
+	int	ret_value;
 
 	ret_value = 0;
 	if (cmd->argc > 0)
@@ -39,9 +39,9 @@ int exec_builtin(t_cmd *cmd)
 	return (ret_value);
 }
 
-void exec_builtin_fork_child(t_cmd *cmd)
+void	exec_builtin_fork_child(t_cmd *cmd)
 {
-	int ret_value;
+	int	ret_value;
 
 	if (cmd->read_pipe != -1)
 		close(cmd->read_pipe);
@@ -49,9 +49,9 @@ void exec_builtin_fork_child(t_cmd *cmd)
 	exit_with_code(NULL, ret_value);
 }
 
-int exec_builtin_fork(t_cmd *cmd)
+int	exec_builtin_fork(t_cmd *cmd)
 {
-	int pid;
+	int	pid;
 
 	pid = fork();
 	if (pid == -1)
