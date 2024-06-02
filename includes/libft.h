@@ -6,12 +6,14 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 00:34:30 by msitni            #+#    #+#             */
-/*   Updated: 2024/04/04 09:48:10 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/02 11:22:41 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LIBFT_H
 # define LIBFT_H
+# define TRUE 1
+# define FALSE 0
 # include <stddef.h>
 # include <stdint.h>
 # include <stdio.h>
@@ -55,6 +57,7 @@ char				*ft_strjoin(char const *s1, char const *s2);
 char				*ft_strtrim(char const *s1, char const *set);
 char				**ft_split(char const *s, char c);
 char				*ft_itoa(int n);
+int					ft_isspace(char c);
 char				*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 void				ft_striteri(char *s, void (*f)(unsigned int, char *));
 void				ft_putchar_fd(char c, int fd);
@@ -72,5 +75,8 @@ void				ft_lstclear(t_list **lst, void (*del)(void *));
 void				ft_lstiter(t_list *lst, void (*f)(void *));
 t_list				*ft_lstmap(t_list *lst, void *(*f)(void *),
 						void (*del)(void *));
+int					ft_strcmp(const char *s1, const char *s2);
+size_t				ft_sitoa(char *buff, long nbr);
+void				ft_sort_char_arr(char **list);
 
 #endif

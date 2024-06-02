@@ -1,45 +1,56 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   interpreter.h                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/02 09:43:17 by msitni            #+#    #+#             */
+/*   Updated: 2024/06/02 11:59:04 by msitni           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef INTERPRETER_H
 # define INTERPRETER_H
 
 # include "built_ins.h"
-# include "env.h"
 # include "free.h"
 # include "lexer.h"
 # include "shared.h"
-# include <dirent.h>
 # include <errno.h>
 # include <fcntl.h>
 # include <sys/stat.h>
 # include <sys/types.h>
 # include <sys/wait.h>
 
-typedef enum e_expansion_state
-{
-	NORMAL,
-	DQUOTE_STATE,
-	SQUOTE_STATE,
-}		t_expansion_state;
-
 //  interpreter:
 int		interpret_root(t_node *root);
+int		parse_cmd(t_node *node, t_cmd *cmd);
+
+/* piping */
+int		execute_piping(t_node **node, t_cmd *cmd);
 
 //  execution:
 int		execute_cmd(t_cmd *cmd, int is_pipe, int wait_child);
 int		wait_all_childs(void);
+int		exec_bin(t_cmd *cmd, int wait_child);
+int		exec_builtin(t_cmd *cmd);
+int		exec_builtin_fork(t_cmd *cmd);
+int		exec_subshell(t_cmd *cmd, int wait_child);
 
-//  utils:
+/* reirections */
+int		open_files(t_node *cmd_node, t_cmd *cmd);
+
+/* argv */
+void	get_argv(t_node *cmd_node, t_cmd *cmd);
+
+/* bin path joining */
+int		get_cmd_path(t_cmd *cmd);
+
+/* utils */
 t_node	*get_next_node_by_type(t_node *root, t_node_type type);
-int		contains_chars(t_string string, char *charset);
-
-/* asterices expansion */
-char	**expand_asterices(char **argv, size_t *argc);
-
-/* string expansion */
-char	*expand_string(t_string string, int expand_vars);
-size_t	get_expanded_str_len(t_string string, int expand_vars);
-size_t	parse_key_count(const char *s);
-void	copy_var_value(char *res, t_string *string, size_t *i);
-int		count_num_chars(long n);
+void	get_perm_flags(int *p_flags, int *m_flags, t_node_type type);
+int		is_builtin(const char *s);
 
 /* errors */
 void	print_error(char *name, char *reason);

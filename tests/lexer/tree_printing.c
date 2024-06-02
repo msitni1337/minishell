@@ -6,8 +6,8 @@ char *get_token_type(t_token_type type)
     {
     case TOKEN_EOF:
         return "TOKEN_EOF";
-    case TOKEN_STRING:
-        return "TOKEN_STRING";
+    case TOKEN_STR:
+        return "TOKEN_STR";
     case TOKEN_PIPE:
         return "TOKEN_PIPE";
     case TOKEN_REDIRECT_IN:
@@ -39,8 +39,8 @@ char *get_node_type(t_node_type type)
     {
     case NODE_CMD:
         return "NODE_CMD";
-    case NODE_STRING:
-        return "NODE_STRING";
+    case NODE_STR:
+        return "NODE_STR";
     case NODE_PIPE:
         return "NODE_PIPE";
     case NODE_REDIRECT_IN:

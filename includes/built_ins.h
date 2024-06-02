@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   built_ins.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/02 09:43:09 by msitni            #+#    #+#             */
+/*   Updated: 2024/06/02 09:54:58 by msitni           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef BUILT_INS_H
 # define BUILT_INS_H
-# include "env.h"
+# include "environment.h"
 # include "shared.h"
 # include <errno.h>
 # include <fcntl.h>

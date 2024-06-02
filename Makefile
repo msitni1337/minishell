@@ -29,8 +29,6 @@ OBJ = $(SHARED_OBJ) $(SHELL_OBJ) $(BUILTIN_OBJ) $(ENV_OBJ) $(LEXER_OBJ) $(EXEC_O
 # VARS
 CC = cc
 NAME = minishell
-LEXER = lexer
-BUILTIN = builtin
 CFLAGS = -Wall -Werror -Wextra -Iincludes -g3 -fsanitize=address
 LDFLAGS = -lreadline -L$(LIBFT_DIR) -lft
 
@@ -45,12 +43,6 @@ all : $(NAME)
 $(NAME): $(LIBFT) $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) $(LDFLAGS)
 
-$(BUILTIN): $(LIBFT) $(LEXER_OBJ) $(ENV_OBJ) $(BUILTIN_OBJ)
-	$(CC) $(CFLAGS) $(LEXER_OBJ) $(ENV_OBJ) $(BUILTIN_OBJ) -o $(BUILTIN) $(LDFLAGS)
-
-$(LEXER): $(LIBFT) $(SHARED_OBJ) $(tests) $(LEXER_OBJ)
-	$(CC) $(CFLAGS) $(LEXER_OBJ) -o $(LEXER) $(LDFLAGS)
-
 $(LIBFT):
 	make -C ${LIBFT_DIR}
 
@@ -61,8 +53,5 @@ clean :
 fclean : clean
 	make fclean -C ${LIBFT_DIR}
 	rm -f $(NAME)
-	rm -f $(EXEC)
-	rm -f $(BUILTIN)
-	rm -f $(LEXER)
 
 re : fclean all

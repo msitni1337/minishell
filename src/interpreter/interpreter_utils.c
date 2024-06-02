@@ -1,23 +1,37 @@
 #include "interpreter.h"
 
-int contains_chars(t_string string, char *charset)
+t_node	*get_next_node_by_type(t_node *root, t_node_type type)
 {
-    size_t i;
-    size_t j;
-    size_t charset_len;
+	t_node	*tmp;
 
-    charset_len = ft_strlen(charset);
-    i = 0;
-    while (i < string.count)
-    {
-        j = 0;
-        while (j < charset_len)
-        {
-            if (string.s[i] == charset[j])
-                return TRUE;
-            j++;
-        }
-        i++;
-    }
-    return FALSE;
+	tmp = root;
+	while (tmp && !(tmp->type & type))
+		tmp = tmp->next;
+	return (tmp);
+}
+
+void	get_perm_flags(int *p_flags, int *m_flags, t_node_type type)
+{
+	if (type == NODE_REDIRECT_IN)
+	{
+		*p_flags = O_RDONLY;
+		*m_flags = 0;
+	}
+	else if (type == NODE_REDIRECT_OUT)
+	{
+		*p_flags = O_WRONLY | O_CREAT | O_TRUNC;
+		*m_flags = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+	}
+	else if (type == NODE_APPEND)
+	{
+		*p_flags = O_WRONLY | O_APPEND | O_CREAT;
+		*m_flags = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+	}
+}
+
+int	is_builtin(const char *s)
+{
+	return (!ft_strcmp(s, "cd") || !ft_strcmp(s, "echo") || !ft_strcmp(s, "pwd")
+		|| !ft_strcmp(s, "export") || !ft_strcmp(s, "unset") || !ft_strcmp(s,
+			"env") || !ft_strcmp(s, "exit"));
 }

@@ -1,22 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env.c                                              :+:      :+:    :+:   */
+/*   env_init.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 16:56:12 by nmellal           #+#    #+#             */
-/*   Updated: 2024/05/18 01:14:53 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/02 09:49:28 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "env.h"
+#include "environment.h"
 
-t_lstenv *increment_shlvl()
+t_lstenv	*increment_shlvl(void)
 {
-	t_lstenv *node;
-	char *value;
-	int shlvl;
+	t_lstenv	*node;
+	char		*value;
+	int			shlvl;
 
 	node = get_env_node("SHLVL");
 	if (node)
@@ -25,21 +25,21 @@ t_lstenv *increment_shlvl()
 		shlvl++;
 		value = ft_itoa(shlvl);
 		if (value == NULL)
-			return NULL;
+			return (NULL);
 		node = add_or_replace_env("SHLVL", value);
 		free(value);
 	}
 	else
 		node = add_or_replace_env("SHLVL", "1");
-	return node;
+	return (node);
 }
 
-void take_env(const char **envp)
+void	take_env(const char **envp)
 {
-	char *key;
-	char *value;
-	t_lstenv *node;
-	int i;
+	char		*key;
+	char		*value;
+	t_lstenv	*node;
+	int			i;
 
 	g_shell.env_list = NULL;
 	i = 0;

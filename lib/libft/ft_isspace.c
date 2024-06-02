@@ -1,21 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free.h                                             :+:      :+:    :+:   */
+/*   ft_isspace.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/02 09:43:29 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/02 09:43:31 by msitni           ###   ########.fr       */
+/*   Created: 2024/06/02 11:22:01 by msitni            #+#    #+#             */
+/*   Updated: 2024/06/02 12:06:49 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FREE_H
-# define FREE_H
-# include "lexer.h"
+#include "libft.h"
 
-void	free_tree(t_node **root);
-void	free_cmd(t_cmd *cmd);
-void	*free_p(void *p1, void *p2, void *p3, char **p4);
-
-#endif
+int	ft_isspace(char c)
+{
+	return (c == ' ' || c == '\t' || c == '\v' || c == '\r' || c == '\n'
+		|| c == '\f');
+}

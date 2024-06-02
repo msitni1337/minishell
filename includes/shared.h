@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   shared.h                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/02 09:43:01 by msitni            #+#    #+#             */
+/*   Updated: 2024/06/02 10:57:17 by msitni           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef SHARED_H
 # define SHARED_H
 # define PROG_NAME "Millishell"
@@ -5,8 +17,8 @@
 "\001\e[1;32m\002Millishell \001\e[0;37m\002[\001\e[1;34m\002"
 # define PROMPTEND "\001\e[0;37m\002]\001\e[0;32m\002~> \001\e[0;37m\002"
 # define MALLOC_ERROR_MSG "Malloc failed. exiting Millishell."
-# define TRUE 1
-# define FALSE 0
+# define DQUOTE '"'
+# define SQUOTE '\''
 # define BUFF_SZ 1024
 # include "libft.h"
 # include <assert.h>
@@ -19,6 +31,7 @@
 # include <stdlib.h>
 # include <sys/stat.h>
 # include <unistd.h>
+# include <dirent.h>
 
 typedef struct s_string
 {
@@ -37,7 +50,7 @@ typedef struct s_lstenv
 typedef enum e_token_type
 {
 	TOKEN_EOF = 0,
-	TOKEN_STRING = (1 << 1),
+	TOKEN_STR = (1 << 1),
 	TOKEN_PIPE = (1 << 2),
 	TOKEN_REDIRECT_IN = (1 << 3),
 	TOKEN_REDIRECT_OUT = (1 << 4),
@@ -52,7 +65,7 @@ typedef enum e_token_type
 typedef enum e_node_type
 {
 	NODE_CMD = (1 << 0),
-	NODE_STRING = (1 << 1),
+	NODE_STR = (1 << 1),
 	NODE_PIPE = (1 << 2),
 	NODE_REDIRECT_IN = (1 << 3),
 	NODE_REDIRECT_OUT = (1 << 4),

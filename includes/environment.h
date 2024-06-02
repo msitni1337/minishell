@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env.h                                              :+:      :+:    :+:   */
+/*   environment.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmellal <nmellal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 17:05:58 by nmellal           #+#    #+#             */
-/*   Updated: 2024/04/23 17:10:55 by nmellal          ###   ########.fr       */
+/*   Updated: 2024/06/02 09:48:47 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ENV_H
-# define ENV_H
+#ifndef ENVIRONMENT_H
+# define ENVIRONMENT_H
 # include "shell.h"
 
 t_lstenv	*create_nodes(char *key, char *value);
