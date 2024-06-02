@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 10:46:13 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/02 10:49:39 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/02 20:11:31 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void	get_here_doc_filename(char *filename)
 	{
 		perror("open");
 		free(filename);
-		exit_with_code(NULL, errno);
+		exit_with_code(NULL, EXIT_FAILURE);
 	}
 	tries = randomize_str(filename + 25, rand_fd);
 	while (tries < 100 && access(filename, F_OK) == 0)
@@ -77,7 +77,7 @@ void	init_here_doc(t_node *node, int *fd, int *stdin_dup)
 	{
 		perror("dup");
 		free(filename);
-		exit_with_code(NULL, errno);
+		exit_with_code(NULL, EXIT_FAILURE);
 	}
 	*fd = open(filename, O_RDWR | O_CREAT,
 			S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
@@ -86,7 +86,7 @@ void	init_here_doc(t_node *node, int *fd, int *stdin_dup)
 	{
 		perror("open");
 		free(filename);
-		exit_with_code(NULL, errno);
+		exit_with_code(NULL, EXIT_FAILURE);
 	}
 	free(filename);
 }

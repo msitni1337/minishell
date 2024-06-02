@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 09:43:17 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/02 11:59:04 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/02 20:11:39 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 # include "free.h"
 # include "lexer.h"
 # include "shared.h"
-# include <errno.h>
 # include <fcntl.h>
 # include <sys/stat.h>
 # include <sys/types.h>

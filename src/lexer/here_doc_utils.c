@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 10:46:07 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/02 10:47:54 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/02 20:11:06 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	randomize_str(char *str, int rand_fd)
 	if (read(rand_fd, str, len) == -1)
 	{
 		perror("read");
-		exit_with_code(NULL, errno);
+		exit_with_code(NULL, EXIT_FAILURE);
 	}
 	while (str && *str)
 	{
@@ -39,7 +39,7 @@ int	handle_here_doc_interrupt(int stdin_dup)
 	if (dup2(stdin_dup, STDIN_FILENO) == -1)
 	{
 		perror("dup2");
-		exit_with_code(NULL, errno);
+		exit_with_code(NULL, EXIT_FAILURE);
 	}
 	close(stdin_dup);
 	return (1);

@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 11:25:43 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/02 11:26:09 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/02 20:11:31 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	close_here_docs(void)
 	int			fd;
 
 	fd = 3;
-	while (fd > 2 && fstat(fd, &s) != -1 && errno != EBADF)
+	while (fd > 2 && fstat(fd, &s) != -1)
 	{
 		close(fd);
 		fd++;

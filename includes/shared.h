@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 09:43:01 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/02 10:57:17 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/02 20:11:42 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@
 # define BUFF_SZ 1024
 # include "libft.h"
 # include <assert.h>
-# include <errno.h>
 # include <fcntl.h>
 # include <readline/history.h>
 # include <readline/readline.h>

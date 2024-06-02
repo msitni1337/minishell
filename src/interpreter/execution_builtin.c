@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution_builtin.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmellal <nmellal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 18:51:49 by nmellal           #+#    #+#             */
-/*   Updated: 2024/06/02 18:51:50 by nmellal          ###   ########.fr       */
+/*   Updated: 2024/06/02 20:10:55 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ int	exec_builtin_fork(t_cmd *cmd)
 	if (pid == -1)
 	{
 		perror("fork");
-		exit_with_code(cmd, errno);
+		exit_with_code(cmd, EXIT_FAILURE);
 	}
 	if (pid == 0)
 		exec_builtin_fork_child(cmd);
