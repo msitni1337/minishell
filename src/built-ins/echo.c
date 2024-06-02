@@ -58,7 +58,7 @@ int	ft_echo(t_cmd cmd)
 	if (cmd.argc == 1)
 	{
 		write(cmd.outfile, "\n", 1);
-		return (errno);
+		return (0);
 	}
 	return (check_echo_options(cmd));
 }

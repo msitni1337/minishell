@@ -38,7 +38,7 @@ void			setup_signal_handlers(void);
 void			start_shell(void);
 
 /* file mode */
-void			execute_file(void);
+void			execute_from_stdin(void);
 
 /* prompt */
 char			*get_prompt(void);

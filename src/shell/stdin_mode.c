@@ -34,7 +34,7 @@ char	*read_entire_stdin(void)
 	return (res);
 }
 
-void	execute_file(void)
+void	execute_from_stdin(void)
 {
 	g_shell.line = read_entire_stdin();
 	if (parse_line(g_shell.line, &g_shell.tree_root) != NULL)

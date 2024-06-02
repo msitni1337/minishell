@@ -1,12 +1,10 @@
 #include "interpreter.h"
 
-int	exec_builtin(t_cmd *cmd)
+int run_builtin(t_cmd *cmd)
 {
-	int	ret_value;
+	int ret_value;
 
 	ret_value = 0;
-	if (add_or_replace_env("_", cmd->argv[0]) == NULL)
-		malloc_error(NULL, NULL, NULL, cmd);
 	if (!ft_strcmp(cmd->argv[0], "cd"))
 		ret_value = change_directory(*cmd);
 	else if (!ft_strcmp(cmd->argv[0], "echo"))
@@ -21,6 +19,18 @@ int	exec_builtin(t_cmd *cmd)
 		ret_value = ft_env(*cmd);
 	else if (!ft_strcmp(cmd->argv[0], "exit"))
 		ret_value = ft_exit(*cmd);
+	return ret_value;
+}
+
+int exec_builtin(t_cmd *cmd)
+{
+	int ret_value;
+
+	ret_value = 0;
+	if (cmd->argc > 0)
+		if (add_or_replace_env("_", cmd->argv[cmd->argc - 1]) == NULL)
+			malloc_error(NULL, NULL, NULL, cmd);
+	ret_value = run_builtin(cmd);
 	if (cmd->infile != STDIN_FILENO)
 		close(cmd->infile);
 	if (cmd->outfile != STDOUT_FILENO)
@@ -29,9 +39,9 @@ int	exec_builtin(t_cmd *cmd)
 	return (ret_value);
 }
 
-void	exec_builtin_fork_child(t_cmd *cmd)
+void exec_builtin_fork_child(t_cmd *cmd)
 {
-	int	ret_value;
+	int ret_value;
 
 	if (cmd->read_pipe != -1)
 		close(cmd->read_pipe);
@@ -39,9 +49,9 @@ void	exec_builtin_fork_child(t_cmd *cmd)
 	exit_with_code(NULL, ret_value);
 }
 
-int	exec_builtin_fork(t_cmd *cmd)
+int exec_builtin_fork(t_cmd *cmd)
 {
-	int	pid;
+	int pid;
 
 	pid = fork();
 	if (pid == -1)
@@ -52,8 +62,6 @@ int	exec_builtin_fork(t_cmd *cmd)
 	if (pid == 0)
 		exec_builtin_fork_child(cmd);
 	if (add_to_arr(&(g_shell.childs_pids), &pid) == NULL)
-		malloc_error(NULL, NULL, NULL, cmd);
-	if (add_or_replace_env("_", cmd->argv[0]) == NULL)
 		malloc_error(NULL, NULL, NULL, cmd);
 	if (cmd->infile != STDIN_FILENO)
 		close(cmd->infile);

@@ -19,9 +19,9 @@ int	main(int c, const char **v, const char **env)
 	(void)c;
 	(void)v;
 	init_shell(env);
-	if (isatty(0) == 1)
+	if (isatty(STDIN_FILENO) == 1)
 		start_shell();
 	else
-		execute_file();
+		execute_from_stdin();
 	return (g_shell.last_exit_value);
 }
