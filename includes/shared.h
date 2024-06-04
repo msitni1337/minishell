@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 09:43:01 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/02 20:11:42 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/04 13:41:28 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,6 @@ typedef struct s_node
 	struct s_node	*children;
 	size_t			childs_count;
 	int			here_doc_fd;
-	t_darr			here_docs;
 }					t_node;
 
 typedef struct s_lexer

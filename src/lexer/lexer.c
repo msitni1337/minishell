@@ -6,15 +6,15 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 11:10:06 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/02 11:10:06 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/04 14:00:59 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lexer.h"
 
-t_token	*parse_subshell(t_node *root, t_lexer *lexer, t_token *token)
+t_token *parse_subshell(t_node *root, t_lexer *lexer, t_token *token)
 {
-	t_node	*subshell;
+	t_node *subshell;
 
 	if (init_subshell_node(root, lexer, token, &subshell) == NULL)
 		return (NULL);
@@ -23,7 +23,7 @@ t_token	*parse_subshell(t_node *root, t_lexer *lexer, t_token *token)
 		if (is_cmd_token(*token))
 		{
 			if (fill_cmd(&subshell, token, lexer, TRUE) != NULL)
-				continue ;
+				continue;
 			return (NULL);
 		}
 		else if (subshell->childs_count == 0)
@@ -31,20 +31,20 @@ t_token	*parse_subshell(t_node *root, t_lexer *lexer, t_token *token)
 		else if (is_logic_op(*token))
 		{
 			if (link_logic_oper(&subshell, lexer, token, TRUE))
-				continue ;
+				continue;
 			return (syntax_error(SYN_ERR));
 		}
 		else if (token->type == TOKEN_CLOSE_PAREN)
-			break ;
+			break;
 		*token = get_next_token(lexer, TRUE);
 	}
 	return (token);
 }
 
-int	add_redirect_node(t_lexer *lexer, t_node *curr_cmd, int type)
+int add_redirect_node(t_lexer *lexer, t_node *curr_cmd, int type)
 {
-	t_token	token;
-	t_node	*tmp;
+	t_token token;
+	t_node *tmp;
 
 	tmp = create_node(type);
 	if (tmp == NULL)
@@ -59,8 +59,8 @@ int	add_redirect_node(t_lexer *lexer, t_node *curr_cmd, int type)
 			syntax_error(SYN_QUOTE);
 			return (1);
 		}
-		if (type == NODE_HERE_DOC && get_here_doc(tmp))
-			return (1);
+		if (type == NODE_HERE_DOC)
+			add_here_doc(tmp);
 	}
 	else
 	{
@@ -70,10 +70,10 @@ int	add_redirect_node(t_lexer *lexer, t_node *curr_cmd, int type)
 	return (0);
 }
 
-t_token	*fill_cmd(t_node **root, t_token *token, t_lexer *lexer, int as_child)
+t_token *fill_cmd(t_node **root, t_token *token, t_lexer *lexer, int as_child)
 {
-	t_node	*curr_cmd;
-	int		can_have_subshell;
+	t_node *curr_cmd;
+	int can_have_subshell;
 
 	can_have_subshell = TRUE;
 	curr_cmd = link_new_node(root, NODE_CMD, as_child);
@@ -82,7 +82,7 @@ t_token	*fill_cmd(t_node **root, t_token *token, t_lexer *lexer, int as_child)
 		if (token->type == TOKEN_STR && link_argv_node(curr_cmd, lexer) == NULL)
 			return (NULL);
 		else if (is_redirect_token(*token) && add_redirect_node(lexer,
-		 		curr_cmd, token->type))
+																curr_cmd, token->type))
 			return (NULL);
 		else if (token->type == TOKEN_OPEN_PAREN)
 		{
@@ -99,17 +99,17 @@ t_token	*fill_cmd(t_node **root, t_token *token, t_lexer *lexer, int as_child)
 	return (token);
 }
 
-t_node	**parser_loop(t_node **root, t_lexer *lexer, t_token *token)
+t_node **parser_loop(t_node **root, t_lexer *lexer, t_token *token)
 {
 	*root = NULL;
-	g_shell.here_docs_count = 0;
+	g_shell.here_docs.count = 0;
 	while (token->type != TOKEN_EOF)
 	{
 		if (is_cmd_token(*token))
 		{
 			token = fill_cmd(root, token, lexer, FALSE);
 			if (token)
-				continue ;
+				continue;
 			return (NULL);
 		}
 		if ((*root)->list_count > 0)
@@ -117,7 +117,7 @@ t_node	**parser_loop(t_node **root, t_lexer *lexer, t_token *token)
 			if (is_logic_op(*token))
 			{
 				if (link_logic_oper(root, lexer, token, FALSE))
-					continue ;
+					continue;
 			}
 			return (syntax_error(SYN_ERR));
 		}
@@ -125,13 +125,13 @@ t_node	**parser_loop(t_node **root, t_lexer *lexer, t_token *token)
 			return (syntax_error(SYN_ERR));
 		*token = get_next_token(lexer, TRUE);
 	}
-	return (root);
+	return get_here_docs(root);
 }
 
-t_node	**parse_line(char *line, t_node **root)
+t_node **parse_line(char *line, t_node **root)
 {
-	t_lexer	lexer;
-	t_token	token;
+	t_lexer lexer;
+	t_token token;
 
 	lexer = new_lexer(line);
 	token = get_next_token(&lexer, TRUE);

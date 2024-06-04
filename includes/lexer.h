@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 09:43:22 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/02 11:37:14 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/04 14:00:03 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,8 @@ int		is_logic_op(t_token token);
 /* here_doc */
 int		randomize_str(char *str, int rand_fd);
 int		handle_here_doc_interrupt(int stdin_dup);
-int	get_here_doc(t_node *node);
+void	add_here_doc(t_node *node);
+t_node** get_here_docs(t_node**root);
 
 /* t_string utils */
 int		contains_chars(t_string string, char *charset);

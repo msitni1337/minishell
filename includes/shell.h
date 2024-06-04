@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 09:42:43 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/02 11:17:43 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/04 13:34:01 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,9 @@ typedef struct s_shell
 	char		*line;
 	int			last_exit_value;
 	t_darr		childs_pids;
+	t_darr		here_docs;
 	int			interrupt;
 	int			collecting_here_doc;
-	int			here_docs_count;
 }				t_shell;
 
 // global variable:

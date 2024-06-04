@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution_bin.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmellal <nmellal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 18:51:44 by nmellal           #+#    #+#             */
-/*   Updated: 2024/06/02 18:51:45 by nmellal          ###   ########.fr       */
+/*   Updated: 2024/06/04 13:25:19 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void handle_sig_quit(int sig)
 		kill(pids[i], SIGKILL);
 		i++;
 	}
-	ft_putendl_fd("Quit (core dumb)", STDERR_FILENO);
+	ft_putendl_fd("Quit (core dumped)", STDERR_FILENO);
 }
 
 void exec_bin_main(t_cmd *cmd)

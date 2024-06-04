@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 10:46:13 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/02 20:11:31 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/04 14:00:06 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,17 +91,22 @@ void init_here_doc(t_node *node, int *fd, int *stdin_dup)
 	free(filename);
 }
 
+void add_here_doc(t_node *node)
+{
+	if (g_shell.here_docs.count > 15)
+	{
+		print_error(NULL, "maximum here-document count exceeded");
+		exit_with_code(NULL, 2);
+	}
+	if (add_to_arr(&(g_shell.here_docs), &node) == NULL)
+		malloc_error(NULL, NULL, NULL, NULL);
+}
+
 int get_here_doc(t_node *node)
 {
 	int here_doc_fd;
 	int stdin_dup;
 
-	if (g_shell.here_docs_count > 16)
-	{
-		print_error(NULL, "maximum here-document count exceeded");
-		exit_with_code(NULL, 2);
-	}
-	g_shell.here_docs_count++;
 	init_here_doc(node, &here_doc_fd, &stdin_dup);
 	if (write_next_line_here_doc(node, here_doc_fd))
 	{
@@ -112,4 +117,21 @@ int get_here_doc(t_node *node)
 	close(stdin_dup);
 	g_shell.collecting_here_doc = FALSE;
 	return (0);
+}
+
+t_node** get_here_docs(t_node**root)
+{
+	t_node** here_docs;
+	size_t i;
+
+	here_docs = g_shell.here_docs.data;
+	i = 0;
+	while (i < g_shell.here_docs.count)
+	{
+		if (get_here_doc(here_docs[i]))
+			return NULL;
+		i++;
+	}
+	g_shell.here_docs.count = 0;
+	return root;
 }
