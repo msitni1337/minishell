@@ -6,17 +6,17 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 16:56:12 by nmellal           #+#    #+#             */
-/*   Updated: 2024/06/02 09:49:28 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/04 14:48:51 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "environment.h"
 
-t_lstenv	*increment_shlvl(void)
+void increment_shlvl(void)
 {
-	t_lstenv	*node;
-	char		*value;
-	int			shlvl;
+	t_lstenv *node;
+	char *value;
+	int shlvl;
 
 	node = get_env_node("SHLVL");
 	if (node)
@@ -25,21 +25,34 @@ t_lstenv	*increment_shlvl(void)
 		shlvl++;
 		value = ft_itoa(shlvl);
 		if (value == NULL)
-			return (NULL);
+			malloc_error(NULL, NULL, NULL, NULL);
 		node = add_or_replace_env("SHLVL", value);
 		free(value);
 	}
 	else
 		node = add_or_replace_env("SHLVL", "1");
-	return (node);
+	if (node == NULL)
+		malloc_error(NULL, NULL, NULL, NULL);
 }
 
-void	take_env(const char **envp)
+void set_pwd()
 {
-	char		*key;
-	char		*value;
-	t_lstenv	*node;
-	int			i;
+	char*pwd;
+
+	pwd = getcwd(NULL, 0);
+	if (pwd == NULL)
+		malloc_error(NULL, NULL, NULL, NULL);
+	if(add_or_replace_env("PWD", pwd) == NULL)
+		malloc_error(pwd, NULL, NULL, NULL);
+	free(pwd);
+}
+
+void take_env(const char **envp)
+{
+	char *key;
+	char *value;
+	t_lstenv *node;
+	int i;
 
 	g_shell.env_list = NULL;
 	i = 0;
@@ -54,7 +67,6 @@ void	take_env(const char **envp)
 			malloc_error(key, value, NULL, NULL);
 		i++;
 	}
-	node = increment_shlvl();
-	if (node == NULL)
-		malloc_error(NULL, NULL, NULL, NULL);
+	increment_shlvl();
+	set_pwd();
 }

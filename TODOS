@@ -1,3 +1,2 @@
-## Here doc should be kept till the end of parsing loop.
 ## envs should be splitted.
 ## set default environment when running under env -i like pwd.

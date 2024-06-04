@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 10:46:13 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/04 14:00:06 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/04 14:12:19 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int write_next_line_here_doc(t_node *node, int write)
 	char *delim;
 
 	g_shell.collecting_here_doc = TRUE;
-	delim = ft_substr(node->token_str.s, 0, node->token_str.count);
+	delim = expand_string(node->token_str, FALSE);
 	if (delim == NULL)
 		malloc_error(NULL, NULL, NULL, NULL);
 	line = readline("> ");
