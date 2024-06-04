@@ -1,34 +1,3 @@
-## [Garbage Collector] [DONE]
-    # if malloc failed Galloc need to free everything and print error and exit the whole program. 
-    # Galloc need to set allocated buffer to zero calling memset after you call malloc.
-    # Galloc Need To implement following func:
-        - void*galloc(size_t size); --> Allocate size bytes of memory.
-        - void gfree(void*ptr); --> free the corresponding pointer.
-        - void gfreeall(); --> frees all pointer allocated except for the list of pointer.
-        - void gexit(int exit_code); --> frees everything even the list holding the ptrs + exiting with the exit_code.
-## [string expansion] [DONE]
-    # You'll have everything you need to do in the file "./src/interpreter/strings_expansion.c".
-    # In that file I layed down the backbone of what you need to do you just need to implement the logic.
-    # this is an example: Variable $PWD = /home/dev
-        - string = hello"world my pwd is $PWD"and'I am inside of $PWD'right.
-        - after expansion it will return the following:
-        - helloworld my pwd is /home/devandI am inside of $PWDright.
-
-
-## ADD working directory to PATH binary checking in case of an empty colon like "/usr/bin:" or "/usr/bin::/usr/sbin" ... [DONE]
-
-## We need a better env system with keys and values [DONE]
-
-## For error printing we need to check every perror and any write(stderr functions.. 
-
-## Garbage Collector integration
-
-## heavely test last exit status $?
-
-## cmd1 | cmd2 | builtin << last builtin should not execute on main proc. [DONE]
-
-## builtin | cat << builtin should close write pipe. [DONE]
-
-## Better history adding.
-
-## asterix expansion *.
+## Here doc should be kept till the end of parsing loop.
+## envs should be splitted.
+## set default environment when running under env -i like pwd.
