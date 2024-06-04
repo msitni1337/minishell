@@ -66,7 +66,7 @@ void handle_sig_quit(int sig)
 		kill(pids[i], SIGKILL);
 		i++;
 	}
-	exit_with_code(NULL, 131);
+	ft_putendl_fd("Quit (core dumb)", STDERR_FILENO);
 }
 
 void exec_bin_main(t_cmd *cmd)
