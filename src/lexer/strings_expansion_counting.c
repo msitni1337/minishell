@@ -12,10 +12,10 @@
 
 #include "lexer.h"
 
-void	count_var_len(t_string string, size_t *i, size_t *len)
+void count_var_len(t_string string, size_t *i, size_t *len)
 {
-	int		count;
-	char	buff[BUFF_SZ];
+	int count;
+	char buff[BUFF_SZ];
 
 	(*i)++;
 	count = parse_key_count(string.s + *i);
@@ -34,20 +34,31 @@ void	count_var_len(t_string string, size_t *i, size_t *len)
 	}
 }
 
-t_expansion_state	count_normal_mode(t_string string, size_t *i, size_t *len,
-		int expand_vars)
+t_expansion_state count_normal_mode(t_string string, size_t *i, size_t *len,
+									t_expansion_type expansion_type)
 {
+	t_expansion_state state;
+
+	state = NORMAL_STATE;
 	if (string.s[*i] == '\'')
 	{
-		(*i)++;
-		return (SQUOTE_STATE);
+		state = SQUOTE_STATE;
+		if (expansion_type & REM_QUOTES)
+		{
+			(*i)++;
+			return (state);
+		}
 	}
 	else if (string.s[*i] == '"')
 	{
-		(*i)++;
-		return (DQUOTE_STATE);
+		state = DQUOTE_STATE;
+		if (expansion_type & REM_QUOTES)
+		{
+			(*i)++;
+			return (state);
+		}
 	}
-	else if (expand_vars && string.s[*i] == '$')
+	if (expansion_type & EXPAND_VARS && string.s[*i] == '$')
 	{
 		count_var_len(string, i, len);
 	}
@@ -56,18 +67,25 @@ t_expansion_state	count_normal_mode(t_string string, size_t *i, size_t *len,
 		(*i)++;
 		(*len)++;
 	}
-	return (NORMAL);
+	return (state);
 }
 
-t_expansion_state	count_dquote_mode(t_string string, size_t *i, size_t *len,
-		int expand_vars)
+t_expansion_state count_dquote_mode(t_string string, size_t *i, size_t *len,
+									t_expansion_type expansion_type)
 {
+	t_expansion_state state;
+
+	state = DQUOTE_STATE;
 	if (string.s[*i] == '"')
 	{
-		(*i)++;
-		return (NORMAL);
+		state = NORMAL_STATE;
+		if (expansion_type & REM_QUOTES)
+		{
+			(*i)++;
+			return (state);
+		}
 	}
-	else if (expand_vars && string.s[*i] == '$')
+	if (expansion_type & EXPAND_VARS && string.s[*i] == '$')
 	{
 		count_var_len(string, i, len);
 	}
@@ -76,41 +94,45 @@ t_expansion_state	count_dquote_mode(t_string string, size_t *i, size_t *len,
 		(*i)++;
 		(*len)++;
 	}
-	return (DQUOTE_STATE);
+	return (state);
 }
 
-t_expansion_state	count_squote_mode(t_string string, size_t *i, size_t *len)
+t_expansion_state count_squote_mode(t_string string, size_t *i, size_t *len, t_expansion_type expansion_type)
 {
+	t_expansion_state state;
+
+	state = SQUOTE_STATE;
 	if (string.s[*i] == '\'')
 	{
-		(*i)++;
-		return (NORMAL);
+		state = NORMAL_STATE;
+		if (expansion_type & REM_QUOTES)
+		{
+			(*i)++;
+			return (state);
+		}
 	}
-	else
-	{
-		(*i)++;
-		(*len)++;
-	}
-	return (SQUOTE_STATE);
+	(*i)++;
+	(*len)++;
+	return (state);
 }
 
-size_t	get_expanded_str_len(t_string string, int expand_vars)
+size_t get_expanded_str_len(t_string string, t_expansion_type expansion_type)
 {
-	t_expansion_state	state;
-	size_t				len;
-	size_t				i;
+	t_expansion_state state;
+	size_t len;
+	size_t i;
 
 	len = 0;
 	i = 0;
-	state = NORMAL;
+	state = NORMAL_STATE;
 	while (i < string.count)
 	{
-		if (state == NORMAL)
-			state = count_normal_mode(string, &i, &len, expand_vars);
+		if (state == NORMAL_STATE)
+			state = count_normal_mode(string, &i, &len, expansion_type);
 		else if (state == DQUOTE_STATE)
-			state = count_dquote_mode(string, &i, &len, expand_vars);
+			state = count_dquote_mode(string, &i, &len, expansion_type);
 		else if (state == SQUOTE_STATE)
-			state = count_squote_mode(string, &i, &len);
+			state = count_squote_mode(string, &i, &len, expansion_type);
 	}
 	return (len);
 }

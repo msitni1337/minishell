@@ -88,7 +88,7 @@ int	open_file_from_node(t_node *node, t_cmd *cmd)
 		cmd->infile = node->children->here_doc_fd;
 		return (0);
 	}
-	name = expand_string(node->children->token_str, TRUE);
+	name = expand_string(node->children->token_str, EXPAND_VARS | REM_QUOTES);
 	if (name == NULL)
 		malloc_error(NULL, NULL, NULL, NULL);
 	if (contains_chars(node->children->token_str, "*") == FALSE)

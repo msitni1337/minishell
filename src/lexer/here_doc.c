@@ -18,7 +18,7 @@ int write_next_line_here_doc(t_node *node, int write)
 	char *delim;
 
 	g_shell.collecting_here_doc = TRUE;
-	delim = expand_string(node->token_str, FALSE);
+	delim = expand_string(node->token_str, REM_QUOTES);
 	if (delim == NULL)
 		malloc_error(NULL, NULL, NULL, NULL);
 	line = readline("> ");

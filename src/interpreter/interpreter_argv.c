@@ -32,7 +32,7 @@ char	*expand_argv(t_string str, int *has_asterix)
 
 	if (contains_chars(str, "*") == TRUE)
 		*has_asterix = TRUE;
-	res = expand_string(str, TRUE);
+	res = expand_string(str, EXPAND_VARS | REM_QUOTES);
 	return (res);
 }
 

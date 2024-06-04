@@ -12,22 +12,33 @@
 
 #include "lexer.h"
 
-t_expansion_state	expand_normal_mode(char *res, t_string *string, size_t *i,
-		int expand_vars)
+t_expansion_state expand_normal_mode(char *res, t_string *string, size_t *i,
+									 t_expansion_type expansion_type)
 {
+	t_expansion_state state;
+
+	state = NORMAL_STATE;
 	if (*(string->s) == '\'')
 	{
-		(string->count)--;
-		(string->s)++;
-		return (SQUOTE_STATE);
+		state = SQUOTE_STATE;
+		if (expansion_type & REM_QUOTES)
+		{
+			(string->count)--;
+			(string->s)++;
+			return (state);
+		}
 	}
 	else if (*(string->s) == '"')
 	{
-		(string->count)--;
-		(string->s)++;
-		return (DQUOTE_STATE);
+		state = DQUOTE_STATE;
+		if (expansion_type & REM_QUOTES)
+		{
+			(string->count)--;
+			(string->s)++;
+			return (state);
+		}
 	}
-	else if (expand_vars && *(string->s) == '$')
+	if (expansion_type & EXPAND_VARS && *(string->s) == '$')
 	{
 		copy_var_value(res, string, i);
 	}
@@ -38,19 +49,26 @@ t_expansion_state	expand_normal_mode(char *res, t_string *string, size_t *i,
 		(string->s)++;
 		(*i)++;
 	}
-	return (NORMAL);
+	return (state);
 }
 
-t_expansion_state	expand_dquote_mode(char *res, t_string *string, size_t *i,
-		int expand_vars)
+t_expansion_state expand_dquote_mode(char *res, t_string *string, size_t *i,
+									 t_expansion_type expansion_type)
 {
+	t_expansion_state state;
+
+	state = DQUOTE_STATE;
 	if (*(string->s) == '"')
 	{
-		(string->count)--;
-		(string->s)++;
-		return (NORMAL);
+		state = NORMAL_STATE;
+		if (expansion_type & REM_QUOTES)
+		{
+			(string->count)--;
+			(string->s)++;
+			return (state);
+		}
 	}
-	else if (expand_vars && *(string->s) == '$')
+	if (expansion_type & EXPAND_VARS && *(string->s) == '$')
 	{
 		copy_var_value(res, string, i);
 	}
@@ -61,57 +79,62 @@ t_expansion_state	expand_dquote_mode(char *res, t_string *string, size_t *i,
 		(string->s)++;
 		(*i)++;
 	}
-	return (DQUOTE_STATE);
+	return (state);
 }
 
-t_expansion_state	expand_squote_mode(char *res, t_string *string, size_t *i)
+t_expansion_state expand_squote_mode(char *res, t_string *string, size_t *i,
+									 t_expansion_type expansion_type)
 {
+	t_expansion_state state;
+
+	state = SQUOTE_STATE;
 	if (*(string->s) == '\'')
 	{
-		(string->count)--;
-		(string->s)++;
-		return (NORMAL);
+		state = NORMAL_STATE;
+		if (expansion_type & REM_QUOTES)
+		{
+			(string->count)--;
+			(string->s)++;
+			return (state);
+		}
 	}
-	else
-	{
-		res[*i] = *(string->s);
-		(string->count)--;
-		(string->s)++;
-		(*i)++;
-	}
-	return (SQUOTE_STATE);
+	res[*i] = *(string->s);
+	(string->count)--;
+	(string->s)++;
+	(*i)++;
+	return (state);
 }
 
-char	*perform_string_expansion(t_string string, int expand_vars)
+char *perform_string_expansion(t_string string, t_expansion_type expansion_type)
 {
-	t_expansion_state	state;
-	char				*res;
-	size_t				len;
-	size_t				i;
+	t_expansion_state state;
+	char *res;
+	size_t len;
+	size_t i;
 
-	len = get_expanded_str_len(string, expand_vars);
+	len = get_expanded_str_len(string, expansion_type);
 	res = malloc(len + 1);
 	if (res == NULL)
 		return (NULL);
 	i = 0;
-	state = NORMAL;
+	state = NORMAL_STATE;
 	while (string.count > 0)
 	{
-		if (state == NORMAL)
-			state = expand_normal_mode(res, &string, &i, expand_vars);
+		if (state == NORMAL_STATE)
+			state = expand_normal_mode(res, &string, &i, expansion_type);
 		else if (state == DQUOTE_STATE)
-			state = expand_dquote_mode(res, &string, &i, expand_vars);
+			state = expand_dquote_mode(res, &string, &i, expansion_type);
 		else if (state == SQUOTE_STATE)
-			state = expand_squote_mode(res, &string, &i);
+			state = expand_squote_mode(res, &string, &i, expansion_type);
 	}
 	res[i] = 0;
 	return (res);
 }
 
-char	*expand_string(t_string string, int expand_vars)
+char *expand_string(t_string string, t_expansion_type expansion_type)
 {
 	if (contains_chars(string, "*'\"$") == TRUE)
-		return (perform_string_expansion(string, expand_vars));
+		return (perform_string_expansion(string, expansion_type));
 	else
 		return (ft_substr(string.s, 0, string.count));
 }

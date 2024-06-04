@@ -29,10 +29,16 @@
 
 typedef enum e_expansion_state
 {
-	NORMAL,
+	NORMAL_STATE,
 	DQUOTE_STATE,
 	SQUOTE_STATE,
 }		t_expansion_state;
+
+typedef enum e_expansion_type
+{
+	EXPAND_VARS = (1 << 1),
+	REM_QUOTES = (1 << 2)
+} t_expansion_type;
 
 // Tree Builder:
 t_node	*create_node(int type);
@@ -77,8 +83,8 @@ t_node** get_here_docs(t_node**root);
 int		contains_chars(t_string string, char *charset);
 
 /* string expansion */
-char	*expand_string(t_string string, int expand_vars);
-size_t	get_expanded_str_len(t_string string, int expand_vars);
+char	*expand_string(t_string string, t_expansion_type expansion_type);
+size_t get_expanded_str_len(t_string string, t_expansion_type expansion_type);
 size_t	parse_key_count(const char *s);
 void	copy_var_value(char *res, t_string *string, size_t *i);
 int		count_num_chars(long n);
