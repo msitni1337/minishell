@@ -12,7 +12,7 @@
 
 #include "shell.h"
 
-void	handle_sigint(int sig)
+void handle_sigint(int sig)
 {
 	(void)sig;
 	g_shell.interrupt = TRUE;
@@ -20,13 +20,13 @@ void	handle_sigint(int sig)
 	if (g_shell.childs_pids.count > 0)
 	{
 		write(1, "\n", 1);
-		return ;
+		return;
 	}
 	if (g_shell.collecting_here_doc == TRUE)
 	{
 		write(1, "\n", 1);
 		close(0);
-		return ;
+		return;
 	}
 	rl_on_new_line();
 	write(1, "\n", 1);
@@ -34,10 +34,16 @@ void	handle_sigint(int sig)
 	rl_redisplay();
 }
 
-void	setup_signal_handlers(void)
+void setup_signal_handlers(void)
 {
 	if (signal(SIGINT, handle_sigint) == SIG_ERR)
-		exit(1);
+	{
+		print_error(NULL, "Can't set signal.");
+		exit(EXIT_FAILURE);
+	}
 	if (signal(SIGQUIT, SIG_IGN) == SIG_ERR)
-		exit(1);
+	{
+		print_error(NULL, "Can't set signal.");
+		exit(EXIT_FAILURE);
+	}
 }

@@ -81,8 +81,8 @@ t_token	*fill_cmd(t_node **root, t_token *token, t_lexer *lexer, int as_child)
 	{
 		if (token->type == TOKEN_STR && link_argv_node(curr_cmd, lexer) == NULL)
 			return (NULL);
-		else if (is_redirect_token(*token) && add_redirect_node(lexer, curr_cmd,
-				token->type))
+		else if (is_redirect_token(*token) && add_redirect_node(lexer,
+		 		curr_cmd, token->type))
 			return (NULL);
 		else if (token->type == TOKEN_OPEN_PAREN)
 		{
@@ -102,6 +102,7 @@ t_token	*fill_cmd(t_node **root, t_token *token, t_lexer *lexer, int as_child)
 t_node	**parser_loop(t_node **root, t_lexer *lexer, t_token *token)
 {
 	*root = NULL;
+	g_shell.here_docs_count = 0;
 	while (token->type != TOKEN_EOF)
 	{
 		if (is_cmd_token(*token))

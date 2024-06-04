@@ -57,9 +57,7 @@ void	perform_var_value_copy(char *res, t_string *string, size_t *i,
 	char	*value;
 
 	ft_strlcpy(key, string->s, key_count + 1);
-	if (ft_strcmp(key, "$") == 0)
-		*i += ft_sitoa(res + *i, getpid());
-	else if (ft_strcmp(key, "?") == 0)
+	if (ft_strcmp(key, "?") == 0)
 		*i += ft_sitoa(res + *i, g_shell.last_exit_value);
 	else
 	{

@@ -70,7 +70,7 @@ int		is_logic_op(t_token token);
 /* here_doc */
 int		randomize_str(char *str, int rand_fd);
 int		handle_here_doc_interrupt(int stdin_dup);
-int		get_here_doc(t_node *node);
+int	get_here_doc(t_node *node);
 
 /* t_string utils */
 int		contains_chars(t_string string, char *charset);

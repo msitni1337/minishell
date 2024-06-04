@@ -19,12 +19,13 @@
 typedef struct s_shell
 {
 	t_lstenv	*env_list;
-	int			last_exit_value;
-	int			interrupt;
-	int			collecting_here_doc;
-	t_darr		childs_pids;
 	t_node		*tree_root;
 	char		*line;
+	int			last_exit_value;
+	t_darr		childs_pids;
+	int			interrupt;
+	int			collecting_here_doc;
+	int			here_docs_count;
 }				t_shell;
 
 // global variable:

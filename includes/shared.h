@@ -32,6 +32,14 @@
 # include <unistd.h>
 # include <dirent.h>
 
+typedef struct s_darr
+{
+	void	*data;
+	size_t	count;
+	size_t	elem_size;
+	size_t	capacity;
+}			t_darr;
+
 typedef struct s_string
 {
 	const char		*s;
@@ -90,7 +98,8 @@ typedef struct s_node
 	size_t			list_count;
 	struct s_node	*children;
 	size_t			childs_count;
-	int				here_doc_fd;
+	int			here_doc_fd;
+	t_darr			here_docs;
 }					t_node;
 
 typedef struct s_lexer

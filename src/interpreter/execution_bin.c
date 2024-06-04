@@ -12,9 +12,9 @@
 
 #include "interpreter.h"
 
-void	run_bin(t_cmd *cmd)
+void run_bin(t_cmd *cmd)
 {
-	char	**envp;
+	char **envp;
 
 	envp = get_exported_env_arr();
 	if (envp == NULL)
@@ -28,7 +28,7 @@ void	run_bin(t_cmd *cmd)
 	exit_with_code(cmd, EXIT_SUCCESS);
 }
 
-void	exec_bin_child(t_cmd *cmd)
+void exec_bin_child(t_cmd *cmd)
 {
 	if (cmd->infile != STDIN_FILENO)
 	{
@@ -53,9 +53,39 @@ void	exec_bin_child(t_cmd *cmd)
 	run_bin(cmd);
 }
 
-int	exec_bin(t_cmd *cmd, int wait_child)
+void handle_sig_quit(int sig)
 {
-	int	pid;
+	(void)sig;
+	int *pids;
+	size_t i;
+
+	pids = g_shell.childs_pids.data;
+	i = 0;
+	while (i < g_shell.childs_pids.count)
+	{
+		kill(pids[i], SIGKILL);
+		i++;
+	}
+	exit_with_code(NULL, 131);
+}
+
+void exec_bin_main(t_cmd *cmd)
+{
+	if (cmd->infile != STDIN_FILENO)
+		close(cmd->infile);
+	if (cmd->outfile != STDOUT_FILENO)
+		close(cmd->outfile);
+	free_cmd(cmd);
+	if (signal(SIGQUIT, handle_sig_quit) == SIG_ERR)
+	{
+		print_error(NULL, "Can't set signal.");
+		exit_with_code(NULL, EXIT_FAILURE);
+	}
+}
+
+int exec_bin(t_cmd *cmd, int wait_child)
+{
+	int pid;
 
 	if (cmd->argc > 0)
 		if (add_or_replace_env("_", cmd->argv[cmd->argc - 1]) == NULL)
@@ -70,11 +100,7 @@ int	exec_bin(t_cmd *cmd, int wait_child)
 		exec_bin_child(cmd);
 	if (add_to_arr(&(g_shell.childs_pids), &pid) == NULL)
 		malloc_error(NULL, NULL, NULL, cmd);
-	if (cmd->infile != STDIN_FILENO)
-		close(cmd->infile);
-	if (cmd->outfile != STDOUT_FILENO)
-		close(cmd->outfile);
-	free_cmd(cmd);
+	exec_bin_main(cmd);
 	if (wait_child == FALSE)
 		return (0);
 	return (wait_all_childs());
