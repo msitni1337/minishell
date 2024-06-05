@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 17:33:59 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/02 17:34:01 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/05 20:41:10 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,15 @@ void	print_error(char *name, char *reason)
 {
 	ft_putstr_fd(PROG_NAME ": ", STDERR_FILENO);
 	ft_putstr_fd(name, STDERR_FILENO);
+	ft_putstr_fd(": ", STDERR_FILENO);
+	ft_putstr_fd(reason, STDERR_FILENO);
+	write(STDERR_FILENO, "\n", 1);
+}
+
+void	print_error_str(t_string str, char *reason)
+{
+	ft_putstr_fd(PROG_NAME ": ", STDERR_FILENO);
+	write(STDERR_FILENO, str.s, str.count);
 	ft_putstr_fd(": ", STDERR_FILENO);
 	ft_putstr_fd(reason, STDERR_FILENO);
 	write(STDERR_FILENO, "\n", 1);

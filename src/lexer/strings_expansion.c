@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 10:11:15 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/02 10:21:29 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/05 19:04:37 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,6 +169,9 @@ char **expand_args(char **args, size_t *count)
 	size_t i;
 
 	result = init_da(sizeof(char *));
+	result.data = malloc(sizeof(char*));
+	((char**)(result.data))[0] = NULL;
+	result.capacity = 1;
 	i = 0;
 	while (i < *count)
 	{

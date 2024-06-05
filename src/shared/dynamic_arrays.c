@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 17:34:10 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/02 17:34:10 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/05 19:04:07 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@ t_darr	*expand_arr(t_darr *arr)
 	ft_memset(tmp, 0, arr->elem_size * arr->capacity);
 	if (arr->data && arr->count)
 		ft_memcpy(tmp, arr->data, arr->elem_size * arr->count);
-	free(arr->data);
+	if (arr->data)
+		free(arr->data);
 	arr->data = tmp;
 	return (arr);
 }

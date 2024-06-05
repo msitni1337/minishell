@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 09:43:01 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/04 13:41:28 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/05 20:41:22 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,5 +138,6 @@ void				close_here_docs(void);
 void				malloc_error(void *p1, void *p2, char **p3, t_cmd *cmd);
 void				exit_with_code(t_cmd *cmd, int exit_value);
 void				*free_p(void *p1, void *p2, void *p3, char **p4);
+void	print_error_str(t_string str, char *reason);
 
 #endif
