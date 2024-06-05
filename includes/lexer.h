@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 09:43:22 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/04 14:00:03 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/05 20:55:10 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ t_node	**init_subshell_node(t_node *root, t_lexer *lexer, t_token *token,
 			t_node **subshell);
 t_node	*link_argv_node(t_node *curr_cmd, t_lexer *lexer);
 void	*syntax_error(char *reason);
-int	get_string(t_lexer *lexer, t_string *s);
+int	get_string(t_lexer *lexer, t_string *s, char *special_char_set);
 
 // tokenizer:
 t_token	get_next_token(t_lexer *lexer, int ignore_spaces);

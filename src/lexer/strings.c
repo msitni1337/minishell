@@ -6,20 +6,20 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 11:03:20 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/02 11:03:45 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/05 20:56:39 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lexer.h"
 
-int	get_string_whitespace(t_lexer *lexer, t_string *s)
+int	get_string_whitespace(t_lexer *lexer, t_string *s, char*special_char_set)
 {
 	while (lexer->pos < lexer->count)
 	{
 		if (ft_isspace(lexer->line[lexer->pos])
 			|| lexer->line[lexer->pos] == DQUOTE
 			|| lexer->line[lexer->pos] == SQUOTE
-			|| is_special(lexer->line[lexer->pos]))
+			|| ft_strchr(special_char_set, lexer->line[lexer->pos]))
 			break ;
 		s->count++;
 		lexer->pos++;
@@ -44,7 +44,7 @@ int	get_string_delim(t_lexer *lexer, t_string *s, const char delim)
 	return (FALSE);
 }
 
-int	get_string(t_lexer *lexer, t_string *s)
+int	get_string(t_lexer *lexer, t_string *s, char *special_char_set)
 {
 	int	is_closed;
 
@@ -55,7 +55,7 @@ int	get_string(t_lexer *lexer, t_string *s)
 	else if (*(s->s) == SQUOTE)
 		is_closed = get_string_delim(lexer, s, SQUOTE);
 	else
-		is_closed = get_string_whitespace(lexer, s);
+		is_closed = get_string_whitespace(lexer, s, special_char_set);
 	while (is_closed == TRUE && s->s[s->count] && !ft_isspace(s->s[s->count])
 		&& !is_special(s->s[s->count]))
 	{
@@ -64,7 +64,7 @@ int	get_string(t_lexer *lexer, t_string *s)
 		else if (s->s[s->count] == SQUOTE)
 			is_closed = get_string_delim(lexer, s, SQUOTE);
 		else
-			is_closed = get_string_whitespace(lexer, s);
+			is_closed = get_string_whitespace(lexer, s, special_char_set);
 	}
 	return (is_closed);
 }
@@ -77,7 +77,7 @@ t_node	*add_str_node(t_node *root, t_lexer *lexer)
 	node = create_node(NODE_STR);
 	if (node == NULL)
 		malloc_error(NULL, NULL, NULL, NULL);
-	if (get_string(lexer, &(node->token_str)) == FALSE)
+	if (get_string(lexer, &(node->token_str), "()<>|") == FALSE)
 	{
 		free(node);
 		return (NULL);

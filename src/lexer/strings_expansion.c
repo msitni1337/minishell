@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 10:11:15 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/05 19:04:37 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/05 20:55:41 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,7 @@ char **expand_argument(t_darr *result, char *arg)
 	trim_spaces(&lexer);
 	while (lexer.pos < lexer.count)
 	{
-		get_string(&lexer, &str);
+		get_string(&lexer, &str, NULL);
 		s = expand_string(str, REM_QUOTES);
 		if (s == NULL)
 			return NULL;
