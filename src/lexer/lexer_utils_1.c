@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 10:06:31 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/02 10:57:47 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/05 21:52:56 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,4 +52,32 @@ int	contains_chars(t_string string, char *charset)
 		i++;
 	}
 	return (FALSE);
+}
+
+int	write_next_line_here_doc(t_node *node, int write)
+{
+	char	*line;
+	char	*delim;
+
+	g_shell.collecting_here_doc = TRUE;
+	delim = expand_string(node->token_str, REM_QUOTES);
+	if (delim == NULL)
+		malloc_error(NULL, NULL, NULL, NULL);
+	line = readline("> ");
+	while (line)
+	{
+		if (ft_strcmp(line, delim) == 0)
+			break ;
+		ft_putendl_fd(line, write);
+		free(line);
+		line = readline("> ");
+	}
+	close(write);
+	free(delim);
+	if (line)
+	{
+		free(line);
+		return (0);
+	}
+	return (1);
 }

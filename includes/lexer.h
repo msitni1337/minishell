@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 09:43:22 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/05 20:55:10 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/05 22:03:13 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,12 @@
 # define SYN_BRACE "unclosed brace."
 
 # define HERE_DOC_FILENAME_ERROR \
-	"Can't get a valid here_doc file name after 100 tries.\n\
-	Maybe it's time to clean up your /tmp folder manually."
+"Can't get a valid here_doc file name after 100 tries.\n\
+Maybe it's time to clean up your /tmp folder manually."
 # define REDIRECTION_FNAME_ERR \
 "expecting name of file or here_doc delim to redirect I/O."
-# define CMD_BEFORE_SUBSHL "CMD ARGS BEFORE SUBSHELL OR MULTIPLE SUBSHELLS"
+# define CMD_BEFORE_SUBSHL \
+"CMD ARGS BEFORE SUBSHELL OR MULTIPLE SUBSHELLS"
 
 typedef enum e_expansion_state
 {
@@ -38,7 +39,7 @@ typedef enum e_expansion_type
 {
 	EXPAND_VARS = (1 << 1),
 	REM_QUOTES = (1 << 2)
-} t_expansion_type;
+}		t_expansion_type;
 
 // Tree Builder:
 t_node	*create_node(int type);
@@ -61,7 +62,7 @@ t_node	**init_subshell_node(t_node *root, t_lexer *lexer, t_token *token,
 			t_node **subshell);
 t_node	*link_argv_node(t_node *curr_cmd, t_lexer *lexer);
 void	*syntax_error(char *reason);
-int	get_string(t_lexer *lexer, t_string *s, char *special_char_set);
+int		get_string(t_lexer *lexer, t_string *s, char *special_char_set);
 
 // tokenizer:
 t_token	get_next_token(t_lexer *lexer, int ignore_spaces);
@@ -78,18 +79,22 @@ int		is_logic_op(t_token token);
 int		randomize_str(char *str, int rand_fd);
 int		handle_here_doc_interrupt(int stdin_dup);
 void	add_here_doc(t_node *node);
-t_node** get_here_docs(t_node**root);
+t_node	**get_here_docs(t_node **root);
+int		write_next_line_here_doc(t_node *node, int write);
 
 /* t_string utils */
 int		contains_chars(t_string string, char *charset);
 
 /* string expansion */
 char	*expand_string(t_string string, t_expansion_type expansion_type);
-size_t get_expanded_str_len(t_string string, t_expansion_type expansion_type);
+char	*perform_string_expansion(t_string string,
+			t_expansion_type expansion_type);
+size_t	get_expanded_str_len(t_string string, t_expansion_type expansion_type);
 size_t	parse_key_count(const char *s);
 void	copy_var_value(char *res, t_string *string, size_t *i);
 int		count_num_chars(long n);
-char **expand_args(char **args, size_t *count);
+char	**expand_args(char **args, size_t *count);
+void	count_var_len(t_string string, size_t *i, size_t *len);
 
 /* asterices expansion */
 char	**expand_asterices(char **argv, size_t *argc);

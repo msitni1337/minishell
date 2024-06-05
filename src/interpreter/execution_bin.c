@@ -12,9 +12,9 @@
 
 #include "interpreter.h"
 
-void run_bin(t_cmd *cmd)
+void	run_bin(t_cmd *cmd)
 {
-	char **envp;
+	char	**envp;
 
 	envp = get_exported_env_arr();
 	if (envp == NULL)
@@ -28,7 +28,7 @@ void run_bin(t_cmd *cmd)
 	exit_with_code(cmd, EXIT_SUCCESS);
 }
 
-void exec_bin_child(t_cmd *cmd)
+void	exec_bin_child(t_cmd *cmd)
 {
 	if (cmd->infile != STDIN_FILENO)
 	{
@@ -53,12 +53,12 @@ void exec_bin_child(t_cmd *cmd)
 	run_bin(cmd);
 }
 
-void handle_sig_quit(int sig)
+void	handle_sig_quit(int sig)
 {
-	(void)sig;
-	int *pids;
-	size_t i;
+	int		*pids;
+	size_t	i;
 
+	(void)sig;
 	pids = g_shell.childs_pids.data;
 	i = 0;
 	while (i < g_shell.childs_pids.count)
@@ -69,7 +69,7 @@ void handle_sig_quit(int sig)
 	ft_putendl_fd("Quit (core dumped)", STDERR_FILENO);
 }
 
-void exec_bin_main(t_cmd *cmd)
+void	exec_bin_main(t_cmd *cmd)
 {
 	if (cmd->infile != STDIN_FILENO)
 		close(cmd->infile);
@@ -83,9 +83,9 @@ void exec_bin_main(t_cmd *cmd)
 	}
 }
 
-int exec_bin(t_cmd *cmd, int wait_child)
+int	exec_bin(t_cmd *cmd, int wait_child)
 {
-	int pid;
+	int	pid;
 
 	if (cmd->argc > 0)
 		if (add_or_replace_env("_", cmd->argv[cmd->argc - 1]) == NULL)

@@ -6,38 +6,30 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 10:11:11 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/02 10:22:33 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/05 21:50:01 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lexer.h"
 
-void count_var_len(t_string string, size_t *i, size_t *len)
+void	count_normal_mode_2(t_string string, size_t *i, size_t *len,
+		t_expansion_type expansion_type)
 {
-	int count;
-	char buff[BUFF_SZ];
-
-	(*i)++;
-	count = parse_key_count(string.s + *i);
-	if (count > 0 && count < BUFF_SZ - 1)
+	if (expansion_type & EXPAND_VARS && string.s[*i] == '$')
 	{
-		ft_strlcpy(buff, string.s + *i, count + 1);
-		if (ft_strcmp(buff, "?") == 0)
-			*len += count_num_chars(g_shell.last_exit_value);
-		else
-			*len += ft_strlen(get_env_value(buff));
-		*i += count;
+		count_var_len(string, i, len);
 	}
-	else if (count == -1)
+	else
 	{
+		(*i)++;
 		(*len)++;
 	}
 }
 
-t_expansion_state count_normal_mode(t_string string, size_t *i, size_t *len,
-									t_expansion_type expansion_type)
+t_expansion_state	count_normal_mode(t_string string, size_t *i, size_t *len,
+		t_expansion_type expansion_type)
 {
-	t_expansion_state state;
+	t_expansion_state	state;
 
 	state = NORMAL_STATE;
 	if (string.s[*i] == '\'')
@@ -58,22 +50,14 @@ t_expansion_state count_normal_mode(t_string string, size_t *i, size_t *len,
 			return (state);
 		}
 	}
-	if (expansion_type & EXPAND_VARS && string.s[*i] == '$')
-	{
-		count_var_len(string, i, len);
-	}
-	else
-	{
-		(*i)++;
-		(*len)++;
-	}
+	count_normal_mode_2(string, i, len, expansion_type);
 	return (state);
 }
 
-t_expansion_state count_dquote_mode(t_string string, size_t *i, size_t *len,
-									t_expansion_type expansion_type)
+t_expansion_state	count_dquote_mode(t_string string, size_t *i, size_t *len,
+		t_expansion_type expansion_type)
 {
-	t_expansion_state state;
+	t_expansion_state	state;
 
 	state = DQUOTE_STATE;
 	if (string.s[*i] == '"')
@@ -97,9 +81,10 @@ t_expansion_state count_dquote_mode(t_string string, size_t *i, size_t *len,
 	return (state);
 }
 
-t_expansion_state count_squote_mode(t_string string, size_t *i, size_t *len, t_expansion_type expansion_type)
+t_expansion_state	count_squote_mode(t_string string, size_t *i, size_t *len,
+		t_expansion_type expansion_type)
 {
-	t_expansion_state state;
+	t_expansion_state	state;
 
 	state = SQUOTE_STATE;
 	if (string.s[*i] == '\'')
@@ -116,11 +101,11 @@ t_expansion_state count_squote_mode(t_string string, size_t *i, size_t *len, t_e
 	return (state);
 }
 
-size_t get_expanded_str_len(t_string string, t_expansion_type expansion_type)
+size_t	get_expanded_str_len(t_string string, t_expansion_type expansion_type)
 {
-	t_expansion_state state;
-	size_t len;
-	size_t i;
+	t_expansion_state	state;
+	size_t				len;
+	size_t				i;
 
 	len = 0;
 	i = 0;

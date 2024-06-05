@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 11:06:49 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/05 20:54:02 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/05 21:48:07 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,4 @@ void	trim_spaces(t_lexer *lexer)
 {
 	while (lexer->pos < lexer->count && ft_isspace(lexer->line[lexer->pos]))
 		lexer->pos++;
-}
-
-int	is_special(char c)
-{
-	return (c == '(' || c == ')' || c == '<' || c == '>' || c == '|');
 }

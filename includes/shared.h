@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 09:43:01 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/05 20:41:22 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/05 21:24:30 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,15 @@
 # define PROG_NAME "Millishell"
 # define PROMPTSTART \
 "\001\e[1;32m\002Millishell \001\e[0;37m\002[\001\e[1;34m\002"
-# define PROMPTEND "\001\e[0;37m\002]\001\e[0;32m\002~> \001\e[0;37m\002"
+# define PROMPTEND \
+"\001\e[0;37m\002]\001\e[0;32m\002~> \001\e[0;37m\002"
 # define MALLOC_ERROR_MSG "Malloc failed. exiting Millishell."
 # define DQUOTE '"'
 # define SQUOTE '\''
 # define BUFF_SZ 1024
 # include "libft.h"
 # include <assert.h>
+# include <dirent.h>
 # include <fcntl.h>
 # include <readline/history.h>
 # include <readline/readline.h>
@@ -30,15 +32,14 @@
 # include <stdlib.h>
 # include <sys/stat.h>
 # include <unistd.h>
-# include <dirent.h>
 
 typedef struct s_darr
 {
-	void	*data;
-	size_t	count;
-	size_t	elem_size;
-	size_t	capacity;
-}			t_darr;
+	void			*data;
+	size_t			count;
+	size_t			elem_size;
+	size_t			capacity;
+}					t_darr;
 
 typedef struct s_string
 {
@@ -98,7 +99,7 @@ typedef struct s_node
 	size_t			list_count;
 	struct s_node	*children;
 	size_t			childs_count;
-	int			here_doc_fd;
+	int				here_doc_fd;
 }					t_node;
 
 typedef struct s_lexer
@@ -138,6 +139,6 @@ void				close_here_docs(void);
 void				malloc_error(void *p1, void *p2, char **p3, t_cmd *cmd);
 void				exit_with_code(t_cmd *cmd, int exit_value);
 void				*free_p(void *p1, void *p2, void *p3, char **p4);
-void	print_error_str(t_string str, char *reason);
+void				print_error_str(t_string str, char *reason);
 
 #endif

@@ -1,25 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   initialization.c                                   :+:      :+:    :+:   */
+/*   strings_expansion_utils_1.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/02 11:12:44 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/04 13:38:02 by msitni           ###   ########.fr       */
+/*   Created: 2024/06/05 21:58:16 by msitni            #+#    #+#             */
+/*   Updated: 2024/06/05 22:03:24 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "environment.h"
-#include "shell.h"
+#include "lexer.h"
 
-void	init_shell(const char **envp)
+char	*expand_string(t_string string, t_expansion_type expansion_type)
 {
-	setup_signal_handlers();
-	g_shell.last_exit_value = 0;
-	g_shell.childs_pids = init_da(sizeof(int));
-	g_shell.here_docs = init_da(sizeof(t_node *));
-	take_env(envp);
-	g_shell.interrupt = FALSE;
-	g_shell.collecting_here_doc = FALSE;
+	if (contains_chars(string, "*'\"$") == TRUE)
+		return (perform_string_expansion(string, expansion_type));
+	else
+		return (ft_substr(string.s, 0, string.count));
 }

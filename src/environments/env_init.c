@@ -12,11 +12,11 @@
 
 #include "environment.h"
 
-void increment_shlvl(void)
+void	increment_shlvl(void)
 {
-	t_lstenv *node;
-	char *value;
-	int shlvl;
+	t_lstenv	*node;
+	char		*value;
+	int			shlvl;
 
 	node = get_env_node("SHLVL");
 	if (node)
@@ -35,24 +35,24 @@ void increment_shlvl(void)
 		malloc_error(NULL, NULL, NULL, NULL);
 }
 
-void set_pwd()
+void	set_pwd(void)
 {
-	char*pwd;
+	char	*pwd;
 
 	pwd = getcwd(NULL, 0);
 	if (pwd == NULL)
 		malloc_error(NULL, NULL, NULL, NULL);
-	if(add_or_replace_env("PWD", pwd) == NULL)
+	if (add_or_replace_env("PWD", pwd) == NULL)
 		malloc_error(pwd, NULL, NULL, NULL);
 	free(pwd);
 }
 
-void take_env(const char **envp)
+void	take_env(const char **envp)
 {
-	char *key;
-	char *value;
-	t_lstenv *node;
-	int i;
+	char		*key;
+	char		*value;
+	t_lstenv	*node;
+	int			i;
 
 	g_shell.env_list = NULL;
 	i = 0;

@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 10:11:07 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/02 10:22:12 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/05 21:50:09 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,5 +84,27 @@ void	copy_var_value(char *res, t_string *string, size_t *i)
 	{
 		res[*i] = '$';
 		(*i)++;
+	}
+}
+
+void	count_var_len(t_string string, size_t *i, size_t *len)
+{
+	int		count;
+	char	buff[BUFF_SZ];
+
+	(*i)++;
+	count = parse_key_count(string.s + *i);
+	if (count > 0 && count < BUFF_SZ - 1)
+	{
+		ft_strlcpy(buff, string.s + *i, count + 1);
+		if (ft_strcmp(buff, "?") == 0)
+			*len += count_num_chars(g_shell.last_exit_value);
+		else
+			*len += ft_strlen(get_env_value(buff));
+		*i += count;
+	}
+	else if (count == -1)
+	{
+		(*len)++;
 	}
 }

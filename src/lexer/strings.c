@@ -6,7 +6,7 @@
 /*   By: msitni <msitni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/02 11:03:20 by msitni            #+#    #+#             */
-/*   Updated: 2024/06/05 20:56:39 by msitni           ###   ########.fr       */
+/*   Updated: 2024/06/05 21:15:07 by msitni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int	get_string(t_lexer *lexer, t_string *s, char *special_char_set)
 	else
 		is_closed = get_string_whitespace(lexer, s, special_char_set);
 	while (is_closed == TRUE && s->s[s->count] && !ft_isspace(s->s[s->count])
-		&& !is_special(s->s[s->count]))
+		&& !ft_strchr(special_char_set, s->s[s->count]))
 	{
 		if (s->s[s->count] == DQUOTE)
 			is_closed = get_string_delim(lexer, s, DQUOTE);
