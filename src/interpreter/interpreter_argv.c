@@ -12,9 +12,9 @@
 
 #include "interpreter.h"
 
-size_t	get_argc(t_node *cmd_node)
+size_t get_argc(t_node *cmd_node)
 {
-	size_t	argc;
+	size_t argc;
 
 	argc = 0;
 	cmd_node = get_next_node_by_type(cmd_node->children, NODE_STR);
@@ -26,21 +26,21 @@ size_t	get_argc(t_node *cmd_node)
 	return (argc);
 }
 
-char	*expand_argv(t_string str, int *has_asterix)
+char *expand_argv(t_string str, int *has_asterix)
 {
-	char	*res;
+	char *res;
 
-	if (contains_chars(str, "*") == TRUE)
+	res = expand_string(str, EXPAND_VARS);
+	if (ft_strchr(res, '*'))
 		*has_asterix = TRUE;
-	res = expand_string(str, EXPAND_VARS | REM_QUOTES);
 	return (res);
 }
 
-void	get_argv(t_node *cmd_node, t_cmd *cmd)
+void get_argv(t_node *cmd_node, t_cmd *cmd)
 {
-	t_node	*tmp;
-	int		has_asterix;
-	size_t	i;
+	t_node *tmp;
+	int has_asterix;
+	size_t i;
 
 	cmd->bin_path = NULL;
 	cmd->argc = get_argc(cmd_node);
@@ -55,6 +55,9 @@ void	get_argv(t_node *cmd_node, t_cmd *cmd)
 		i++;
 		tmp = get_next_node_by_type(tmp->next, NODE_STR);
 	}
+	cmd->argv = expand_args(cmd->argv, &cmd->argc);
+	if (cmd->argv == NULL)
+		malloc_error(NULL, NULL, NULL, NULL);
 	if (has_asterix == TRUE)
 	{
 		cmd->argv = expand_asterices(cmd->argv, &cmd->argc);

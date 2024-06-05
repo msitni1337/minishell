@@ -48,6 +48,8 @@ int	get_string(t_lexer *lexer, t_string *s)
 {
 	int	is_closed;
 
+	s->count = 0;
+	s->s = lexer->line + lexer->pos;
 	if (*(s->s) == DQUOTE)
 		is_closed = get_string_delim(lexer, s, DQUOTE);
 	else if (*(s->s) == SQUOTE)
@@ -75,8 +77,6 @@ t_node	*add_str_node(t_node *root, t_lexer *lexer)
 	node = create_node(NODE_STR);
 	if (node == NULL)
 		malloc_error(NULL, NULL, NULL, NULL);
-	node->token_str.count = 0;
-	node->token_str.s = lexer->line + lexer->pos;
 	if (get_string(lexer, &(node->token_str)) == FALSE)
 	{
 		free(node);

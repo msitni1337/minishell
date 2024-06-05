@@ -61,6 +61,7 @@ t_node	**init_subshell_node(t_node *root, t_lexer *lexer, t_token *token,
 			t_node **subshell);
 t_node	*link_argv_node(t_node *curr_cmd, t_lexer *lexer);
 void	*syntax_error(char *reason);
+int	get_string(t_lexer *lexer, t_string *s);
 
 // tokenizer:
 t_token	get_next_token(t_lexer *lexer, int ignore_spaces);
@@ -88,6 +89,7 @@ size_t get_expanded_str_len(t_string string, t_expansion_type expansion_type);
 size_t	parse_key_count(const char *s);
 void	copy_var_value(char *res, t_string *string, size_t *i);
 int		count_num_chars(long n);
+char **expand_args(char **args, size_t *count);
 
 /* asterices expansion */
 char	**expand_asterices(char **argv, size_t *argc);
